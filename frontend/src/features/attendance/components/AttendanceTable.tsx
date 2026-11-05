@@ -31,37 +31,38 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
 }) => {
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
 
+  // Status Badge Pill Styling
   const getStatusBadgeStyle = (status: string) => {
     switch (status) {
       case 'Present':
         return {
-          backgroundColor: '#ECFDF5',
-          border: '1px solid #A7F3D0',
-          color: '#059669',
+          backgroundColor: '#DCFCE7',
+          border: '1px solid #86EFAC',
+          color: '#15803D',
         };
       case 'Leave':
         return {
-          backgroundColor: '#FAF5FF',
-          border: '1px solid #E9D5FF',
-          color: '#9333EA',
+          backgroundColor: '#F3E8FF',
+          border: '1px solid #D8B4FE',
+          color: '#7E22CE',
         };
       case 'Half Day':
         return {
-          backgroundColor: '#FFFBEB',
+          backgroundColor: '#FEF3C7',
           border: '1px solid #FDE68A',
-          color: '#D97706',
+          color: '#B45309',
         };
       case 'Absent':
         return {
-          backgroundColor: '#FEF2F2',
-          border: '1px solid #FECDD3',
+          backgroundColor: '#FEE2E2',
+          border: '1px solid #FECACA',
           color: '#DC2626',
         };
       case 'Holiday':
         return {
-          backgroundColor: '#F0F9FF',
-          border: '1px solid #BAE6FD',
-          color: '#0284C7',
+          backgroundColor: '#E0E7FF',
+          border: '1px solid #C7D2FE',
+          color: '#4338CA',
         };
       default:
         return {
@@ -72,6 +73,51 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
     }
   };
 
+<<<<<<< HEAD
+  // Day Type Badge Pill Styling
+  const getDayTypeBadgeStyle = (dayType?: string) => {
+    switch (dayType) {
+      case 'Leave':
+        return {
+          backgroundColor: '#FEF3C7',
+          border: '1px solid #FDE68A',
+          color: '#D97706',
+        };
+      case 'Holiday':
+        return {
+          backgroundColor: '#F3E8FF',
+          border: '1px solid #E9D5FF',
+          color: '#9333EA',
+        };
+      case 'Working Day':
+      default:
+        return {
+          backgroundColor: '#EFF6FF',
+          border: '1px solid #BFDBFE',
+          color: '#2563EB',
+        };
+    }
+  };
+
+  // Late Flag Badge Pill Styling
+  const getLateFlagBadgeStyle = (flag?: string) => {
+    if (flag === 'Yes') {
+      return {
+        backgroundColor: '#FEE2E2',
+        border: '1px solid #FECACA',
+        color: '#DC2626',
+      };
+    }
+    return {
+      backgroundColor: '#DCFCE7',
+      border: '1px solid #86EFAC',
+      color: '#16A34A',
+    };
+  };
+
+  // Avatar Initials Circle Styling
+=======
+>>>>>>> origin/main
   const getAvatarStyle = (color?: string) => {
     switch (color) {
       case 'purple':
@@ -90,7 +136,7 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
         return { backgroundColor: '#D1FAE5', color: '#059669' };
       case 'blue':
       default:
-        return { backgroundColor: '#E0F2FE', color: '#0284C7' };
+        return { backgroundColor: '#DBEAFE', color: '#1D4ED8' };
     }
   };
 
@@ -129,16 +175,17 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
         flexDirection: 'column',
         width: '100%',
         boxSizing: 'border-box',
+        overflow: 'hidden',
       }}
     >
-      {/* Table Header: Title and Sort By */}
+      {/* Table Top Header: Title and Sort By */}
       <div
         style={{
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '20px 20px 16px',
+          padding: '20px 24px 16px',
           width: '100%',
           boxSizing: 'border-box',
         }}
@@ -149,7 +196,6 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
             fontSize: '16px',
             fontWeight: 700,
             lineHeight: '24px',
-            letterSpacing: '-0.4px',
             color: '#0F172A',
             margin: 0,
           }}
@@ -157,14 +203,14 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
           Attendance Records ({totalCount.toLocaleString()})
         </h2>
 
-        {/* Sort By Dropdown */}
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
+        {/* Sort Dropdown */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span
             style={{
               fontFamily: "'Inter', sans-serif",
               fontSize: '12px',
+              fontWeight: 500,
               color: '#64748B',
-              whiteSpace: 'nowrap',
             }}
           >
             Sort by
@@ -174,28 +220,24 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
               value={sortBy}
               onChange={(e) => onSortChange(e.target.value as AttendanceSortOption)}
               style={{
-                height: '32px',
+                appearance: 'none',
                 backgroundColor: '#FFFFFF',
                 border: '1px solid #E2E8F0',
                 borderRadius: '8px',
-                padding: '4px 28px 4px 12px',
-                fontFamily: "'Inter', sans-serif",
+                padding: '6px 30px 6px 12px',
                 fontSize: '12px',
                 fontWeight: 500,
                 color: '#1E293B',
-                outline: 'none',
-                appearance: 'none',
                 cursor: 'pointer',
+                outline: 'none',
               }}
             >
               <option value="date-desc">Date (Newest)</option>
               <option value="date-asc">Date (Oldest)</option>
-              <option value="employee-asc">Employee Name (A - Z)</option>
-              <option value="employee-desc">Employee Name (Z - A)</option>
-              <option value="id-desc">Attendance ID (Newest)</option>
-              <option value="id-asc">Attendance ID (Oldest)</option>
-              <option value="overtime-desc">Highest Overtime</option>
-              <option value="workhours-desc">Highest Work Hours</option>
+              <option value="employee-asc">Employee (A to Z)</option>
+              <option value="employee-desc">Employee (Z to A)</option>
+              <option value="overtime-desc">Most Overtime</option>
+              <option value="workhours-desc">Most Work Hours</option>
             </select>
             <div
               style={{
@@ -212,7 +254,7 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
         </div>
       </div>
 
-      {/* Table Container with Overflow Horizontal */}
+      {/* Table Container with Horizontal Scroll */}
       <div
         style={{
           width: '100%',
@@ -225,49 +267,66 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
         <table
           style={{
             width: '100%',
-            minWidth: '940px',
+            minWidth: '1540px',
             borderCollapse: 'collapse',
             textAlign: 'left',
             fontFamily: "'Inter', sans-serif",
           }}
         >
-          {/* Header Row */}
+          {/* Header Row - Matching Exact Image Headers */}
           <thead>
             <tr
               style={{
-                height: '42px',
-                backgroundColor: 'rgba(248, 250, 252, 0.8)',
+                height: '44px',
+                backgroundColor: '#FFFFFF',
                 borderBottom: '1px solid #E2E8F0',
               }}
             >
-              <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: 700, color: '#94A3B8', letterSpacing: '0.55px' }}>
-                ATTENDANCE ID
+              <th style={{ padding: '12px 18px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
+                Attendance ID
               </th>
-              <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: 700, color: '#94A3B8', letterSpacing: '0.55px' }}>
-                DATE
+              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
+                Date
               </th>
-              <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: 700, color: '#94A3B8', letterSpacing: '0.55px' }}>
-                EMPLOYEE ID
+              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
+                Employee ID
               </th>
-              <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: 700, color: '#94A3B8', letterSpacing: '0.55px' }}>
-                EMPLOYEE NAME
+              <th style={{ padding: '12px 18px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
+                Employee Name
               </th>
-              <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: 700, color: '#94A3B8', letterSpacing: '0.55px' }}>
-                STATUS
+              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
+                Status
               </th>
-              <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: 700, color: '#94A3B8', letterSpacing: '0.55px' }}>
-                CHECK IN
+              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
+                Check In
               </th>
-              <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: 700, color: '#94A3B8', letterSpacing: '0.55px' }}>
-                CHECK OUT
+              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
+                Check Out
               </th>
-              <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: 700, color: '#94A3B8', letterSpacing: '0.55px' }}>
-                WORK HOURS
+              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
+                Work Hours
               </th>
-              <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: 700, color: '#94A3B8', letterSpacing: '0.55px' }}>
-                OVERTIME HOURS
+              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
+                Overtime Hours
               </th>
-              <th style={{ width: '48px', padding: '12px 16px', textAlign: 'center' }}></th>
+              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
+                Day Type
+              </th>
+              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
+                Paid Day Equivalent
+              </th>
+              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
+                Late Flag
+              </th>
+              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
+                Overtime Value
+              </th>
+              <th style={{ padding: '12px 18px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
+                Remarks
+              </th>
+              <th style={{ width: '56px', padding: '12px 14px', fontSize: '12px', fontWeight: 600, color: '#64748B', textAlign: 'center', whiteSpace: 'nowrap' }}>
+                Actions
+              </th>
             </tr>
           </thead>
 
@@ -275,13 +334,19 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
           <tbody>
             {records.length === 0 ? (
               <tr>
-                <td colSpan={10} style={{ padding: '40px', textAlign: 'center', color: '#64748B', fontSize: '13px' }}>
+                <td colSpan={15} style={{ padding: '48px', textAlign: 'center', color: '#64748B', fontSize: '13px' }}>
                   No attendance records found matching current criteria.
                 </td>
               </tr>
             ) : (
               records.map((rec) => {
+<<<<<<< HEAD
+                const statusBadge = getStatusBadgeStyle(rec.status);
+                const dayTypeBadge = getDayTypeBadgeStyle(rec.dayType);
+                const lateFlagBadge = getLateFlagBadgeStyle(rec.lateFlag);
+=======
                 const badgeStyle = getStatusBadgeStyle(rec.status);
+>>>>>>> origin/main
                 const avatarStyle = getAvatarStyle(rec.avatarColor);
                 const isMenuOpen = activeMenuId === rec.id;
 
@@ -289,20 +354,20 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
                   <tr
                     key={rec.id}
                     style={{
-                      height: '52px',
+                      height: '54px',
                       borderBottom: '1px solid #F1F5F9',
                       transition: 'background-color 0.15s ease',
+                      backgroundColor: '#FFFFFF',
                     }}
                     className="hover:bg-slate-50/70"
                   >
-                    {/* ATTENDANCE ID */}
-                    <td style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>
+                    {/* 1. ATTENDANCE ID */}
+                    <td style={{ padding: '14px 18px', whiteSpace: 'nowrap' }}>
                       <span
                         onClick={() => onViewRecord(rec)}
                         style={{
-                          fontSize: '12.5px',
+                          fontSize: '13px',
                           fontWeight: 500,
-                          lineHeight: '19px',
                           color: '#2563EB',
                           cursor: 'pointer',
                         }}
@@ -312,31 +377,32 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
                       </span>
                     </td>
 
-                    {/* DATE */}
-                    <td style={{ padding: '14px 16px', whiteSpace: 'nowrap', fontSize: '12.5px', color: '#475569' }}>
+                    {/* 2. DATE */}
+                    <td style={{ padding: '14px 16px', whiteSpace: 'nowrap', fontSize: '13px', color: '#64748B' }}>
                       {rec.attendanceDate}
                     </td>
 
-                    {/* EMPLOYEE ID */}
+                    {/* 3. EMPLOYEE ID */}
                     <td style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>
-                      <span style={{ fontSize: '12.5px', fontWeight: 500, color: '#2563EB' }}>
+                      <span style={{ fontSize: '13px', fontWeight: 500, color: '#2563EB' }}>
                         {rec.employeeId}
                       </span>
                     </td>
 
-                    {/* EMPLOYEE NAME with Initial Badge */}
-                    <td style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {/* 4. EMPLOYEE NAME with Circle Avatar */}
+                    <td style={{ padding: '14px 18px', whiteSpace: 'nowrap' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
                         <div
                           style={{
-                            width: '24px',
-                            height: '24px',
+                            width: '26px',
+                            height: '26px',
                             borderRadius: '9999px',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontSize: '10px',
+                            fontSize: '10.5px',
                             fontWeight: 700,
+                            flexShrink: 0,
                             ...avatarStyle,
                           }}
                         >
@@ -345,7 +411,7 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
                         <span
                           onClick={() => onViewRecord(rec)}
                           style={{
-                            fontSize: '12.5px',
+                            fontSize: '13px',
                             fontWeight: 500,
                             color: '#0F172A',
                             cursor: 'pointer',
@@ -357,48 +423,100 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
                       </div>
                     </td>
 
-                    {/* STATUS */}
+                    {/* 5. STATUS */}
                     <td style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>
                       <div
                         style={{
                           display: 'inline-flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          padding: '2px 8px',
+                          padding: '3px 10px',
                           borderRadius: '6px',
-                          height: '22px',
                           fontSize: '11px',
-                          fontWeight: 500,
+                          fontWeight: 600,
                           lineHeight: '16px',
-                          ...badgeStyle,
+                          ...statusBadge,
                         }}
                       >
                         {rec.status}
                       </div>
                     </td>
 
-                    {/* CHECK IN */}
-                    <td style={{ padding: '14px 16px', whiteSpace: 'nowrap', fontSize: '12.5px', color: '#475569' }}>
+                    {/* 6. CHECK IN */}
+                    <td style={{ padding: '14px 16px', whiteSpace: 'nowrap', fontSize: '13px', color: rec.checkIn === '-' ? '#94A3B8' : '#64748B' }}>
                       {rec.checkIn}
                     </td>
 
-                    {/* CHECK OUT */}
-                    <td style={{ padding: '14px 16px', whiteSpace: 'nowrap', fontSize: '12.5px', color: '#475569' }}>
+                    {/* 7. CHECK OUT */}
+                    <td style={{ padding: '14px 16px', whiteSpace: 'nowrap', fontSize: '13px', color: rec.checkOut === '-' ? '#94A3B8' : '#64748B' }}>
                       {rec.checkOut}
                     </td>
 
-                    {/* WORK HOURS */}
-                    <td style={{ padding: '14px 16px', whiteSpace: 'nowrap', fontSize: '12.5px', color: '#475569' }}>
+                    {/* 8. WORK HOURS */}
+                    <td style={{ padding: '14px 16px', whiteSpace: 'nowrap', fontSize: '13px', color: '#64748B' }}>
                       {rec.workHours}
                     </td>
 
-                    {/* OVERTIME HOURS */}
-                    <td style={{ padding: '14px 16px', whiteSpace: 'nowrap', fontSize: '12.5px', color: '#475569' }}>
+                    {/* 9. OVERTIME HOURS */}
+                    <td style={{ padding: '14px 16px', whiteSpace: 'nowrap', fontSize: '13px', color: '#64748B' }}>
                       {rec.overtimeHours}
                     </td>
 
-                    {/* ACTION MENU */}
-                    <td style={{ padding: '14px 16px', textAlign: 'center', position: 'relative' }}>
+                    {/* 10. DAY TYPE */}
+                    <td style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>
+                      <div
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          padding: '3px 10px',
+                          borderRadius: '6px',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          lineHeight: '16px',
+                          ...dayTypeBadge,
+                        }}
+                      >
+                        {rec.dayType || 'Working Day'}
+                      </div>
+                    </td>
+
+                    {/* 11. PAID DAY EQUIVALENT */}
+                    <td style={{ padding: '14px 16px', whiteSpace: 'nowrap', fontSize: '13px', color: '#64748B' }}>
+                      {rec.paidDayEquivalent || '1.0'}
+                    </td>
+
+                    {/* 12. LATE FLAG */}
+                    <td style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>
+                      <div
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          padding: '2px 10px',
+                          borderRadius: '9999px',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          lineHeight: '16px',
+                          ...lateFlagBadge,
+                        }}
+                      >
+                        {rec.lateFlag || (rec.isLate ? 'Yes' : 'No')}
+                      </div>
+                    </td>
+
+                    {/* 13. OVERTIME VALUE */}
+                    <td style={{ padding: '14px 16px', whiteSpace: 'nowrap', fontSize: '13px', color: '#64748B' }}>
+                      {rec.overtimeValue || '₹ 0'}
+                    </td>
+
+                    {/* 14. REMARKS */}
+                    <td style={{ padding: '14px 18px', whiteSpace: 'nowrap', fontSize: '13px', color: rec.remarks === '-' ? '#94A3B8' : '#64748B' }}>
+                      {rec.remarks || '-'}
+                    </td>
+
+                    {/* 15. ACTIONS (⋮ Menu) */}
+                    <td style={{ padding: '14px 14px', textAlign: 'center', position: 'relative' }}>
                       <button
                         type="button"
                         onClick={(e) => {
@@ -406,8 +524,8 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
                           setActiveMenuId(isMenuOpen ? null : rec.id);
                         }}
                         style={{
-                          width: '26px',
-                          height: '26px',
+                          width: '28px',
+                          height: '28px',
                           borderRadius: '6px',
                           border: 'none',
                           backgroundColor: 'transparent',
@@ -420,16 +538,16 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
                         className="hover:bg-slate-100"
                         title="Actions"
                       >
-                        <MoreVertical size={15} />
+                        <MoreVertical size={16} />
                       </button>
 
                       {isMenuOpen && (
                         <div
                           style={{
                             position: 'absolute',
-                            right: '20px',
+                            right: '18px',
                             top: '40px',
-                            width: '130px',
+                            width: '134px',
                             backgroundColor: '#FFFFFF',
                             border: '1px solid #E2E8F0',
                             borderRadius: '8px',
@@ -538,7 +656,7 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '16px 20px',
+          padding: '16px 24px',
           width: '100%',
           boxSizing: 'border-box',
           fontFamily: "'Inter', sans-serif",
@@ -547,7 +665,7 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
         }}
       >
         {/* Left: Showing Range */}
-        <div style={{ fontSize: '12px', color: '#64748B' }}>
+        <div style={{ fontSize: '13px', color: '#64748B' }}>
           Showing <span style={{ fontWeight: 600, color: '#1E293B' }}>{startRange} – {endRange}</span> of{' '}
           <span style={{ fontWeight: 600, color: '#1E293B' }}>{totalCount.toLocaleString()}</span> records
         </div>
@@ -561,8 +679,8 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
               disabled={currentPage <= 1}
               onClick={() => onPageChange(currentPage - 1)}
               style={{
-                width: '28px',
-                height: '28px',
+                width: '30px',
+                height: '30px',
                 borderRadius: '6px',
                 border: '1px solid #E2E8F0',
                 backgroundColor: '#FFFFFF',
@@ -573,7 +691,7 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
                 cursor: currentPage <= 1 ? 'not-allowed' : 'pointer',
               }}
             >
-              <ChevronLeft size={14} />
+              <ChevronLeft size={15} />
             </button>
 
             {renderPaginationButtons().map((p, idx) => {
@@ -582,9 +700,9 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
                   <span
                     key={`ellipsis-${idx}`}
                     style={{
-                      width: '24px',
+                      width: '26px',
                       textAlign: 'center',
-                      fontSize: '12px',
+                      fontSize: '13px',
                       color: '#94A3B8',
                     }}
                   >
@@ -598,17 +716,17 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
 
               return (
                 <button
-                  key={pageNum}
+                  key={`page-${pageNum}`}
                   type="button"
                   onClick={() => onPageChange(pageNum)}
                   style={{
-                    width: '28px',
-                    height: '28px',
+                    width: '30px',
+                    height: '30px',
                     borderRadius: '6px',
                     border: isActive ? 'none' : '1px solid #E2E8F0',
-                    backgroundColor: isActive ? '#4F46E5' : '#FFFFFF',
-                    color: isActive ? '#FFFFFF' : '#64748B',
-                    fontSize: '12px',
+                    backgroundColor: isActive ? '#2563EB' : '#FFFFFF',
+                    color: isActive ? '#FFFFFF' : '#334155',
+                    fontSize: '13px',
                     fontWeight: isActive ? 600 : 500,
                     display: 'flex',
                     alignItems: 'center',
@@ -626,8 +744,8 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
               disabled={currentPage >= totalPages}
               onClick={() => onPageChange(currentPage + 1)}
               style={{
-                width: '28px',
-                height: '28px',
+                width: '30px',
+                height: '30px',
                 borderRadius: '6px',
                 border: '1px solid #E2E8F0',
                 backgroundColor: '#FFFFFF',
@@ -638,27 +756,26 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
                 cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
               }}
             >
-              <ChevronRight size={14} />
+              <ChevronRight size={15} />
             </button>
           </div>
 
-          {/* Page Size Select */}
+          {/* Page Size Selector */}
           <div style={{ position: 'relative' }}>
             <select
               value={pageSize}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
               style={{
-                height: '30px',
+                appearance: 'none',
                 backgroundColor: '#FFFFFF',
                 border: '1px solid #E2E8F0',
                 borderRadius: '8px',
-                padding: '4px 26px 4px 10px',
-                fontFamily: "'Inter', sans-serif",
-                fontSize: '12px',
-                color: '#475569',
-                outline: 'none',
-                appearance: 'none',
+                padding: '6px 28px 6px 12px',
+                fontSize: '13px',
+                fontWeight: 500,
+                color: '#334155',
                 cursor: 'pointer',
+                outline: 'none',
               }}
             >
               <option value={10}>10 per page</option>

@@ -141,6 +141,10 @@ public class AttendanceService {
         if (updates.getIsLate() != null) existing.setIsLate(updates.getIsLate());
         if (updates.getHasOvertime() != null) existing.setHasOvertime(updates.getHasOvertime());
         if (updates.getNotes() != null) existing.setNotes(updates.getNotes());
+        if (updates.getPaidDayEquivalent() != null) existing.setPaidDayEquivalent(updates.getPaidDayEquivalent());
+        if (updates.getLateFlag() != null) existing.setLateFlag(updates.getLateFlag());
+        if (updates.getOvertimeValue() != null) existing.setOvertimeValue(updates.getOvertimeValue());
+        if (updates.getRemarks() != null) existing.setRemarks(updates.getRemarks());
 
         return attendanceRepository.save(existing);
     }

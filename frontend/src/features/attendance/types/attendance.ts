@@ -12,10 +12,14 @@ export interface AttendanceRecord {
   overtimeHours: string; // e.g. 1h 00m or 0h 0m
   workMinutes?: number;
   overtimeMinutes?: number;
-  dayType?: 'Regular' | 'Weekend' | 'Holiday' | string;
+  dayType?: 'Regular' | 'Working Day' | 'Leave' | 'Holiday' | string;
   isLate?: boolean;
   hasOvertime?: boolean;
   notes?: string;
+  paidDayEquivalent?: string;
+  lateFlag?: 'Yes' | 'No' | string;
+  overtimeValue?: string;
+  remarks?: string;
   createdAt?: string;
   updatedAt?: string;
 }

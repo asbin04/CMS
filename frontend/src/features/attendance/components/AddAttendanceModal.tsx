@@ -35,6 +35,17 @@ export const AddAttendanceModal: React.FC<AddAttendanceModalProps> = ({
       const selectedEmp = employees.find((e) => e.id === employeeId) || employees[0];
       const isLate = checkIn.includes('AM') && !checkIn.startsWith('08:') && !checkIn.startsWith('09:00');
       const hasOvertime = overtimeHours !== '0h 0m' && overtimeHours !== '-';
+      const paidDayEquivalent = status === 'Half Day' ? '0.5' : (status === 'Leave' || status === 'Absent' || status === 'Holiday' ? '0.0' : '1.0');
+      const lateFlag = isLate ? 'Yes' : 'No';
+      let otVal = '₹ 0';
+      if (hasOvertime) {
+        const m = overtimeHours.match(/(\d+)h\s*(\d+)m/);
+        if (m) {
+          const otMins = parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+          otVal = `₹ ${Math.round(otMins * 12.5).toLocaleString('en-IN')}`;
+        }
+      }
+      const defaultRemark = isLate ? 'Late arrival' : (status === 'Half Day' ? 'Left early' : (status === 'Leave' ? 'Personal leave' : (status === 'Holiday' ? 'Company holiday' : (status === 'Absent' ? 'Absent' : '-'))));
 
       await onAdd({
         employeeId: selectedEmp.id,
@@ -47,9 +58,13 @@ export const AddAttendanceModal: React.FC<AddAttendanceModalProps> = ({
         checkOut: status === 'Absent' || status === 'Leave' || status === 'Holiday' ? '-' : checkOut,
         workHours: status === 'Absent' || status === 'Leave' || status === 'Holiday' ? '0h 0m' : workHours,
         overtimeHours: status === 'Absent' || status === 'Leave' || status === 'Holiday' ? '0h 0m' : overtimeHours,
-        dayType,
+        dayType: status === 'Leave' ? 'Leave' : (status === 'Holiday' ? 'Holiday' : 'Working Day'),
         isLate,
         hasOvertime,
+        paidDayEquivalent,
+        lateFlag,
+        overtimeValue: otVal,
+        remarks: notes || defaultRemark,
         notes,
       });
       onClose();

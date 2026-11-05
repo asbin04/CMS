@@ -201,6 +201,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
     if (path === '/clients/list' && (location.pathname === '/clients' || location.pathname === '/clients/list')) {
       return true;
     }
+    if (path === '/finance/payments' && (location.pathname === '/payments' || location.pathname === '/finance/payments')) {
+      return true;
+    }
     return location.pathname === path;
   };
 
@@ -213,7 +216,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         (item.path === '/hr/attendance' &&
           (location.pathname === '/attendance' || location.pathname.startsWith('/hr/attendance'))) ||
         (item.path === '/clients/list' &&
-          (location.pathname === '/clients' || location.pathname.startsWith('/clients')))
+          (location.pathname === '/clients' || location.pathname.startsWith('/clients'))) ||
+        (item.path === '/finance/payments' &&
+          (location.pathname === '/payments' || location.pathname.startsWith('/finance/payments')))
     );
   };
 

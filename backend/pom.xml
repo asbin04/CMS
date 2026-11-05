@@ -125,6 +125,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
+					<jvmArguments>-Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true</jvmArguments>
 					<excludes>
 						<exclude>
 							<groupId>org.projectlombok</groupId>

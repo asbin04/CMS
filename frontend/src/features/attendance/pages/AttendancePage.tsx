@@ -283,7 +283,10 @@ export const AttendancePage: React.FC = () => {
       'Work Hours',
       'Overtime Hours',
       'Day Type',
-      'Late',
+      'Paid Day Equivalent',
+      'Late Flag',
+      'Overtime Value',
+      'Remarks',
     ];
 
     const rows = filteredRecords.map((r) => [
@@ -296,8 +299,11 @@ export const AttendancePage: React.FC = () => {
       `"${r.checkOut}"`,
       `"${r.workHours}"`,
       `"${r.overtimeHours}"`,
-      `"${r.dayType || 'Regular'}"`,
-      `"${r.isLate ? 'Yes' : 'No'}"`,
+      `"${r.dayType || 'Working Day'}"`,
+      `"${r.paidDayEquivalent || '1.0'}"`,
+      `"${r.lateFlag || (r.isLate ? 'Yes' : 'No')}"`,
+      `"${r.overtimeValue || '₹ 0'}"`,
+      `"${(r.remarks || '-').replace(/"/g, '""')}"`,
     ]);
 
     const csvContent = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');

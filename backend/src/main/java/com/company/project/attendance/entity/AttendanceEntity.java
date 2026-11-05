@@ -68,6 +68,18 @@ public class AttendanceEntity {
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
 
+    @Column(name = "paid_day_equivalent", length = 20)
+    private String paidDayEquivalent;
+
+    @Column(name = "late_flag", length = 10)
+    private String lateFlag;
+
+    @Column(name = "overtime_value", length = 30)
+    private String overtimeValue;
+
+    @Column(name = "remarks", length = 150)
+    private String remarks;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
