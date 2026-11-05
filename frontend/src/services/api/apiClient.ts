@@ -145,16 +145,9 @@ async function executeRequest<T>(
     throw new ApiError(message, 0);
   }
 
-<<<<<<< HEAD
-  // Handle 401 Unauthorized by clearing stale tokens and retrying once in DEV mode
-  if ((response.status === 401 || response.status === 403) && !options._isRetry) {
-    localStorage.removeItem('auth_token');
-    sessionStorage.removeItem('auth_token');
-=======
-  // Handle 401 Unauthorized
-  if (response.status === 401) {
+  // Handle 401/403 Unauthorized
+  if (response.status === 401 || response.status === 403) {
     clearAuthStorage();
->>>>>>> origin/main
 
     // Never loop: retry at most once, and never retry /auth/login
     if (!options.isRetry && !isAuthLogin && import.meta.env.DEV && !isTestEnv && sessionStorage.getItem('logged_out') !== 'true') {
