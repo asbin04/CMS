@@ -60,31 +60,4 @@ public interface ProjectTaskRepository extends JpaRepository<ProjectTaskEntity, 
 
     @Query("SELECT CASE WHEN COUNT(pt) > 0 THEN true ELSE false END FROM ProjectTaskEntity pt WHERE pt.id = :taskId AND (pt.projectId = :projectId OR pt.projectId IN (SELECT p.projectCode FROM ProjectEntity p WHERE p.id = :projectId))")
     boolean existsByProjectIdAndTaskId(@Param("projectId") String projectId, @Param("taskId") String taskId);
-
-    List<ProjectTaskEntity> findAllByOrderByCreatedAtDesc();
-
-    List<ProjectTaskEntity> findAllByOrderByIdDesc();
-
-    List<ProjectTaskEntity> findByProjectIdOrderByCreatedAtDesc(String projectId);
-
-    long countByProjectId(String projectId);
-
-    long countByProjectIdAndStatusIgnoreCase(String projectId, String status);
-
-    void deleteByProjectId(String projectId);
-
-    @Query("SELECT DISTINCT t.projectId FROM ProjectTaskEntity t WHERE t.projectId IS NOT NULL ORDER BY t.projectId")
-    List<String> findDistinctProjectIds();
-
-    @Query("SELECT DISTINCT t.milestone FROM ProjectTaskEntity t WHERE t.milestone IS NOT NULL ORDER BY t.milestone")
-    List<String> findDistinctMilestones();
-
-    @Query("SELECT DISTINCT t.assignedTo FROM ProjectTaskEntity t WHERE t.assignedTo IS NOT NULL ORDER BY t.assignedTo")
-    List<String> findDistinctAssignees();
-
-    @Query("SELECT DISTINCT t.status FROM ProjectTaskEntity t WHERE t.status IS NOT NULL ORDER BY t.status")
-    List<String> findDistinctStatuses();
-
-    @Query("SELECT DISTINCT t.priority FROM ProjectTaskEntity t WHERE t.priority IS NOT NULL ORDER BY t.priority")
-    List<String> findDistinctPriorities();
 }

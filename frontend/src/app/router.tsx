@@ -32,7 +32,6 @@ import { DevelopmentPage } from '../features/development/pages/DevelopmentPage';
 import { CashFlowPage } from '../features/finance/cash-flow/pages/CashFlowPage';
 import { LoginPage } from '../features/auth/pages/LoginPage';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
-import { LoginPage } from '../features/auth/pages/LoginPage';
 
 const CeoDashboardRoute: React.FC = () => {
   const context = useOutletContext<AppLayoutContextType>();
