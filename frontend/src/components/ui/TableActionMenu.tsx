@@ -60,7 +60,7 @@ export const TableActionMenu: React.FC<TableActionMenuProps> = ({
     if (!buttonRef.current) return;
     const rect = buttonRef.current.getBoundingClientRect();
     const dropdownHeight = menuRef.current?.offsetHeight || 120;
-    const dropdownWidth = menuRef.current?.offsetWidth || 144;
+    const dropdownWidth = menuRef.current?.offsetWidth || 156;
     const vh = typeof window !== 'undefined' ? window.innerHeight || 800 : 800;
     const vw = typeof window !== 'undefined' ? window.innerWidth || 1280 : 1280;
 
@@ -186,7 +186,7 @@ export const TableActionMenu: React.FC<TableActionMenuProps> = ({
               position: 'fixed',
               top: `${menuPosition.top}px`,
               right: `${menuPosition.right}px`,
-              width: '144px',
+              minWidth: '156px',
               zIndex: 99999,
             }}
             className="bg-white rounded-xl border border-slate-200 shadow-xl py-1 animate-in fade-in zoom-in-95 duration-100 select-none text-left"

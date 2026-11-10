@@ -29,13 +29,9 @@ import { AmcSlaPage } from '../features/support/pages/AmcSlaPage';
 import { InvoicesPage } from '../features/invoices/pages/InvoicesPage';
 import { TimesheetsRequirementsPage } from '../features/projects/pages/TimesheetsRequirementsPage';
 import { DevelopmentPage } from '../features/development/pages/DevelopmentPage';
-
-const FinanceDashboardPage = React.lazy(() =>
-  import('../features/finance/pages/FinanceDashboardPage').then((m) => ({ default: m.FinanceDashboardPage }))
-);
-
-import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
+import { CashFlowPage } from '../features/finance/cash-flow/pages/CashFlowPage';
 import { LoginPage } from '../features/auth/pages/LoginPage';
+import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
 
 const CeoDashboardRoute: React.FC = () => {
   const context = useOutletContext<AppLayoutContextType>();
@@ -109,6 +105,7 @@ export const AppRouter: React.FC = () => {
         <Route path="/projects/timesheets" element={<TimesheetsRequirementsPage />} />
         <Route path="/projects/timesheets-requirements" element={<Navigate to="/projects/timesheets" replace />} />
         <Route path="/projects/development" element={<DevelopmentPage />} />
+        <Route path="/finance/cash-flow" element={<CashFlowPage />} />
 
         {/* Generate dynamic module engine routes for all other navigation items */}
         {navigationSections.map((section) =>
@@ -140,23 +137,7 @@ export const AppRouter: React.FC = () => {
                 item.path !== '/invoices' &&
                 item.path !== '/projects/timesheets' &&
                 item.path !== '/projects/development' &&
-                item.path !== '/projects/tasks' &&
-                item.path !== '/projects' &&
-                item.path !== '/projects/ui-ux' &&
-                item.path !== '/ui-ux' &&
-                item.path !== '/projects/uat' &&
-                item.path !== '/uat' &&
-                item.path !== '/hr/employee-exit' &&
-                item.path !== '/hr/payroll' &&
-                item.path !== '/hr/payroll-salary' &&
-                item.path !== '/finance/payments' &&
-                item.path !== '/payments' &&
-                item.path !== '/finance/expenses' &&
-                item.path !== '/expenses' &&
-                item.path !== '/support/tickets' &&
-                item.path !== '/tickets' &&
-                item.path !== '/support/amc-sla' &&
-                item.path !== '/amc-sla'
+                item.path !== '/finance/cash-flow'
             )
             .map((item) => (
               <Route

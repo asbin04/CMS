@@ -91,11 +91,13 @@ body {
 }
 
 /* Base button and input resets */
-button, input, select {
+button, input, select, textarea {
   font-family: inherit;
   font-size: inherit;
   color: inherit;
-  border: none;
+  border-style: solid;
+  border-width: 0;
+  border-color: #cbd5e1;
   background: transparent;
   outline: none;
 }

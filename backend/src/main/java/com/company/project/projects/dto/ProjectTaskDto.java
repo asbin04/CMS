@@ -41,7 +41,23 @@ public class ProjectTaskDto {
         return id != null ? id : taskId;
     }
 
+    public String getTaskId() {
+        return taskId != null ? taskId : id;
+    }
+
     public String getName() {
         return name != null ? name : taskName;
+    }
+
+    public String getTaskName() {
+        return taskName != null ? taskName : name;
+    }
+
+    public Boolean getBillable() {
+        return billable != null ? billable : billableDefault;
+    }
+
+    public Boolean getBillableDefault() {
+        return billableDefault != null ? billableDefault : billable;
     }
 }

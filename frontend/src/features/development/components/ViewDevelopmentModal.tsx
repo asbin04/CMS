@@ -59,12 +59,25 @@ export const ViewDevelopmentModal: React.FC<ViewDevelopmentModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="relative bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4"
+      style={{ fontFamily: "'Inter', sans-serif" }}
+    >
+      <style>{`
+        .modal-border-readonly {
+          border: 1px solid #C7D5E8 !important;
+          background-color: #FFFFFF !important;
+          border-radius: 10px !important;
+        }
+      `}</style>
+
+      <div className="relative bg-white rounded-[20px] max-w-[880px] w-full shadow-2xl border border-slate-100 my-auto animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4.5 border-b border-slate-100 bg-slate-50/60">
+        <div className="flex items-center justify-between px-7 py-3.5 border-b border-slate-100">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#EEF2FF] border border-[#E0E7FF] flex items-center justify-center text-[#4F46E5]">
+            <div className="w-10 h-10 rounded-xl bg-[#EEF2FF] border border-[#E0E7FF] flex items-center justify-center text-[#4F46E5] shrink-0">
               <Code2 className="w-5 h-5 stroke-[2.2]" />
             </div>
             <div>
@@ -94,10 +107,10 @@ export const ViewDevelopmentModal: React.FC<ViewDevelopmentModalProps> = ({
           </button>
         </div>
 
-        {/* Content Body */}
-        <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
+        {/* Content Body - Fits completely without vertical scrolling on desktop */}
+        <div className="px-7 py-3.5 space-y-3">
           {/* Linked Identifiers Section */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 bg-slate-50 rounded-xl border border-slate-100">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 px-3.5 py-2 bg-slate-50 rounded-lg border border-slate-100">
             <div>
               <span className="block text-[10.5px] font-medium text-slate-400 uppercase tracking-wide">
                 Project ID
@@ -133,32 +146,35 @@ export const ViewDevelopmentModal: React.FC<ViewDevelopmentModalProps> = ({
           </div>
 
           {/* Development Information */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-3.5 gap-y-2.5">
+            {/* Developer */}
             <div>
-              <label className="block text-xs font-medium text-slate-500 mb-1">
+              <label className="block text-[11.5px] font-medium text-slate-700 mb-1 leading-none">
                 Developer
               </label>
-              <div className="p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-800">
+              <div className="modal-border-readonly h-[38px] px-3 flex items-center text-xs font-semibold text-slate-800 truncate">
                 {record.developer}
               </div>
             </div>
 
+            {/* Build Version */}
             <div>
-              <label className="block text-xs font-medium text-slate-500 mb-1">
+              <label className="block text-[11.5px] font-medium text-slate-700 mb-1 leading-none">
                 Build Version
               </label>
-              <div className="p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-mono font-medium text-slate-700">
+              <div className="modal-border-readonly h-[38px] px-3 flex items-center text-xs font-mono font-medium text-slate-700 truncate">
                 {record.buildVersion}
               </div>
             </div>
 
+            {/* Environment */}
             <div>
-              <label className="block text-xs font-medium text-slate-500 mb-1">
+              <label className="block text-[11.5px] font-medium text-slate-700 mb-1 leading-none">
                 Environment
               </label>
-              <div>
+              <div className="modal-border-readonly h-[38px] px-3 flex items-center">
                 <span
-                  className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium ${getEnvironmentBadge(
+                  className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium ${getEnvironmentBadge(
                     record.environment
                   )}`}
                 >
@@ -167,13 +183,14 @@ export const ViewDevelopmentModal: React.FC<ViewDevelopmentModalProps> = ({
               </div>
             </div>
 
+            {/* Code Review Status */}
             <div>
-              <label className="block text-xs font-medium text-slate-500 mb-1">
+              <label className="block text-[11.5px] font-medium text-slate-700 mb-1 leading-none">
                 Code Review Status
               </label>
-              <div>
+              <div className="modal-border-readonly h-[38px] px-3 flex items-center">
                 <span
-                  className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium ${getCodeReviewBadge(
+                  className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium ${getCodeReviewBadge(
                     record.codeReviewStatus
                   )}`}
                 >
@@ -182,18 +199,31 @@ export const ViewDevelopmentModal: React.FC<ViewDevelopmentModalProps> = ({
               </div>
             </div>
 
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-slate-500 mb-1">
+            {/* Git Branch */}
+            <div>
+              <label className="block text-[11.5px] font-medium text-slate-700 mb-1 leading-none">
                 Git Branch
               </label>
-              <div className="flex items-center gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono text-slate-800">
-                <GitBranch className="w-3.5 h-3.5 text-slate-400" />
-                <span>{record.branch}</span>
+              <div className="modal-border-readonly h-[38px] px-3 flex items-center gap-1.5 text-xs font-mono text-slate-800">
+                <GitBranch className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span className="truncate">{record.branch}</span>
               </div>
             </div>
 
+            {/* QA Handoff Date */}
+            <div>
+              <label className="block text-[11.5px] font-medium text-slate-700 mb-1 leading-none">
+                QA Handoff Date
+              </label>
+              <div className="modal-border-readonly h-[38px] px-3 flex items-center gap-1.5 text-xs font-normal text-slate-700">
+                <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span>{record.qaHandoffDate || '—'}</span>
+              </div>
+            </div>
+
+            {/* Repository URL */}
             <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-slate-500 mb-1">
+              <label className="block text-[11.5px] font-medium text-slate-700 mb-1 leading-none">
                 Repository URL
               </label>
               <a
@@ -204,28 +234,19 @@ export const ViewDevelopmentModal: React.FC<ViewDevelopmentModalProps> = ({
                 }
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-normal text-slate-700 transition-colors"
+                className="modal-border-readonly h-[38px] px-3 flex items-center justify-between text-xs text-slate-700 hover:text-[#4F46E5] transition-colors"
               >
                 <span className="truncate">{record.repositoryUrl}</span>
                 <ExternalLink className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-2" />
               </a>
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-slate-500 mb-1">
-                QA Handoff Date
-              </label>
-              <div className="flex items-center gap-2 p-2.5 bg-white border border-slate-200 rounded-lg text-xs font-normal text-slate-700">
-                <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                <span>{record.qaHandoffDate || '—'}</span>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-slate-500 mb-1">
+            {/* Documentation Link */}
+            <div className="sm:col-span-2">
+              <label className="block text-[11.5px] font-medium text-slate-700 mb-1 leading-none">
                 Documentation Link
               </label>
-              {record.documentationLink ? (
+              {record.documentationLink && record.documentationLink !== '#' && record.documentationLink !== '—' ? (
                 <a
                   href={
                     record.documentationLink.startsWith('http')
@@ -234,26 +255,27 @@ export const ViewDevelopmentModal: React.FC<ViewDevelopmentModalProps> = ({
                   }
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center justify-between p-2.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-[#4F46E5] transition-colors"
+                  className="modal-border-readonly h-[38px] px-3 flex items-center justify-between text-xs font-medium text-[#4F46E5] hover:underline transition-colors"
                 >
                   <span className="flex items-center gap-1.5 truncate">
-                    <FileText className="w-3.5 h-3.5 text-[#4F46E5]" />
-                    <span>View Documentation</span>
+                    <FileText className="w-3.5 h-3.5 text-[#4F46E5] shrink-0" />
+                    <span className="truncate">{record.documentationLink}</span>
                   </span>
-                  <ExternalLink className="w-3 h-3 text-[#4F46E5]" />
+                  <ExternalLink className="w-3.5 h-3.5 text-[#4F46E5] shrink-0 ml-2" />
                 </a>
               ) : (
-                <div className="p-2.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-400">
-                  No link available
+                <div className="modal-border-readonly h-[38px] px-3 flex items-center text-xs text-slate-400">
+                  No documentation link is available for this development.
                 </div>
               )}
             </div>
 
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-slate-500 mb-1">
+            {/* Technical Notes */}
+            <div className="sm:col-span-2 md:col-span-4">
+              <label className="block text-[11.5px] font-medium text-slate-700 mb-1 leading-none">
                 Technical Notes
               </label>
-              <div className="p-3 bg-white border border-slate-200 rounded-lg text-xs leading-relaxed text-slate-700 min-h-[60px]">
+              <div className="modal-border-readonly p-2.5 text-xs leading-relaxed text-slate-700 min-h-[58px]">
                 {record.technicalNotes || '—'}
               </div>
             </div>
@@ -261,11 +283,11 @@ export const ViewDevelopmentModal: React.FC<ViewDevelopmentModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 bg-slate-50 border-t border-slate-100">
+        <div className="flex items-center justify-between px-7 py-3 bg-white border-t border-slate-100 rounded-b-[20px]">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 hover:bg-white transition-colors cursor-pointer"
+            className="px-5 py-2 border border-solid border-[#C7D5E8] rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
           >
             Close
           </button>
@@ -275,7 +297,7 @@ export const ViewDevelopmentModal: React.FC<ViewDevelopmentModalProps> = ({
               onClose();
               onEdit(record);
             }}
-            className="px-4 py-2 bg-[#4F46E5] hover:bg-[#4338CA] text-white rounded-lg text-xs font-semibold shadow-2xs transition-colors flex items-center gap-2 cursor-pointer"
+            className="px-5 py-2 bg-[#4F46E5] hover:bg-[#4338CA] text-white rounded-lg text-xs font-semibold shadow-xs transition-colors flex items-center gap-2 cursor-pointer"
           >
             <Edit2 className="w-3.5 h-3.5" />
             <span>Edit Development</span>

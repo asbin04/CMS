@@ -78,12 +78,15 @@ export const UniversalDonutChart: React.FC<UniversalDonutChartProps> = ({
         </ResponsiveContainer>
 
         {/* Permanent, Crisp Center Text matching SVG */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none px-1" style={{ fontFamily: "'Inter', sans-serif" }}>
-          <span className="text-[18px] font-semibold text-slate-900 tracking-tight leading-[24px]">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none px-1">
+          <span className={`${size >= 160 ? 'text-[17px] leading-[22px]' : 'text-[18px] leading-[24px]'} font-semibold text-slate-900 tracking-tight`}>
             {centerPrimaryText}
           </span>
           {centerSecondaryText && (
-            <span className="text-[11px] text-slate-500 font-normal leading-[14px] mt-0.5 truncate max-w-[72px]">
+            <span
+              className="text-[11px] text-slate-500 font-normal leading-[14px] mt-0.5 truncate"
+              style={{ maxWidth: size >= 150 ? `${Math.round(size * 0.7)}px` : '72px' }}
+            >
               {centerSecondaryText}
             </span>
           )}
@@ -92,7 +95,7 @@ export const UniversalDonutChart: React.FC<UniversalDonutChartProps> = ({
 
       {/* Legend Column with Interactive Hover Sync */}
       {showLegend && (
-        <div className="flex flex-col gap-1 flex-1 min-w-0" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="flex flex-col gap-1 flex-1 min-w-0">
           {data.map((item, idx) => {
             const isHovered = hoveredIndex === idx;
             const pct = item.percentage !== undefined ? item.percentage : Math.round((item.value / total) * 100);
@@ -119,8 +122,8 @@ export const UniversalDonutChart: React.FC<UniversalDonutChartProps> = ({
                   {item.secondaryInfo && (
                     <span className="text-[12px] leading-[18px] font-semibold text-slate-900">{item.secondaryInfo}</span>
                   )}
-                  <span className={`text-[12px] leading-[18px] ${isHovered ? 'text-slate-900 font-semibold' : 'text-slate-500 font-normal'}`}>
-                    {pct}%
+                  <span className={`text-[12px] leading-[18px] ${isHovered ? 'text-slate-900 font-semibold' : item.secondaryInfo ? 'text-slate-400 font-normal' : 'text-slate-500 font-normal'}`}>
+                    {item.secondaryInfo ? `(${pct}%)` : `${pct}%`}
                   </span>
                 </div>
               </div>

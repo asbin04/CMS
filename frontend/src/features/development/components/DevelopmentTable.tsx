@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink, FileText, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { ExternalLink, FileText, ArrowUpDown, ArrowUp, ArrowDown, Eye, Edit, Trash2 } from 'lucide-react';
 import {
   DevelopmentRecord,
   DevelopmentEnvironment,
@@ -17,6 +17,7 @@ interface DevelopmentTableProps {
   onIdClick?: (type: 'dev' | 'project' | 'req' | 'task' | 'release', id: string) => void;
   onUpdateCodeReviewStatus?: (id: string, newStatus: CodeReviewStatus) => void;
   onUpdateStatus?: (id: string, newStatus: DevelopmentStatus) => void;
+  onShowToast?: (message: string, type?: 'success' | 'info' | 'error') => void;
   sortField?: string | null;
   sortOrder?: 'asc' | 'desc';
   onSort?: (field: string) => void;
@@ -58,6 +59,7 @@ export const DevelopmentTable: React.FC<DevelopmentTableProps> = ({
   onIdClick,
   onUpdateCodeReviewStatus,
   onUpdateStatus,
+  onShowToast,
   sortField = null,
   sortOrder = 'asc',
   onSort,
@@ -100,6 +102,36 @@ export const DevelopmentTable: React.FC<DevelopmentTableProps> = ({
         return 'bg-[#F3E8FF] text-[#9333EA]';
       default:
         return 'bg-slate-100 text-slate-700';
+    }
+  };
+
+  const handleViewDocument = (record: DevelopmentRecord) => {
+    const link = record.documentationLink ? record.documentationLink.trim() : '';
+
+    if (!link || link === '#' || link === '—' || link === '-') {
+      onShowToast?.('No documentation link is available for this development.', 'info');
+      return;
+    }
+
+    let validUrl = link;
+    if (!/^https?:\/\//i.test(validUrl)) {
+      if (/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/.*)?$/.test(validUrl)) {
+        validUrl = `https://${validUrl}`;
+      } else {
+        onShowToast?.('No documentation link is available for this development.', 'info');
+        return;
+      }
+    }
+
+    try {
+      const parsed = new URL(validUrl);
+      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+        window.open(parsed.href, '_blank', 'noopener,noreferrer');
+      } else {
+        onShowToast?.('No documentation link is available for this development.', 'info');
+      }
+    } catch {
+      onShowToast?.('No documentation link is available for this development.', 'info');
     }
   };
 
@@ -317,33 +349,48 @@ export const DevelopmentTable: React.FC<DevelopmentTableProps> = ({
 
                 {/* 15. Documentation Link */}
                 <td className="py-3 px-4 text-xs whitespace-nowrap">
-                  <a
-                    href={row.documentationLink || '#'}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => {
-                      if (!row.documentationLink || row.documentationLink === '#') {
-                        e.preventDefault();
-                        onViewDetails(row);
-                      }
-                    }}
+                  <button
+                    type="button"
+                    onClick={() => handleViewDocument(row)}
                     className="inline-flex items-center gap-1.5 text-[#4F46E5] hover:underline font-medium cursor-pointer"
                   >
                     <FileText className="w-3.5 h-3.5 text-[#4F46E5] shrink-0" />
                     <span>View Doc</span>
                     <ExternalLink className="w-3 h-3 text-[#4F46E5] shrink-0" />
-                  </a>
+                  </button>
                 </td>
 
                 {/* 16. Actions */}
                 <td className="py-3 px-4 text-xs text-center whitespace-nowrap">
                   <TableActionMenu
-                    viewLabel="View Development"
-                    editLabel="Edit Development"
-                    deleteLabel="Delete Development"
-                    onViewDetails={() => onViewDetails(row)}
-                    onEdit={() => onEdit(row)}
-                    onDelete={() => onDelete(row)}
+                    items={[
+                      {
+                        key: 'view-details',
+                        label: 'View Details',
+                        icon: <Eye className="w-3.5 h-3.5 text-slate-500 shrink-0" />,
+                        onClick: () => onViewDetails(row),
+                      },
+                      {
+                        key: 'edit',
+                        label: 'Edit Development',
+                        icon: <Edit className="w-3.5 h-3.5 text-slate-500 shrink-0" />,
+                        onClick: () => onEdit(row),
+                      },
+                      {
+                        key: 'view-document',
+                        label: 'View Document',
+                        icon: <FileText className="w-3.5 h-3.5 text-slate-500 shrink-0" />,
+                        onClick: () => handleViewDocument(row),
+                      },
+                      {
+                        key: 'delete',
+                        label: 'Delete',
+                        icon: <Trash2 className="w-3.5 h-3.5 text-red-500 shrink-0" />,
+                        onClick: () => onDelete(row),
+                        variant: 'danger',
+                        hasDividerAbove: true,
+                      },
+                    ]}
                   />
                 </td>
               </tr>
