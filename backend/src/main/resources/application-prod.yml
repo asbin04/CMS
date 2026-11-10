@@ -1,26 +1,6 @@
+# Spring Boot Production Profile Configuration
+# Strictly locked to structural production migrations. Dev migrations are prohibited.
 spring:
   flyway:
-    locations: ${FLYWAY_LOCATIONS:classpath:db/migration}
-    ignore-missing-migrations: true
-  mail:
-    host: ${SMTP_HOST:}
-    port: ${SMTP_PORT:587}
-    username: ${SMTP_USERNAME:}
-    password: ${SMTP_PASSWORD:}
-    properties:
-      mail:
-        smtp:
-          auth: ${SMTP_AUTH:true}
-          starttls:
-            enable: ${SMTP_STARTTLS_ENABLE:true}
-            required: ${SMTP_STARTTLS_REQUIRED:true}
-          connectiontimeout: 5000
-          timeout: 10000
-          writetimeout: 10000
-
-springdoc:
-  api-docs:
-    enabled: false
-  swagger-ui:
-    enabled: false
+    locations: classpath:db/migration
 

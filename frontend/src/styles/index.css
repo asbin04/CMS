@@ -272,3 +272,30 @@ button {
   }
 }
 
+/* Scoped borders for Development page Search and Filters section */
+.development-search-input,
+.development-filter-select,
+.development-filter-button {
+  border: 1px solid #DCE3ED !important;
+  background-color: #FFFFFF !important;
+  border-radius: 10px !important;
+  box-sizing: border-box !important;
+}
+
+.development-filter-button {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+.development-search-input:hover,
+.development-filter-select:hover,
+.development-filter-button:hover {
+  border-color: #C5D0E0 !important;
+}
+
+.development-search-input:focus,
+.development-filter-select:focus {
+  border-color: #4F46E5 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 1px #4F46E5 !important;
+}
+

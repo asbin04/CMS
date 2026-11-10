@@ -10,12 +10,12 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 @Entity
-@Table(name = "project_tasks")
+@Table(name = "project_tasks", schema = "public")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class ProjectTaskEntity {
 
     @Id
@@ -26,23 +26,27 @@ public class ProjectTaskEntity {
     private String projectId;
 
     @Column(name = "milestone", length = 100, nullable = false)
-    private String milestone;
+    @Builder.Default
+    private String milestone = "General";
 
     @Column(name = "task_name", length = 255, nullable = false)
     private String taskName;
 
     @Column(name = "assigned_to", length = 100, nullable = false)
-    private String assignedTo;
+    @Builder.Default
+    private String assignedTo = "Unassigned";
 
     @Column(name = "priority", length = 50, nullable = false)
     @Builder.Default
     private String priority = "Medium";
 
     @Column(name = "start_date", nullable = false)
-    private LocalDate startDate;
+    @Builder.Default
+    private LocalDate startDate = LocalDate.now();
 
     @Column(name = "due_date", nullable = false)
-    private LocalDate dueDate;
+    @Builder.Default
+    private LocalDate dueDate = LocalDate.now().plusWeeks(2);
 
     @Column(name = "estimated_hours", precision = 6, scale = 1, nullable = false)
     @Builder.Default
@@ -83,5 +87,27 @@ public class ProjectTaskEntity {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
-}
 
+    public String getTaskId() {
+        return id;
+    }
+
+    public void setTaskId(String taskId) {
+        this.id = taskId;
+    }
+
+    public Boolean getBillableDefault() {
+        return true;
+    }
+
+    public static class ProjectTaskEntityBuilder {
+        public ProjectTaskEntityBuilder taskId(String taskId) {
+            this.id = taskId;
+            return this;
+        }
+
+        public ProjectTaskEntityBuilder billableDefault(boolean billableDefault) {
+            return this;
+        }
+    }
+}

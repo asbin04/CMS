@@ -19,49 +19,45 @@ export interface AppLayoutContextType {
 export const AppLayout: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [dateRange, setDateRange] = useState('—');
-  const [userName, setUserName] = useState('—');
-  const [userRole, setUserRole] = useState('—');
-  const [userEmail, setUserEmail] = useState('');
+  const [userName, setUserName] = useState<string>(() => {
+    return (typeof window !== 'undefined' ? localStorage.getItem('auth_user_name') : null) || '—';
+  });
+  const [userRole, setUserRole] = useState<string>(() => {
+    return (typeof window !== 'undefined' ? localStorage.getItem('auth_user_role') : null) || '—';
+  });
+  const [userEmail, setUserEmail] = useState<string>(() => {
+    return (typeof window !== 'undefined' ? localStorage.getItem('auth_user_email') : null) || '—';
+  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const location = useLocation();
 
   useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [location.pathname]);
+    const syncAuthUser = () => {
+      const storedName = localStorage.getItem('auth_user_name');
+      const storedRole = localStorage.getItem('auth_user_role');
+      const storedEmail = localStorage.getItem('auth_user_email');
+      if (storedName) setUserName(storedName);
+      if (storedRole) setUserRole(storedRole);
+      if (storedEmail) setUserEmail(storedEmail);
+    };
 
-  useEffect(() => {
-    // 1. Fetch user profile directly from /auth/me
-    apiClient.get<{ username: string; name: string; role: string; email?: string }>('/auth/me')
-      .then((res) => {
-        if (res?.data?.name) {
-          setUserName(res.data.name);
-        } else if (res?.data?.username) {
-          setUserName(res.data.username);
-        }
-        if (res?.data?.role) {
-          setUserRole(res.data.role);
-        }
-        if (res?.data?.email) {
-          setUserEmail(res.data.email);
-        } else if (res?.data?.username && res.data.username.includes('@')) {
-          setUserEmail(res.data.username);
-        }
-      })
-      .catch(() => {
-        const storedName = localStorage.getItem('auth_user_name');
-        const storedRole = localStorage.getItem('auth_user_role');
-        const storedEmail = localStorage.getItem('auth_user_email');
-        if (storedName) setUserName(storedName);
-        if (storedRole) setUserRole(storedRole);
-        if (storedEmail) setUserEmail(storedEmail);
-      });
+    syncAuthUser();
+    window.addEventListener('auth_user_changed', syncAuthUser);
+    window.addEventListener('storage', syncAuthUser);
 
-    // 2. Fetch active date range from dashboard settings
     dashboardService.getDashboardData()
       .then((data) => {
         if (data.settings?.active_date_range) setDateRange(data.settings.active_date_range);
+        const storedName = localStorage.getItem('auth_user_name');
+        const storedRole = localStorage.getItem('auth_user_role');
+        if (!storedName && data.settings?.user_name) setUserName(data.settings.user_name);
+        if (!storedRole && data.settings?.user_role) setUserRole(data.settings.user_role);
       })
-      .catch(() => {});
+      .catch(() => { });
+
+    return () => {
+      window.removeEventListener('auth_user_changed', syncAuthUser);
+      window.removeEventListener('storage', syncAuthUser);
+    };
   }, []);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   // Side rail defaults to expanded; toggles and persists preference in localStorage

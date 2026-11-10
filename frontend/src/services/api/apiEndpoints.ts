@@ -50,6 +50,15 @@ export const API_ENDPOINTS = {
     REMINDER: (id: string) => `/collections/invoices/${encodeURIComponent(id)}/reminders`,
     COMMUNICATIONS: (id: string) => `/collections/invoices/${encodeURIComponent(id)}/communications`,
   },
+  INVOICES: {
+    BASE: '/invoices',
+    BY_ID: (id: string) => `/invoices/${encodeURIComponent(id)}`,
+    KPIS: '/invoices/kpis',
+    NEXT_ID: (year?: number) => (year ? `/invoices/next-id?year=${year}` : '/invoices/next-id'),
+    PAYMENTS: (id: string) => `/invoices/${encodeURIComponent(id)}/payments`,
+    REVERSAL: (invoiceId: string, paymentId: string) =>
+      `/invoices/${encodeURIComponent(invoiceId)}/payments/${encodeURIComponent(paymentId)}/reversals`,
+  },
   PROPOSALS: {
     BASE: '/proposals',
     BY_ID: (id: string) => `/proposals/${encodeURIComponent(id)}`,
@@ -117,6 +126,13 @@ export const API_ENDPOINTS = {
     PAYMENTS_KPIS: '/finance/payments/kpis',
     PAYMENTS_FILTERS: '/finance/payments/filters',
     PAYMENTS_EXPORT: '/finance/payments/export',
+  },
+  AUTH: {
+    LOGIN: '/auth/login',
+    FORGOT_PASSWORD: '/auth/forgot-password',
+    VERIFY_OTP: '/auth/verify-otp',
+    RESET_PASSWORD: '/auth/reset-password',
+    ME: '/auth/me',
   },
   PROJECTS: {
     BASE: '/projects',

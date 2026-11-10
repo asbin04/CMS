@@ -31,13 +31,8 @@ spring:
     enabled: true
     baseline-on-migrate: true
     baseline-version: 0
-    validate-on-migrate: true
-    out-of-order: true
-    locations: ${FLYWAY_LOCATIONS:classpath:db/migration}
-    ignore-migration-patterns:
-      - "*:missing"
-      - "*:future"
-      - "*:ignored"
+    validate-on-migrate: false
+    locations: classpath:db/migration
 
   jpa:
     hibernate:

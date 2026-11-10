@@ -1,6 +1,8 @@
 package com.company.project.collections.service;
 
 import com.company.project.collections.repository.CollectionInvoiceRepository;
+import com.company.project.collections.repository.CollectionPaymentRepository;
+import com.company.project.collections.repository.CollectionPaymentReversalRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,11 +17,18 @@ import java.util.regex.Pattern;
 @Slf4j
 public class InvoiceIdGeneratorService {
 
-    private static final String PREFIX = "INV";
+    private static final String INVOICE_PREFIX = "INV";
+    private static final String PAYMENT_PREFIX = "PAY";
+    private static final String REVERSAL_PREFIX = "REV";
+
     private static final Pattern INVOICE_ID_PATTERN = Pattern.compile("^INV-(\\d{4})-(\\d+)$");
+    private static final Pattern PAYMENT_ID_PATTERN = Pattern.compile("^PAY-(\\d{4})-(\\d+)$");
+    private static final Pattern REVERSAL_ID_PATTERN = Pattern.compile("^REV-(\\d{4})-(\\d+)$");
 
     private final JdbcTemplate jdbcTemplate;
     private final CollectionInvoiceRepository invoiceRepository;
+    private final CollectionPaymentRepository paymentRepository;
+    private final CollectionPaymentReversalRepository paymentReversalRepository;
 
     /**
      * Read-only suggested next invoice ID.
@@ -32,7 +41,7 @@ public class InvoiceIdGeneratorService {
             currentVal = jdbcTemplate.queryForObject(
                     "SELECT current_val FROM public.collections_invoice_counters WHERE prefix = ? AND year = ?",
                     Long.class,
-                    PREFIX,
+                    INVOICE_PREFIX,
                     year
             );
         } catch (Exception ignored) {
@@ -40,7 +49,6 @@ public class InvoiceIdGeneratorService {
         }
 
         if (currentVal == null) {
-            // Fallback to inspect current max from collections_invoices
             try {
                 String sql = "SELECT COALESCE(MAX(CASE WHEN id ~ '^INV-" + year + "-[0-9]+$' " +
                         "THEN substring(id from '^INV-" + year + "-([0-9]+)$')::bigint ELSE 0 END), 0) " +
@@ -53,20 +61,18 @@ public class InvoiceIdGeneratorService {
         }
 
         long candidateSeq = (currentVal != null ? currentVal : 0L) + 1;
-        String candidateId = formatInvoiceId(year, candidateSeq);
+        String candidateId = formatId(INVOICE_PREFIX, year, candidateSeq);
 
-        // Ensure candidate ID is not already occupied in collections_invoices
         while (invoiceRepository.existsById(candidateId)) {
             candidateSeq++;
-            candidateId = formatInvoiceId(year, candidateSeq);
+            candidateId = formatId(INVOICE_PREFIX, year, candidateSeq);
         }
 
         return candidateId;
     }
 
     /**
-     * Atomically advances the database counter and allocates the next unique ID.
-     * Protected by PostgreSQL row-level lock on collections_invoice_counters.
+     * Atomically advances the invoice database counter and allocates the next unique ID.
      */
     @Transactional
     public String generateAndAllocateNextInvoiceId(int year) {
@@ -79,21 +85,82 @@ public class InvoiceIdGeneratorService {
             RETURNING current_val
         """;
 
-        Long allocatedVal = jdbcTemplate.queryForObject(upsertSql, Long.class, PREFIX, year);
+        Long allocatedVal = jdbcTemplate.queryForObject(upsertSql, Long.class, INVOICE_PREFIX, year);
         if (allocatedVal == null) {
             allocatedVal = 1L;
         }
 
-        String candidateId = formatInvoiceId(year, allocatedVal);
+        String candidateId = formatId(INVOICE_PREFIX, year, allocatedVal);
 
-        // In the rare event candidate was previously inserted out-of-band, advance until truly free
         while (invoiceRepository.existsById(candidateId)) {
-            allocatedVal = jdbcTemplate.queryForObject(upsertSql, Long.class, PREFIX, year);
+            allocatedVal = jdbcTemplate.queryForObject(upsertSql, Long.class, INVOICE_PREFIX, year);
             if (allocatedVal == null) break;
-            candidateId = formatInvoiceId(year, allocatedVal);
+            candidateId = formatId(INVOICE_PREFIX, year, allocatedVal);
         }
 
         log.info("Allocated new atomic invoice ID: {}", candidateId);
+        return candidateId;
+    }
+
+    /**
+     * Atomically advances the payment database counter and allocates the next unique ID.
+     */
+    @Transactional
+    public String generateAndAllocateNextPaymentId(int year) {
+        String upsertSql = """
+            INSERT INTO public.collections_payment_counters (prefix, year, current_val, created_at, updated_at)
+            VALUES (?, ?, 1, NOW(), NOW())
+            ON CONFLICT (prefix, year) DO UPDATE
+            SET current_val = public.collections_payment_counters.current_val + 1,
+                updated_at = NOW()
+            RETURNING current_val
+        """;
+
+        Long allocatedVal = jdbcTemplate.queryForObject(upsertSql, Long.class, PAYMENT_PREFIX, year);
+        if (allocatedVal == null) {
+            allocatedVal = 1L;
+        }
+
+        String candidateId = formatId(PAYMENT_PREFIX, year, allocatedVal);
+
+        while (paymentRepository.existsById(candidateId)) {
+            allocatedVal = jdbcTemplate.queryForObject(upsertSql, Long.class, PAYMENT_PREFIX, year);
+            if (allocatedVal == null) break;
+            candidateId = formatId(PAYMENT_PREFIX, year, allocatedVal);
+        }
+
+        log.info("Allocated new atomic payment ID: {}", candidateId);
+        return candidateId;
+    }
+
+    /**
+     * Atomically advances the reversal database counter and allocates the next unique ID.
+     */
+    @Transactional
+    public String generateAndAllocateNextReversalId(int year) {
+        String upsertSql = """
+            INSERT INTO public.collections_reversal_counters (prefix, year, current_val, created_at, updated_at)
+            VALUES (?, ?, 1, NOW(), NOW())
+            ON CONFLICT (prefix, year) DO UPDATE
+            SET current_val = public.collections_reversal_counters.current_val + 1,
+                updated_at = NOW()
+            RETURNING current_val
+        """;
+
+        Long allocatedVal = jdbcTemplate.queryForObject(upsertSql, Long.class, REVERSAL_PREFIX, year);
+        if (allocatedVal == null) {
+            allocatedVal = 1L;
+        }
+
+        String candidateId = formatId(REVERSAL_PREFIX, year, allocatedVal);
+
+        while (paymentReversalRepository.existsById(candidateId)) {
+            allocatedVal = jdbcTemplate.queryForObject(upsertSql, Long.class, REVERSAL_PREFIX, year);
+            if (allocatedVal == null) break;
+            candidateId = formatId(REVERSAL_PREFIX, year, allocatedVal);
+        }
+
+        log.info("Allocated new atomic reversal ID: {}", candidateId);
         return candidateId;
     }
 
@@ -116,7 +183,7 @@ public class InvoiceIdGeneratorService {
                     SET current_val = GREATEST(public.collections_invoice_counters.current_val, ?),
                         updated_at = NOW()
                 """;
-                jdbcTemplate.update(syncSql, PREFIX, year, seq, seq);
+                jdbcTemplate.update(syncSql, INVOICE_PREFIX, year, seq, seq);
             } catch (Exception ex) {
                 log.warn("Failed to sync sequence counter for invoice ID {}: {}", invoiceId, ex.getMessage());
             }
@@ -124,6 +191,10 @@ public class InvoiceIdGeneratorService {
     }
 
     public static String formatInvoiceId(int year, long sequence) {
-        return String.format("%s-%d-%03d", PREFIX, year, sequence);
+        return formatId(INVOICE_PREFIX, year, sequence);
+    }
+
+    public static String formatId(String prefix, int year, long sequence) {
+        return String.format("%s-%d-%03d", prefix, year, sequence);
     }
 }

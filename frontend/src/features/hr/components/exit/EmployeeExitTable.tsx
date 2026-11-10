@@ -9,6 +9,31 @@ import {
   Download,
 } from 'lucide-react';
 import { EmployeeExitRecord, ExitSortOption } from '../../types';
+import { StatusDropdownMenu, StatusItemConfig } from '../../../../components/ui/StatusDropdownMenu';
+
+export const EXIT_STATUS_CONFIGS: StatusItemConfig[] = [
+  { value: 'Approved', label: 'Approved', dotColor: '#059669', textColor: '#059669' },
+  { value: 'Pending', label: 'Pending', dotColor: '#F59E0B', textColor: '#D97706' },
+  { value: 'In Review', label: 'In Review', dotColor: '#2563EB', textColor: '#2563EB' },
+  { value: 'Rejected', label: 'Rejected', dotColor: '#EF4444', textColor: '#EF4444' },
+];
+
+export const ASSETS_RETURNED_CONFIGS: StatusItemConfig[] = [
+  { value: 'Returned', label: 'Returned', dotColor: '#059669', textColor: '#059669' },
+  { value: 'Pending', label: 'Pending', dotColor: '#F59E0B', textColor: '#D97706' },
+];
+
+export const FULL_AND_FINAL_CONFIGS: StatusItemConfig[] = [
+  { value: 'Approved', label: 'Approved', dotColor: '#059669', textColor: '#059669' },
+  { value: 'In Review', label: 'In Review', dotColor: '#2563EB', textColor: '#2563EB' },
+  { value: 'Pending', label: 'Pending', dotColor: '#F59E0B', textColor: '#D97706' },
+];
+
+export const EXIT_READINESS_CONFIGS: StatusItemConfig[] = [
+  { value: 'Completed', label: 'Completed', dotColor: '#2563EB', textColor: '#2563EB' },
+  { value: 'In Progress', label: 'In Progress', dotColor: '#F59E0B', textColor: '#D97706' },
+  { value: 'Not Started', label: 'Not Started', dotColor: '#E11D48', textColor: '#E11D48' },
+];
 
 interface EmployeeExitTableProps {
   records: EmployeeExitRecord[];
@@ -23,6 +48,11 @@ interface EmployeeExitTableProps {
   onViewDetails: (record: EmployeeExitRecord) => void;
   onEditRecord: (record: EmployeeExitRecord) => void;
   onExportRecord: (record: EmployeeExitRecord) => void;
+  onUpdateStatus?: (
+    exitId: string,
+    field: 'exitStatus' | 'assetsReturned' | 'fullAndFinalStatus' | 'exitReadiness',
+    newValue: string
+  ) => void;
 }
 
 export const EmployeeExitTable: React.FC<EmployeeExitTableProps> = ({
@@ -38,6 +68,7 @@ export const EmployeeExitTable: React.FC<EmployeeExitTableProps> = ({
   onViewDetails,
   onEditRecord,
   onExportRecord,
+  onUpdateStatus,
 }) => {
   const [menuRecord, setMenuRecord] = useState<EmployeeExitRecord | null>(null);
   const [menuPosition, setMenuPosition] = useState<{ top: number; right: number } | null>(null);
@@ -348,19 +379,34 @@ export const EmployeeExitTable: React.FC<EmployeeExitTableProps> = ({
                     {r.reason}
                   </td>
 
-                  {/* Exit Status */}
+                  {/* Exit Status Dropdown */}
                   <td className="py-3 px-3.5 whitespace-nowrap">
-                    {renderExitStatusBadge(r.exitStatus)}
+                    <StatusDropdownMenu
+                      currentStatus={r.exitStatus}
+                      options={EXIT_STATUS_CONFIGS}
+                      headerTitle="CHANGE EXIT STATUS"
+                      onSelect={(newStatus) => onUpdateStatus?.(r.id, 'exitStatus', newStatus)}
+                    />
                   </td>
 
-                  {/* Assets Returned */}
+                  {/* Assets Returned Dropdown */}
                   <td className="py-3 px-3.5 whitespace-nowrap">
-                    {renderAssetsReturnedBadge(r.assetsReturned)}
+                    <StatusDropdownMenu
+                      currentStatus={r.assetsReturned}
+                      options={ASSETS_RETURNED_CONFIGS}
+                      headerTitle="CHANGE ASSETS STATUS"
+                      onSelect={(newStatus) => onUpdateStatus?.(r.id, 'assetsReturned', newStatus)}
+                    />
                   </td>
 
-                  {/* Full & Final Status */}
+                  {/* Full & Final Status Dropdown */}
                   <td className="py-3 px-3.5 whitespace-nowrap">
-                    {renderFullAndFinalBadge(r.fullAndFinalStatus)}
+                    <StatusDropdownMenu
+                      currentStatus={r.fullAndFinalStatus}
+                      options={FULL_AND_FINAL_CONFIGS}
+                      headerTitle="CHANGE F&F STATUS"
+                      onSelect={(newStatus) => onUpdateStatus?.(r.id, 'fullAndFinalStatus', newStatus)}
+                    />
                   </td>
 
                   {/* Notes */}
@@ -373,9 +419,14 @@ export const EmployeeExitTable: React.FC<EmployeeExitTableProps> = ({
                     {r.noticeCompletionDate}
                   </td>
 
-                  {/* Exit Readiness */}
+                  {/* Exit Readiness Dropdown */}
                   <td className="py-3 px-3.5 whitespace-nowrap">
-                    {renderReadinessBadge(r.exitReadiness)}
+                    <StatusDropdownMenu
+                      currentStatus={r.exitReadiness}
+                      options={EXIT_READINESS_CONFIGS}
+                      headerTitle="CHANGE READINESS"
+                      onSelect={(newStatus) => onUpdateStatus?.(r.id, 'exitReadiness', newStatus)}
+                    />
                   </td>
 
                   {/* Actions Column */}

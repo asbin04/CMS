@@ -14,6 +14,8 @@ export interface StatusDropdownMenuProps {
   onSelect: (newStatus: string) => void;
   headerTitle?: string;
   disabled?: boolean;
+  triggerVariant?: 'default' | 'badge';
+  getBadgeClass?: (currentStatus: string) => string;
 }
 
 export const StatusDropdownMenu: React.FC<StatusDropdownMenuProps> = ({
@@ -22,6 +24,8 @@ export const StatusDropdownMenu: React.FC<StatusDropdownMenuProps> = ({
   onSelect,
   headerTitle = 'CHANGE STATE',
   disabled = false,
+  triggerVariant = 'default',
+  getBadgeClass,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null);
@@ -53,8 +57,8 @@ export const StatusDropdownMenu: React.FC<StatusDropdownMenuProps> = ({
     const openUpward = rect.bottom + dropdownHeight > window.innerHeight;
 
     setMenuPos({
-      top: openUpward ? rect.top - dropdownHeight - 4 : rect.bottom + 4,
-      left: Math.max(10, Math.min(rect.left - 4, window.innerWidth - 170)),
+      top: openUpward ? Math.max(8, rect.top - dropdownHeight - 4) : rect.bottom + 4,
+      left: Math.max(10, Math.min(rect.left - 4, window.innerWidth - 180)),
     });
     setIsOpen(true);
   };
@@ -84,12 +88,21 @@ export const StatusDropdownMenu: React.FC<StatusDropdownMenuProps> = ({
       setMenuPos(null);
     };
 
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+        setMenuPos(null);
+      }
+    };
+
     document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('keydown', handleKeyDown);
     window.addEventListener('scroll', handleScrollOrResize, { capture: true, passive: true });
     window.addEventListener('resize', handleScrollOrResize);
 
     return () => {
       document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('scroll', handleScrollOrResize, { capture: true });
       window.removeEventListener('resize', handleScrollOrResize);
     };
@@ -97,72 +110,93 @@ export const StatusDropdownMenu: React.FC<StatusDropdownMenuProps> = ({
 
   return (
     <div className="relative inline-block" style={{ fontFamily: "'Inter', sans-serif" }}>
-      {/* Trigger Button: • Label v */}
-      <button
-        ref={buttonRef}
-        type="button"
-        disabled={disabled}
-        onClick={handleToggle}
-        className="flex items-center gap-1.5 px-2 py-1 -ml-2 rounded-md hover:bg-slate-100 transition-colors group cursor-pointer border-none bg-transparent select-none"
-        title="Click to change state"
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '6px',
-          padding: '4px 8px',
-          marginLeft: '-4px',
-          borderRadius: '6px',
-          backgroundColor: 'transparent',
-          border: 'none',
-          cursor: disabled ? 'default' : 'pointer',
-          fontFamily: "'Inter', sans-serif",
-          transition: 'background-color 0.15s ease',
-        }}
-        onMouseEnter={(e) => {
-          if (!disabled) e.currentTarget.style.backgroundColor = '#F1F5F9';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = 'transparent';
-        }}
-      >
-        {/* Status Dot */}
-        <span
+      {/* Trigger Button: either Badge or Default (• Label v) */}
+      {triggerVariant === 'badge' ? (
+        <button
+          ref={buttonRef}
+          type="button"
+          disabled={disabled}
+          onClick={handleToggle}
+          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer select-none hover:opacity-90 active:scale-95 ${
+            getBadgeClass ? getBadgeClass(currentStatus) : 'bg-slate-100 text-slate-700'
+          }`}
+          title="Click to change"
+        >
+          <span>{activeOption.label || activeOption.value}</span>
+          {!disabled && (
+            <ChevronDown
+              size={11}
+              className={`opacity-70 transition-transform duration-150 ${isOpen ? 'rotate-180' : ''}`}
+            />
+          )}
+        </button>
+      ) : (
+        <button
+          ref={buttonRef}
+          type="button"
+          disabled={disabled}
+          onClick={handleToggle}
+          className="flex items-center gap-1.5 px-2 py-1 -ml-2 rounded-md hover:bg-slate-100 transition-colors group cursor-pointer border-none bg-transparent select-none"
+          title="Click to change state"
           style={{
-            width: '6px',
-            height: '6px',
-            borderRadius: '9999px',
-            backgroundColor: activeOption.dotColor,
-            flexShrink: 0,
-            display: 'inline-block',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '4px 8px',
+            marginLeft: '-4px',
+            borderRadius: '6px',
+            backgroundColor: 'transparent',
+            border: 'none',
+            cursor: disabled ? 'default' : 'pointer',
+            fontFamily: "'Inter', sans-serif",
+            transition: 'background-color 0.15s ease',
           }}
-        />
-
-        {/* Status Text */}
-        <span
-          style={{
-            fontSize: '12px',
-            fontWeight: 500,
-            lineHeight: '16px',
-            color: activeOption.textColor || '#0F172A',
-            whiteSpace: 'nowrap',
+          onMouseEnter={(e) => {
+            if (!disabled) e.currentTarget.style.backgroundColor = '#F1F5F9';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
           }}
         >
-          {activeOption.label || activeOption.value}
-        </span>
-
-        {/* Chevron Icon */}
-        {!disabled && (
-          <ChevronDown
-            size={12}
-            color="#94A3B8"
+          {/* Status Dot */}
+          <span
             style={{
-              opacity: 0.7,
-              transition: 'transform 0.15s ease, opacity 0.15s ease',
-              transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+              width: '6px',
+              height: '6px',
+              borderRadius: '9999px',
+              backgroundColor: activeOption.dotColor,
+              flexShrink: 0,
+              display: 'inline-block',
             }}
           />
-        )}
-      </button>
+
+          {/* Status Text */}
+          <span
+            style={{
+              fontSize: '12px',
+              fontWeight: 500,
+              lineHeight: '16px',
+              color: activeOption.textColor || '#0F172A',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {activeOption.label || activeOption.value}
+          </span>
+
+          {/* Chevron Icon */}
+          {!disabled && (
+            <ChevronDown
+              size={12}
+              color="#94A3B8"
+              style={{
+                opacity: 0.7,
+                transition: 'transform 0.15s ease, opacity 0.15s ease',
+                transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+              }}
+            />
+          )}
+        </button>
+      )}
 
       {/* Floating Popover Menu */}
       {isOpen && menuPos && (
@@ -173,7 +207,8 @@ export const StatusDropdownMenu: React.FC<StatusDropdownMenuProps> = ({
             position: 'fixed',
             top: `${menuPos.top}px`,
             left: `${menuPos.left}px`,
-            width: '146px',
+            width: 'max-content',
+            minWidth: '154px',
             backgroundColor: '#FFFFFF',
             borderRadius: '14px',
             border: '1px solid #E2E8F0',

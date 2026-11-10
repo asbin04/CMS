@@ -194,6 +194,27 @@ export const EmployeeExitPage: React.FC = () => {
     [addToast]
   );
 
+  const handleUpdateRecordStatus = async (
+    exitId: string,
+    field: 'exitStatus' | 'assetsReturned' | 'fullAndFinalStatus' | 'exitReadiness',
+    newValue: string
+  ) => {
+    // Optimistic update
+    setRecords((prev) =>
+      prev.map((r) => (r.id === exitId ? { ...r, [field]: newValue } : r))
+    );
+
+    try {
+      await employeeExitService.updateExitRecord(exitId, { [field]: newValue });
+      fetchKpis();
+      addToast('success', 'Status Updated', `Exit record ${exitId} updated.`);
+    } catch (err: any) {
+      console.error('Failed to update exit record status:', err);
+      addToast('error', 'Update Failed', err.message || 'Failed to update exit record status.');
+      fetchRecords();
+    }
+  };
+
   const handleSaveExitRecord = async (record: EmployeeExitRecord) => {
     try {
       if (editingRecord) {
@@ -274,6 +295,7 @@ export const EmployeeExitPage: React.FC = () => {
           setIsProcessModalOpen(true);
         }}
         onExportRecord={handleExportSingleRecord}
+        onUpdateStatus={handleUpdateRecordStatus}
       />
 
       {/* 5. Process / Edit Exit Modal */}

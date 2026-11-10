@@ -103,7 +103,7 @@ export const navigationSections: NavSection[] = [
       { id: 'ui-ux', label: 'UI / UX', path: '/projects/ui-ux', icon: PenTool },
       { id: 'development', label: 'Development', path: '/projects/development', icon: Code2 },
       { id: 'uat', label: 'UAT', path: '/projects/uat', icon: Settings },
-      { id: 'deployment-go-live', label: 'Deployment / Go-Live', path: '/projects/deployment', icon: Rocket },
+      { id: 'deployment-go-live', label: 'Deployment / Go-Live', path: '/projects/deployment-go-live', icon: Rocket },
     ],
   },
   {

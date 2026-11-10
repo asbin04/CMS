@@ -58,6 +58,38 @@ public class CollectionInvoiceEntity {
     @Column(name = "recommended_action", length = 255)
     private String recommendedAction;
 
+    // V19 Extended Fields for Unified Invoices Module
+    @Column(name = "project_id", length = 50)
+    private String projectId;
+
+    @Column(name = "contract_id", length = 50)
+    private String contractId;
+
+    @Column(name = "amount_before_tax", precision = 14, scale = 2)
+    private BigDecimal amountBeforeTax;
+
+    @Column(name = "tax_rate", precision = 5, scale = 2)
+    @Builder.Default
+    private BigDecimal taxRate = BigDecimal.ZERO;
+
+    @Column(name = "tax_amount", precision = 14, scale = 2, nullable = false)
+    @Builder.Default
+    private BigDecimal taxAmount = BigDecimal.ZERO;
+
+    @Column(name = "payment_terms_days")
+    private Integer paymentTermsDays;
+
+    @Column(name = "invoice_status", length = 50, nullable = false)
+    @Builder.Default
+    private String invoiceStatus = "Unpaid";
+
+    @Column(name = "collection_status", length = 50, nullable = false)
+    @Builder.Default
+    private String collectionStatus = "Pending";
+
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
@@ -66,7 +98,8 @@ public class CollectionInvoiceEntity {
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
 
-    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    // Payments relationship without cascade deletion (aligned with DB ON DELETE RESTRICT)
+    @OneToMany(mappedBy = "invoice", fetch = FetchType.LAZY)
     @Builder.Default
     private List<CollectionPaymentEntity> payments = new ArrayList<>();
 }

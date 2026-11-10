@@ -1,5 +1,6 @@
 package com.company.project.collections.service;
 
+import com.company.project.collections.entity.CollectionInvoiceEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -89,6 +90,92 @@ public class CollectionsCalculationService {
             }
         }
         return "Open";
+    }
+
+    public String calculateInvoiceStatus(BigDecimal outstanding, BigDecimal amountPaid) {
+        if (outstanding == null || outstanding.compareTo(BigDecimal.ZERO) <= 0) {
+            return "Paid";
+        }
+        if (amountPaid != null && amountPaid.compareTo(BigDecimal.ZERO) > 0) {
+            return "Partially Paid";
+        }
+        return "Unpaid";
+    }
+
+    public String calculateCollectionStatus(BigDecimal outstanding, BigDecimal amountPaid, LocalDate dueDate, Integer daysOverdue) {
+        if (outstanding == null || outstanding.compareTo(BigDecimal.ZERO) <= 0) {
+            return "Completed";
+        }
+        if (daysOverdue != null && daysOverdue > 0) {
+            return "Follow Up";
+        }
+        if (amountPaid != null && amountPaid.compareTo(BigDecimal.ZERO) > 0) {
+            return "In Progress";
+        }
+        return "Pending";
+    }
+
+    /**
+     * Applies the agreed unified precedence across both Collections and Finance:
+     * 1. Fully Paid: outstanding <= 0 -> daysOverdue = null, ageingBucket = 'Current', invoiceStatus = 'Paid', collectionStatus = 'Completed', status = 'Paid'
+     * 2. Overdue: outstanding > 0 && daysOverdue > 0 -> collectionStatus = 'Follow Up', status = 'Overdue'
+     * 3. Partially Paid & not overdue: collectionStatus = 'In Progress', invoiceStatus = 'Partially Paid'
+     * 4. Unpaid & not overdue: collectionStatus = 'Pending', invoiceStatus = 'Unpaid', status = 'Due Soon' or 'Open'
+     */
+    public void applyUnifiedStatus(CollectionInvoiceEntity invoice) {
+        if (invoice == null) return;
+
+        BigDecimal outstanding = invoice.getOutstanding() != null ? invoice.getOutstanding() : BigDecimal.ZERO;
+        BigDecimal amountPaid = invoice.getAmountPaid() != null ? invoice.getAmountPaid() : BigDecimal.ZERO;
+
+        if (outstanding.compareTo(BigDecimal.ZERO) <= 0) {
+            invoice.setOutstanding(BigDecimal.ZERO);
+            invoice.setDaysOverdue(null);
+            invoice.setAgeingBucket("Current");
+            invoice.setInvoiceStatus("Paid");
+            invoice.setCollectionStatus("Completed");
+            invoice.setStatus("Paid");
+            invoice.setRecommendedAction("Receipt Issued");
+            return;
+        }
+
+        Integer daysOverdue = calculateDaysOverdue(invoice.getDueDate());
+        invoice.setDaysOverdue(daysOverdue);
+        invoice.setAgeingBucket(calculateAgeingBucket(daysOverdue));
+
+        if (daysOverdue != null && daysOverdue > 0) {
+            invoice.setStatus("Overdue");
+            invoice.setCollectionStatus("Follow Up");
+            invoice.setInvoiceStatus(amountPaid.compareTo(BigDecimal.ZERO) > 0 ? "Partially Paid" : "Unpaid");
+            invoice.setRecommendedAction("Call + Email client");
+        } else {
+            // Not overdue
+            if (amountPaid.compareTo(BigDecimal.ZERO) > 0) {
+                invoice.setInvoiceStatus("Partially Paid");
+                invoice.setCollectionStatus("In Progress");
+                invoice.setStatus("Partially Paid");
+                invoice.setRecommendedAction("Follow up balance");
+            } else {
+                invoice.setInvoiceStatus("Unpaid");
+                invoice.setCollectionStatus("Pending");
+
+                LocalDate dueDate = invoice.getDueDate();
+                if (dueDate != null) {
+                    LocalDate refDate = getReferenceDate(dueDate);
+                    long daysUntilDue = ChronoUnit.DAYS.between(refDate, dueDate);
+                    if (daysUntilDue <= 30) {
+                        invoice.setStatus("Due Soon");
+                        invoice.setRecommendedAction("Send Reminder");
+                    } else {
+                        invoice.setStatus("Open");
+                        invoice.setRecommendedAction("Monitor");
+                    }
+                } else {
+                    invoice.setStatus("Open");
+                    invoice.setRecommendedAction("Monitor");
+                }
+            }
+        }
     }
 
     public String getRecommendedAction(String status) {

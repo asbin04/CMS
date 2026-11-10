@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Invoice,
   PaymentRecord,
@@ -36,6 +37,7 @@ import { ErrorBanner } from '../../../components/ui/ErrorBanner';
 import { EmptyState } from '../../../components/ui/EmptyState';
 
 export const CollectionsPage: React.FC = () => {
+  const navigate = useNavigate();
   // Main Data States (starts empty with isLoading = true)
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
@@ -179,10 +181,10 @@ export const CollectionsPage: React.FC = () => {
 
   // Live Management Checks filter click
   const handleSelectLiveCategory = (status: CollectionStatus) => {
-    setStatusFilter(status);
-    const tableElement = document.getElementById('invoices-receivables-section');
-    if (tableElement) {
-      tableElement.scrollIntoView({ behavior: 'smooth' });
+    if (status === 'Overdue') {
+      navigate('/finance/invoices?filter=overdue');
+    } else if (status === 'Due Soon') {
+      navigate('/finance/invoices?filter=due-soon');
     }
   };
 

@@ -10,6 +10,7 @@ import { OpportunitiesPage } from '../features/sales/pages/OpportunitiesPage';
 import { ContractsPage } from '../features/sales/pages/ContractsPage';
 import { ProposalsPage } from '../features/proposals/pages/ProposalsPage';
 import { CollectionsPage } from '../features/collections/pages/CollectionsPage';
+import { FinanceCollectionsPage } from '../features/collections/pages/FinanceCollectionsPage';
 import { EmployeeMasterPage } from '../features/hr/pages/EmployeeMasterPage';
 import { HrDashboardPage } from '../features/hr/pages/HrDashboardPage';
 import { LeadsPage } from '../features/sales/pages/LeadsPage';
@@ -68,17 +69,9 @@ export const AppRouter: React.FC = () => {
         <Route path="/management/approval-inbox" element={<ApprovalInboxPage />} />
         <Route path="/management/follow-up-queue" element={<FollowUpQueuePage />} />
         <Route path="/management/collections" element={<CollectionsPage />} />
-        <Route
-          path="/finance/dashboard"
-          element={
-            <React.Suspense fallback={<div className="w-full min-h-screen bg-[#F8FAFC]" />}>
-              <FinanceDashboardPage />
-            </React.Suspense>
-          }
-        />
-        <Route path="/finance" element={<Navigate to="/finance/dashboard" replace />} />
-        <Route path="/reports/finance-dashboard" element={<Navigate to="/finance/dashboard" replace />} />
-        <Route path="/finance/collections" element={<Navigate to="/management/collections" replace />} />
+        <Route path="/finance/collections" element={<FinanceCollectionsPage />} />
+        <Route path="/finance/invoices" element={<InvoicesPage />} />
+        <Route path="/invoices" element={<Navigate to="/finance/invoices" replace />} />
         <Route path="/sales/leads" element={<LeadsPage />} />
         <Route path="/sales/opportunities" element={<OpportunitiesPage />} />
         <Route path="/sales/proposals" element={<ProposalsPage />} />
@@ -120,6 +113,7 @@ export const AppRouter: React.FC = () => {
                 item.path !== '/management/approval-inbox' &&
                 item.path !== '/management/follow-up-queue' &&
                 item.path !== '/management/collections' &&
+                item.path !== '/finance/collections' &&
                 item.path !== '/sales/leads' &&
                 item.path !== '/sales/opportunities' &&
                 item.path !== '/sales/proposals' &&

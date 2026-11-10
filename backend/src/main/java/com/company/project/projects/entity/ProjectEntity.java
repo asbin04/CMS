@@ -10,12 +10,12 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 @Entity
-@Table(name = "projects")
+@Table(name = "projects", schema = "public")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class ProjectEntity {
 
     @Id
@@ -75,5 +75,29 @@ public class ProjectEntity {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
-}
 
+    public String getDescription() {
+        return projectName;
+    }
+
+    public String getProjectId() {
+        return projectCode != null ? projectCode : id;
+    }
+
+    public void setProjectId(String projectId) {
+        if (this.projectCode == null) {
+            this.projectCode = projectId;
+        }
+        if (this.id == null) {
+            this.id = projectId;
+        }
+    }
+
+    public static class ProjectEntityBuilder {
+        public ProjectEntityBuilder projectId(String projectId) {
+            this.projectCode = projectId;
+            this.id = projectId;
+            return this;
+        }
+    }
+}
