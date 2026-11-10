@@ -12,18 +12,27 @@ import { ProposalsPage } from '../features/proposals/pages/ProposalsPage';
 import { CollectionsPage } from '../features/collections/pages/CollectionsPage';
 import { FinanceCollectionsPage } from '../features/collections/pages/FinanceCollectionsPage';
 import { EmployeeMasterPage } from '../features/hr/pages/EmployeeMasterPage';
+import { HrDashboardPage } from '../features/hr/pages/HrDashboardPage';
 import { LeadsPage } from '../features/sales/pages/LeadsPage';
 import { ClientsPage } from '../features/clients/pages/ClientsPage';
 import { AttendancePage } from '../features/attendance/pages/AttendancePage';
 import { LeaveManagementPage } from '../features/leave/pages/LeaveManagementPage';
-import { HrDashboardPage } from '../features/hr/pages/HrDashboardPage';
+import { ProjectsTasksPage } from '../features/projects/pages/ProjectsTasksPage';
+import { UiuxPage } from '../features/projects/pages/UiuxPage';
+import { UatPage } from '../features/projects/pages/UatPage';
 import { EmployeeExitPage } from '../features/hr/pages/EmployeeExitPage';
+import { PayrollSalaryPage } from '../features/hr/pages/PayrollSalaryPage';
+import { PaymentsPage } from '../features/finance/payments/pages/PaymentsPage';
+import { ExpensesPage } from '../features/finance/pages/ExpensesPage';
+import { SupportTicketsPage } from '../features/support/pages/SupportTicketsPage';
+import { AmcSlaPage } from '../features/support/pages/AmcSlaPage';
 import { InvoicesPage } from '../features/invoices/pages/InvoicesPage';
 import { TimesheetsRequirementsPage } from '../features/projects/pages/TimesheetsRequirementsPage';
 import { DevelopmentPage } from '../features/development/pages/DevelopmentPage';
 import { CashFlowPage } from '../features/finance/cash-flow/pages/CashFlowPage';
 import { LoginPage } from '../features/auth/pages/LoginPage';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
+import { LoginPage } from '../features/auth/pages/LoginPage';
 
 const CeoDashboardRoute: React.FC = () => {
   const context = useOutletContext<AppLayoutContextType>();
@@ -76,7 +85,24 @@ export const AppRouter: React.FC = () => {
         <Route path="/attendance" element={<Navigate to="/hr/attendance" replace />} />
         <Route path="/hr/leave" element={<LeaveManagementPage />} />
         <Route path="/leave" element={<Navigate to="/hr/leave" replace />} />
+        <Route path="/projects/tasks" element={<ProjectsTasksPage />} />
+        <Route path="/projects" element={<Navigate to="/projects/tasks" replace />} />
+        <Route path="/projects/ui-ux" element={<UiuxPage />} />
+        <Route path="/ui-ux" element={<Navigate to="/projects/ui-ux" replace />} />
+        <Route path="/projects/uat" element={<UatPage />} />
+        <Route path="/uat" element={<Navigate to="/projects/uat" replace />} />
         <Route path="/hr/employee-exit" element={<EmployeeExitPage />} />
+        <Route path="/hr/payroll-salary" element={<PayrollSalaryPage />} />
+        <Route path="/hr/payroll" element={<Navigate to="/hr/payroll-salary" replace />} />
+        <Route path="/payroll" element={<Navigate to="/hr/payroll-salary" replace />} />
+        <Route path="/finance/payments" element={<PaymentsPage />} />
+        <Route path="/payments" element={<Navigate to="/finance/payments" replace />} />
+        <Route path="/finance/expenses" element={<ExpensesPage />} />
+        <Route path="/expenses" element={<Navigate to="/finance/expenses" replace />} />
+        <Route path="/support/tickets" element={<SupportTicketsPage />} />
+        <Route path="/tickets" element={<Navigate to="/support/tickets" replace />} />
+        <Route path="/support/amc-sla" element={<AmcSlaPage />} />
+        <Route path="/amc-sla" element={<Navigate to="/support/amc-sla" replace />} />
         <Route path="/projects/timesheets" element={<TimesheetsRequirementsPage />} />
         <Route path="/projects/timesheets-requirements" element={<Navigate to="/projects/timesheets" replace />} />
         <Route path="/projects/development" element={<DevelopmentPage />} />
@@ -105,7 +131,9 @@ export const AppRouter: React.FC = () => {
                 item.path !== '/attendance' &&
                 item.path !== '/hr/leave' &&
                 item.path !== '/leave' &&
-                item.path !== '/hr/employee-exit' &&
+                item.path !== '/finance/dashboard' &&
+                item.path !== '/finance' &&
+                item.path !== '/reports/finance-dashboard' &&
                 item.path !== '/finance/invoices' &&
                 item.path !== '/invoices' &&
                 item.path !== '/projects/timesheets' &&

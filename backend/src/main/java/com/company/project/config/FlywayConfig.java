@@ -16,12 +16,30 @@ public class FlywayConfig {
         return flyway -> {
             try (Connection conn = dataSource.getConnection();
                  Statement stmt = conn.createStatement()) {
-                // If V17 was recorded in schema history before the tables were physically created,
-                // remove the row so Flyway executes V17 DDL to create expenses and finance_targets
+                // If V17 or V25 was recorded in schema history before the tables were physically created,
+                // remove the row so Flyway executes the DDL
                 stmt.executeUpdate(
                         "DELETE FROM public.flyway_schema_history " +
                         "WHERE version = '17' AND NOT EXISTS (" +
                         "    SELECT 1 FROM information_schema.tables WHERE table_name = 'finance_targets'" +
+                        ")"
+                );
+                stmt.executeUpdate(
+                        "DELETE FROM public.flyway_schema_history " +
+                        "WHERE version = '25' AND NOT EXISTS (" +
+                        "    SELECT 1 FROM information_schema.tables WHERE table_name = 'uiux_designs'" +
+                        ")"
+                );
+                stmt.executeUpdate(
+                        "DELETE FROM public.flyway_schema_history " +
+                        "WHERE version = '26' AND NOT EXISTS (" +
+                        "    SELECT 1 FROM information_schema.tables WHERE table_name = 'project_uats'" +
+                        ")"
+                );
+                stmt.executeUpdate(
+                        "DELETE FROM public.flyway_schema_history " +
+                        "WHERE version = '32' AND NOT EXISTS (" +
+                        "    SELECT 1 FROM information_schema.columns WHERE table_name = 'expenses' AND column_name = 'expense_code'" +
                         ")"
                 );
             } catch (Exception e) {

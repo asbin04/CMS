@@ -14,8 +14,8 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProjectDto {
-    private String projectId;
     private String id;
+    private String projectId;
     private String projectCode;
     private String projectName;
     private String name;

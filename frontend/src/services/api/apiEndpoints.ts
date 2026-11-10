@@ -1,3 +1,6 @@
+const rawEnvUrl = (import.meta as unknown as { env?: Record<string, string> }).env?.VITE_API_BASE_URL;
+export const API_BASE_URL = rawEnvUrl && rawEnvUrl.trim() !== '' ? rawEnvUrl.trim() : '/api/v1';
+
 export const API_ENDPOINTS = {
   FOLLOW_UP_QUEUE: {
     BASE: '/follow-up-queue',
@@ -112,14 +115,17 @@ export const API_ENDPOINTS = {
     PAYROLL_PROCESS: '/hr/payroll/process',
   },
   FINANCE: {
+    DASHBOARD: '/finance/dashboard',
+    EXPENSES: '/finance/expenses',
+    EXPENSES_KPIS: '/finance/expenses/kpis',
+    EXPENSES_FILTERS: '/finance/expenses/filters',
+    EXPENSE_BY_ID: (id: string | number) => `/finance/expenses/${encodeURIComponent(String(id))}`,
+    EXPORT: '/finance/export',
     PAYMENTS: '/finance/payments',
     PAYMENT_BY_ID: (id: string) => `/finance/payments/${encodeURIComponent(id)}`,
     PAYMENTS_KPIS: '/finance/payments/kpis',
     PAYMENTS_FILTERS: '/finance/payments/filters',
     PAYMENTS_EXPORT: '/finance/payments/export',
-    DASHBOARD: '/finance/dashboard',
-    EXPENSES: '/finance/expenses',
-    EXPORT: '/finance/export',
   },
   AUTH: {
     LOGIN: '/auth/login',
@@ -137,6 +143,28 @@ export const API_ENDPOINTS = {
     TASKS_FILTERS: '/projects/tasks/filters',
     TASK_BY_ID: (id: string | number) => `/projects/tasks/${encodeURIComponent(String(id))}`,
     TASKS_BY_PROJECT: (projectId: string | number) => `/projects/${encodeURIComponent(String(projectId))}/tasks`,
+    UI_UX: '/projects/ui-ux',
+    UI_UX_KPIS: '/projects/ui-ux/kpis',
+    UI_UX_FILTERS: '/projects/ui-ux/filters',
+    UI_UX_BY_ID: (id: string | number) => `/projects/ui-ux/${encodeURIComponent(String(id))}`,
+    UAT: '/projects/uat',
+    UAT_KPIS: '/projects/uat/kpis',
+    UAT_FILTERS: '/projects/uat/filters',
+    UAT_BY_ID: (id: string | number) => `/projects/uat/${encodeURIComponent(String(id))}`,
+  },
+  SUPPORT: {
+    TICKETS: '/support/tickets',
+    TICKETS_KPIS: '/support/tickets/kpis',
+    TICKETS_TRENDS: '/support/tickets/trends',
+    TICKETS_FILTERS: '/support/tickets/filters',
+    TICKET_BY_ID: (id: string | number) => `/support/tickets/${encodeURIComponent(String(id))}`,
+    TICKET_BY_CODE: (code: string) => `/support/tickets/code/${encodeURIComponent(code)}`,
+    EXPORT: '/support/tickets/export',
+    AMC_SLA: '/support/amc-sla',
+    AMC_SLA_KPIS: '/support/amc-sla/kpis',
+    AMC_SLA_FILTERS: '/support/amc-sla/filters',
+    AMC_SLA_BY_ID: (id: string | number) => `/support/amc-sla/${encodeURIComponent(String(id))}`,
+    AMC_SLA_BY_CODE: (code: string) => `/support/amc-sla/code/${encodeURIComponent(code)}`,
   },
   TIMESHEETS: {
     BASE: '/timesheets',

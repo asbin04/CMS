@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, Clock, UserCheck, Shield, FileText, TrendingUp, Bell, Menu } from 'lucide-react';
+import { Check, Clock, UserCheck, Shield, FileText, TrendingUp, Bell } from 'lucide-react';
 import {
   notificationService,
   PortalNotification,
@@ -231,7 +231,7 @@ export const TopNav: React.FC<TopNavProps> = ({
         fontFamily: "'Inter', sans-serif",
       }}
     >
-      {/* Left: Mobile Menu Toggle & Search Bar */}
+      {/* Left: Search Bar */}
       <div
         style={{
           display: 'flex',
@@ -245,22 +245,6 @@ export const TopNav: React.FC<TopNavProps> = ({
           minWidth: 0,
         }}
       >
-        {/* Hamburger Toggle (opens mobile drawer on mobile, collapses/expands sidebar rail on desktop) */}
-        <button
-          type="button"
-          onClick={() => {
-            if (window.innerWidth < 768) {
-              onToggleMobileMenu?.();
-            } else {
-              onToggleSidebar?.();
-            }
-          }}
-          className="flex items-center justify-center w-8 h-8 rounded-md text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors shrink-0 cursor-pointer"
-          aria-label="Toggle navigation menu"
-          title="Toggle sidebar (Ctrl+B)"
-        >
-          <Menu size={20} strokeWidth={1.75} />
-        </button>
         {/* Container - Search Bar */}
         <div
           style={{
@@ -665,9 +649,10 @@ export const TopNav: React.FC<TopNavProps> = ({
               display: 'flex',
               flexDirection: 'row',
               alignItems: 'center',
-              padding: '0px 0px 0px 8px',
-              gap: '10px',
-              width: '145px',
+              flexWrap: 'nowrap',
+              padding: '0px 4px 0px 8px',
+              gap: '8px',
+              width: 'auto',
               height: '32px',
               cursor: 'pointer',
               userSelect: 'none',
@@ -735,9 +720,11 @@ export const TopNav: React.FC<TopNavProps> = ({
               style={{
                 boxSizing: 'border-box',
                 padding: '0px',
-                width: '73px',
+                width: 'auto',
+                minWidth: '0',
+                maxWidth: '240px',
                 height: '30px',
-                flex: 'none',
+                flex: '0 0 auto',
                 order: 1,
                 flexGrow: 0,
                 flexShrink: 0,
@@ -751,11 +738,11 @@ export const TopNav: React.FC<TopNavProps> = ({
                   flexDirection: 'column',
                   alignItems: 'flex-start',
                   padding: '0px',
-                  width: '73px',
+                  width: 'auto',
+                  maxWidth: '240px',
                   height: '15px',
                   flex: 'none',
                   order: 0,
-                  alignSelf: 'stretch',
                   flexGrow: 0,
                 }}
               >
@@ -766,13 +753,14 @@ export const TopNav: React.FC<TopNavProps> = ({
                     fontWeight: 600,
                     fontSize: '12px',
                     lineHeight: '15px',
-                    display: 'flex',
-                    alignItems: 'center',
+                    display: 'block',
                     color: '#1E293B',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
+                    maxWidth: '240px',
                   }}
+                  title={userName && userName !== '—' ? userName : 'User'}
                 >
                   {userName && userName !== '—' ? userName : 'User'}
                 </span>
@@ -786,10 +774,11 @@ export const TopNav: React.FC<TopNavProps> = ({
                   flexDirection: 'column',
                   alignItems: 'flex-start',
                   padding: '0px',
+                  width: 'auto',
+                  maxWidth: '240px',
                   height: '15px',
                   flex: 'none',
                   order: 1,
-                  alignSelf: 'stretch',
                   flexGrow: 0,
                 }}
               >
@@ -803,6 +792,7 @@ export const TopNav: React.FC<TopNavProps> = ({
                     display: 'flex',
                     alignItems: 'center',
                     color: '#64748B',
+                    whiteSpace: 'nowrap',
                   }}
                 >
                   {userRole && userRole !== '—' ? userRole : 'Role'}
@@ -821,11 +811,13 @@ export const TopNav: React.FC<TopNavProps> = ({
                 order: 2,
                 flexGrow: 0,
                 flexShrink: 0,
+                alignSelf: 'center',
+                marginLeft: '2px',
               }}
               viewBox="0 0 24 24"
               fill="none"
               stroke="#94A3B8"
-              strokeWidth="1"
+              strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
             >

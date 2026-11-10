@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping({"/api/v1/auth", "/api/auth"})
+@RequestMapping({ "/api/v1/auth", "/api/auth" })
 @Tag(name = "Authentication API", description = "Endpoints for user authentication, password reset, and session verification")
 public class AuthController {
 
@@ -44,8 +44,7 @@ public class AuthController {
             PasswordEncoder passwordEncoder,
             LoginRateLimiter rateLimiter,
             AppUserRepository userRepository,
-            PasswordResetService passwordResetService
-    ) {
+            PasswordResetService passwordResetService) {
         this.tokenProvider = tokenProvider;
         this.passwordEncoder = passwordEncoder;
         this.rateLimiter = rateLimiter;
@@ -56,8 +55,7 @@ public class AuthController {
     public AuthController(
             JwtTokenProvider tokenProvider,
             PasswordEncoder passwordEncoder,
-            LoginRateLimiter rateLimiter
-    ) {
+            LoginRateLimiter rateLimiter) {
         this(tokenProvider, passwordEncoder, rateLimiter, null, null);
     }
 
@@ -82,10 +80,12 @@ public class AuthController {
     public void initAdminCredentials() {
         if (configuredAdminPassword != null && !configuredAdminPassword.isBlank()) {
             boolean isBcrypt = configuredAdminPassword.startsWith("$2a$") || configuredAdminPassword.startsWith("$2b$");
-            boolean isAllowedCredential = "asbin@123".equals(configuredAdminPassword) || "Admin123".equals(configuredAdminPassword);
+            boolean isAllowedCredential = "asbin@123".equals(configuredAdminPassword)
+                    || "Admin123".equals(configuredAdminPassword);
             if (!isBcrypt && !isAllowedCredential && configuredAdminPassword.length() < 12) {
-                throw new IllegalStateException("Admin password must be at least 12 characters long. Provided password has "
-                        + configuredAdminPassword.length() + " characters.");
+                throw new IllegalStateException(
+                        "Admin password must be at least 12 characters long. Provided password has "
+                                + configuredAdminPassword.length() + " characters.");
             }
             this.adminPasswordHash = isBcrypt
                     ? configuredAdminPassword
@@ -106,16 +106,20 @@ public class AuthController {
             return "Asbin T S";
         }
         if (lower.contains("founder")) {
-            return "Kalpanaaa Founder";
+            return "Gaurav Kumar Tripathi";
         }
         if (lower.contains("akshit")) {
             return "Akshit Ujjain";
         }
         if (configuredAdminDisplayName != null && !configuredAdminDisplayName.isBlank()) {
             if (configuredAdminUsername != null) {
-                String configuredPrefix = configuredAdminUsername.contains("@") ? configuredAdminUsername.split("@")[0].trim() : configuredAdminUsername;
-                String userPrefix = (username != null && username.contains("@")) ? username.split("@")[0].trim() : username;
-                if (configuredAdminUsername.equalsIgnoreCase(username) || configuredPrefix.equalsIgnoreCase(userPrefix)) {
+                String configuredPrefix = configuredAdminUsername.contains("@")
+                        ? configuredAdminUsername.split("@")[0].trim()
+                        : configuredAdminUsername;
+                String userPrefix = (username != null && username.contains("@")) ? username.split("@")[0].trim()
+                        : username;
+                if (configuredAdminUsername.equalsIgnoreCase(username)
+                        || configuredPrefix.equalsIgnoreCase(userPrefix)) {
                     return configuredAdminDisplayName;
                 }
             }
@@ -125,7 +129,8 @@ public class AuthController {
         StringBuilder sb = new StringBuilder();
         for (String part : parts) {
             if (!part.isEmpty()) {
-                if (sb.length() > 0) sb.append(" ");
+                if (sb.length() > 0)
+                    sb.append(" ");
                 sb.append(Character.toUpperCase(part.charAt(0))).append(part.substring(1).toLowerCase());
             }
         }
@@ -173,8 +178,7 @@ public class AuthController {
     @Operation(summary = "Authenticate user and return JWT token")
     public ResponseEntity<ApiResponse<LoginResponse>> login(
             @Valid @RequestBody(required = false) LoginRequest request,
-            HttpServletRequest servletRequest
-    ) {
+            HttpServletRequest servletRequest) {
         String username = request != null ? request.getUsername() : null;
         String password = request != null ? request.getPassword() : null;
         String clientIp = extractClientIp(servletRequest);
@@ -191,11 +195,13 @@ public class AuthController {
         // Rate limiting: max 5 failed attempts per username+IP per 15 minutes
         if (rateLimiter.isBlocked(username, clientIp)) {
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                    .body(ApiResponse.error(429, "TOO_MANY_REQUESTS", "Too many failed login attempts. Please try again after 15 minutes."));
+                    .body(ApiResponse.error(429, "TOO_MANY_REQUESTS",
+                            "Too many failed login attempts. Please try again after 15 minutes."));
         }
 
         // 1. First check the app_users table in the database
-        Optional<AppUser> dbUserOpt = userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase(username.trim(), username.trim());
+        Optional<AppUser> dbUserOpt = userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase(username.trim(),
+                username.trim());
         if (dbUserOpt.isPresent()) {
             AppUser user = dbUserOpt.get();
             if (!"ACTIVE".equalsIgnoreCase(user.getStatus())) {
@@ -212,7 +218,8 @@ public class AuthController {
                 LoginResponse response = LoginResponse.builder()
                         .token(token)
                         .username(user.getUsername())
-                        .name(user.getDisplayName() != null ? user.getDisplayName() : resolveDisplayName(user.getUsername()))
+                        .name(user.getDisplayName() != null ? user.getDisplayName()
+                                : resolveDisplayName(user.getUsername()))
                         .role(role)
                         .email(user.getEmail())
                         .build();
@@ -222,7 +229,8 @@ public class AuthController {
                 rateLimiter.recordFailedAttempt(username, clientIp);
                 if (rateLimiter.isBlocked(username, clientIp)) {
                     return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                            .body(ApiResponse.error(429, "TOO_MANY_REQUESTS", "Too many failed login attempts. Please try again after 15 minutes."));
+                            .body(ApiResponse.error(429, "TOO_MANY_REQUESTS",
+                                    "Too many failed login attempts. Please try again after 15 minutes."));
                 }
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(ApiResponse.error(401, "UNAUTHORIZED", "Invalid credentials"));
@@ -262,8 +270,7 @@ public class AuthController {
     @Operation(summary = "Initiate password reset flow and send OTP")
     public ResponseEntity<ApiResponse<ForgotPasswordResponse>> forgotPassword(
             @Valid @RequestBody ForgotPasswordRequest request,
-            HttpServletRequest servletRequest
-    ) {
+            HttpServletRequest servletRequest) {
         String clientIp = extractClientIp(servletRequest);
         ForgotPasswordResponse response = passwordResetService.requestPasswordReset(request, clientIp);
         return ResponseEntity.ok(ApiResponse.success(response.getMessage(), response));
@@ -273,8 +280,7 @@ public class AuthController {
     @Operation(summary = "Verify OTP and obtain a one-time password reset token")
     public ResponseEntity<ApiResponse<VerifyOtpResponse>> verifyOtp(
             @Valid @RequestBody VerifyOtpRequest request,
-            HttpServletRequest servletRequest
-    ) {
+            HttpServletRequest servletRequest) {
         String clientIp = extractClientIp(servletRequest);
         VerifyOtpResponse response = passwordResetService.verifyOtp(request, clientIp);
         return ResponseEntity.ok(ApiResponse.success(response.getMessage(), response));
@@ -284,8 +290,7 @@ public class AuthController {
     @Operation(summary = "Reset password using verified reset token")
     public ResponseEntity<ApiResponse<ResetPasswordResponse>> resetPassword(
             @Valid @RequestBody ResetPasswordRequest request,
-            HttpServletRequest servletRequest
-    ) {
+            HttpServletRequest servletRequest) {
         String clientIp = extractClientIp(servletRequest);
         ResetPasswordResponse response = passwordResetService.resetPassword(request, clientIp);
         return ResponseEntity.ok(ApiResponse.success(response.getMessage(), response));
@@ -314,7 +319,6 @@ public class AuthController {
                 "username", username,
                 "name", displayName,
                 "role", role,
-                "email", userEmail
-        )));
+                "email", userEmail)));
     }
 }

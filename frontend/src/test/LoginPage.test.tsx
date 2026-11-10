@@ -104,7 +104,7 @@ describe('LoginPage Component', () => {
 
   it.each([
     { email: 'asbin.t.s@kalpanaaa.in', name: 'Asbin T S' },
-    { email: 'founder@kalpanaaasoftwaresolutions.in', name: 'Kalpanaaa Founder' },
+    { email: 'founder@kalpanaaasoftwaresolutions.in', name: 'Gaurav Kumar Tripathi' },
     { email: 'akshit.ujjain@kalpanaaasoftwaresolutions.in', name: 'Akshit Ujjain' },
   ])('submits login for $email, stores credentials, and redirects to dashboard', async ({ email, name }) => {
     vi.spyOn(apiClient, 'post').mockResolvedValueOnce({

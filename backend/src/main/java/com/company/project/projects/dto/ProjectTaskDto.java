@@ -14,8 +14,8 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProjectTaskDto {
-    private String taskId;
     private String id;
+    private String taskId;
     private String projectId;
     private String milestone;
     private String taskName;

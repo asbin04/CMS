@@ -114,6 +114,7 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
     };
   };
 
+  // Avatar Initials Circle Styling
   const getAvatarStyle = (color?: string) => {
     switch (color) {
       case 'purple':
