@@ -167,11 +167,11 @@ export const FinanceDashboardPage: React.FC = () => {
   // Skeleton Loader State
   if (isLoading && !data) {
     return (
-      <div className="w-full flex flex-col p-4 sm:p-6 lg:p-7 gap-6 bg-[#F8FAFC] min-h-full max-w-[1400px] mx-auto animate-pulse transition-all duration-200">
+      <div className="flex flex-col p-6 gap-6 w-full min-h-screen bg-[#F8FAFC] font-['Inter'] animate-pulse">
         {/* Header Skeleton */}
         <div className="w-full flex justify-between items-center h-[66px]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-200" />
+            <div className="w-10 h-10 rounded-[12px] bg-slate-200" />
             <div className="flex flex-col gap-2">
               <div className="w-48 h-6 bg-slate-200 rounded" />
               <div className="w-80 h-3 bg-slate-200 rounded" />
@@ -181,14 +181,10 @@ export const FinanceDashboardPage: React.FC = () => {
         </div>
 
         {/* Top 4 KPI Cards Skeleton */}
-        <div className={`w-full grid gap-4 transition-all duration-200 ${
-          isSidebarCollapsed
-            ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
-            : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-4'
-        }`}>
+        <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-24 bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-slate-200" />
+            <div key={i} className="h-[96px] bg-white rounded-[12px] border border-slate-200 p-4 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-[12px] bg-slate-200" />
               <div className="flex flex-col gap-2 flex-1">
                 <div className="w-24 h-3 bg-slate-200 rounded" />
                 <div className="w-20 h-6 bg-slate-200 rounded" />
@@ -198,20 +194,16 @@ export const FinanceDashboardPage: React.FC = () => {
         </div>
 
         {/* Middle Section Skeleton */}
-        <div className={`w-full grid gap-4 transition-all duration-200 ${
-          isSidebarCollapsed
-            ? 'grid-cols-1 lg:grid-cols-12'
-            : 'grid-cols-1 xl:grid-cols-12'
-        }`}>
-          <div className={`${isSidebarCollapsed ? 'lg:col-span-7' : 'xl:col-span-7'} h-[318px] bg-white rounded-xl border border-slate-200 p-5`} />
-          <div className={`${isSidebarCollapsed ? 'lg:col-span-5' : 'xl:col-span-5'} h-[318px] bg-white rounded-xl border border-slate-200 p-5`} />
+        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <div className="lg:col-span-7 h-[318px] bg-white rounded-[12px] border border-slate-200 p-5" />
+          <div className="lg:col-span-5 h-[318px] bg-white rounded-[12px] border border-slate-200 p-5" />
         </div>
 
         {/* Expense Section Skeleton */}
-        <div className="w-full h-36 bg-white rounded-xl border border-slate-200 p-4" />
+        <div className="w-full h-[142px] bg-white rounded-[12px] border border-slate-200 p-4" />
 
         {/* Table Skeleton */}
-        <div className="w-full h-80 bg-white rounded-xl border border-slate-200 p-4" />
+        <div className="w-full h-80 bg-white rounded-[12px] border border-slate-200 p-4" />
       </div>
     );
   }
@@ -219,8 +211,8 @@ export const FinanceDashboardPage: React.FC = () => {
   // Error State Banner
   if (error && !data) {
     return (
-      <div className="w-full p-4 sm:p-6 lg:p-7 max-w-[1400px] mx-auto">
-        <div className="bg-rose-50 border border-rose-200 rounded-xl p-6 flex flex-col items-center justify-center gap-3 text-center">
+      <div className="flex flex-col p-6 gap-6 w-full min-h-screen bg-[#F8FAFC] font-['Inter']">
+        <div className="w-full bg-rose-50 border border-rose-200 rounded-[12px] p-6 flex flex-col items-center justify-center gap-3 text-center">
           <AlertTriangle className="w-8 h-8 text-rose-500" />
           <h2 className="text-base font-semibold text-rose-800">Unable to load Finance Dashboard</h2>
           <p className="text-xs text-rose-600 max-w-md">{error}</p>
@@ -249,30 +241,23 @@ export const FinanceDashboardPage: React.FC = () => {
   const hasReceivablesData = data?.hasReceivablesData || false;
 
   return (
-    <div className="w-full flex flex-col p-4 sm:p-6 lg:p-7 gap-6 bg-[#F8FAFC] min-h-full max-w-[1400px] mx-auto select-none transition-all duration-200">
-      {/* PageHeader & Controls */}
-      <div className="w-full flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+    <div className="flex flex-col p-6 gap-6 w-full min-h-screen bg-[#F8FAFC] font-['Inter']">
+      {/* PageHeader */}
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 w-full">
         {/* Title & Breadcrumbs */}
         <div className="flex items-center gap-3">
           {/* Green Document Icon Badge */}
           <div
-            className="w-10 h-10 rounded-[12px] bg-[#ECFDF5] border border-[#D1FAE5] flex items-center justify-center flex-shrink-0 transition-transform duration-200 hover:scale-105"
-            style={{ boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)' }}
+            className="box-border w-10 h-10 rounded-[12px] bg-[#ECFDF5] border border-[#D1FAE5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] flex items-center justify-center shrink-0"
           >
             <Receipt className="w-5 h-5 text-[#059669]" strokeWidth={2} />
           </div>
 
           <div className="flex flex-col gap-0.5">
-            <h1
-              className="text-[24px] font-bold leading-[32px] tracking-[-0.6px] text-[#0F1E4A]"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
+            <h1 className="text-[24px] font-bold leading-[32px] tracking-[-0.6px] text-[#0F1E4A] m-0">
               Finance Dashboard
             </h1>
-            <p
-              className="text-[12px] font-normal leading-[16px] text-[#64748B]"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
+            <p className="text-[12px] font-normal leading-[16px] text-[#64748B] m-0">
               Monitor invoicing, collections, receivables, expenses and operating cash performance.
             </p>
           </div>
@@ -280,10 +265,7 @@ export const FinanceDashboardPage: React.FC = () => {
 
         {/* Frame 7: Last Updated, Refresh, Export */}
         <div className="flex items-center gap-[11px] self-end sm:self-auto">
-          <span
-            className="text-[12px] font-normal leading-[16px] text-[#94A3B8]"
-            style={{ fontFamily: "'Inter', sans-serif" }}
-          >
+          <span className="text-[12px] font-normal leading-[16px] text-[#94A3B8]">
             Last Updated: {data?.lastUpdated ? formatLastUpdatedTimestamp(data.lastUpdated) : '15 Oct 2026, 11:30 AM'}
           </span>
 
@@ -293,7 +275,7 @@ export const FinanceDashboardPage: React.FC = () => {
             aria-label="Refresh Dashboard"
             onClick={() => loadData(true)}
             disabled={isRefreshing}
-            className="w-[28px] h-[28px] p-[6px] rounded-[8px] bg-white border border-[#E2E8F0] shadow-2xs hover:bg-slate-100 hover:border-slate-300 active:scale-95 flex items-center justify-center text-[#94A3B8] hover:text-[#475569] transition-all cursor-pointer disabled:opacity-60"
+            className="w-[26px] h-[26px] p-[6px] rounded-[8px] bg-white border border-[#E2E8F0] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] hover:bg-[#F8FAFC] active:scale-95 flex items-center justify-center text-[#94A3B8] hover:text-[#475569] transition-all cursor-pointer disabled:opacity-60"
           >
             <RotateCcw className={`w-[14px] h-[14px] ${isRefreshing ? 'animate-spin text-[#4F46E5]' : ''}`} />
           </button>
@@ -302,13 +284,10 @@ export const FinanceDashboardPage: React.FC = () => {
           <button
             type="button"
             onClick={handleExport}
-            className="h-[30px] px-[14px] py-[6px] gap-[8px] bg-white border border-[#E2E8F0] rounded-[8px] shadow-2xs hover:shadow-xs hover:border-indigo-300 hover:bg-indigo-50/50 active:scale-95 flex items-center justify-center transition-all cursor-pointer group"
+            className="box-border w-[90.11px] h-[30px] px-[14px] py-[6px] gap-[8px] bg-white border border-[#E2E8F0] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#F8FAFC] active:scale-95 flex items-center justify-center transition-all cursor-pointer"
           >
-            <Download className="w-[14px] h-[14px] text-[#4F46E5] group-hover:scale-110 transition-transform" />
-            <span
-              className="font-semibold text-[12px] leading-[16px] text-[#4F46E5]"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
+            <Download className="w-[14px] h-[14px] text-[#4F46E5]" strokeWidth={2} />
+            <span className="font-semibold text-[12px] leading-[16px] text-[#4F46E5]">
               Export
             </span>
           </button>
@@ -316,126 +295,82 @@ export const FinanceDashboardPage: React.FC = () => {
       </div>
 
       {/* Section - Key Performance Indicators (Top 4 Cards) */}
-      <div className={`w-full grid gap-4 transition-all duration-200 ${
-        isSidebarCollapsed
-          ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
-          : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-4'
+      <div className={`w-full grid gap-4 ${
+        isSidebarCollapsed ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-4'
       }`}>
         {/* Card 1: Invoice Value */}
-        <div
-          className="w-full h-[96px] bg-white rounded-[12px] border border-[#E2E8F0]/80 p-[23px_16px] flex items-center gap-4 group cursor-pointer transition-all duration-200 ease-out hover:shadow-md hover:border-slate-300 hover:-translate-y-0.5"
-          style={{ boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)' }}
-        >
-          <div className="w-12 h-12 rounded-[12px] bg-[#EFF6FF] flex items-center justify-center flex-shrink-0 transition-transform duration-200 ease-out group-hover:scale-105">
+        <div className="box-border h-[96px] bg-white border border-[#E2E8F0]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[12px] p-[23px_16px] flex flex-row items-center gap-4">
+          <div className="w-12 h-12 rounded-[12px] bg-[#EFF6FF] flex items-center justify-center shrink-0">
             <FileText className="w-6 h-6 text-[#4F46E5]" strokeWidth={2} />
           </div>
           <div className="flex flex-col gap-0.5 min-w-0">
-            <span
-              className="text-[12px] font-medium leading-[16px] text-[#64748B] group-hover:text-[#475569] transition-colors truncate"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
+            <span className="text-[12px] font-medium leading-[16px] text-[#64748B] truncate">
               Invoice Value
             </span>
-            <span
-              className="text-[20px] font-bold leading-[28px] tracking-[-0.5px] text-[#0F172A] truncate"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
+            <span className="text-[20px] font-bold leading-[28px] tracking-[-0.5px] text-[#0F172A] truncate">
               {formatRupeeAmount(kpis?.invoiceValue?.rawValue)}
             </span>
           </div>
         </div>
 
         {/* Card 2: Collected Payments */}
-        <div
-          className="w-full h-[96px] bg-white rounded-[12px] border border-[#E2E8F0]/80 p-[23px_16px] flex items-center gap-4 group cursor-pointer transition-all duration-200 ease-out hover:shadow-md hover:border-slate-300 hover:-translate-y-0.5"
-          style={{ boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)' }}
-        >
-          <div className="w-12 h-12 rounded-[12px] bg-[#ECFDF5] flex items-center justify-center flex-shrink-0 transition-transform duration-200 ease-out group-hover:scale-105">
+        <div className="box-border h-[96px] bg-white border border-[#E2E8F0]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[12px] p-[23px_16px] flex flex-row items-center gap-4">
+          <div className="w-12 h-12 rounded-[12px] bg-[#ECFDF5] flex items-center justify-center shrink-0">
             <CreditCard className="w-6 h-6 text-[#059669]" strokeWidth={2} />
           </div>
           <div className="flex flex-col gap-0.5 min-w-0">
-            <span
-              className="text-[12px] font-medium leading-[16px] text-[#64748B] group-hover:text-[#475569] transition-colors truncate"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
+            <span className="text-[12px] font-medium leading-[16px] text-[#64748B] truncate">
               Collected Payments
             </span>
-            <span
-              className="text-[20px] font-bold leading-[28px] tracking-[-0.5px] text-[#0F172A] truncate"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
+            <span className="text-[20px] font-bold leading-[28px] tracking-[-0.5px] text-[#0F172A] truncate">
               {formatRupeeAmount(kpis?.collectedPayments?.rawValue)}
             </span>
           </div>
         </div>
 
         {/* Card 3: Outstanding Receivables */}
-        <div
-          className="w-full h-[96px] bg-white rounded-[12px] border border-[#E2E8F0]/80 p-[23px_16px] flex items-center gap-4 group cursor-pointer transition-all duration-200 ease-out hover:shadow-md hover:border-slate-300 hover:-translate-y-0.5"
-          style={{ boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)' }}
-        >
-          <div className="w-12 h-12 rounded-[12px] bg-[#FFFBEB] flex items-center justify-center flex-shrink-0 transition-transform duration-200 ease-out group-hover:scale-105">
+        <div className="box-border h-[96px] bg-white border border-[#E2E8F0]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[12px] p-[16px] flex flex-row items-center gap-4">
+          <div className="w-12 h-12 rounded-[12px] bg-[#FFFBEB] flex items-center justify-center shrink-0">
             <Wallet className="w-6 h-6 text-[#D97706]" strokeWidth={2} />
           </div>
           <div className="flex flex-col gap-0.5 min-w-0">
-            <span
-              className="text-[12px] font-medium leading-[16px] text-[#64748B] group-hover:text-[#475569] transition-colors truncate"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
+            <span className="text-[12px] font-medium leading-[16px] text-[#64748B] truncate">
               Outstanding Receivables
             </span>
-            <span
-              className="text-[20px] font-bold leading-[28px] tracking-[-0.5px] text-[#0F172A] truncate"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
+            <span className="text-[20px] font-bold leading-[28px] tracking-[-0.5px] text-[#0F172A] truncate">
               {formatRupeeAmount(kpis?.outstandingReceivables?.rawValue)}
             </span>
           </div>
         </div>
 
         {/* Card 4: Current Receivables */}
-        <div
-          className="w-full h-[96px] bg-white rounded-[12px] border border-[#E2E8F0]/80 p-[23px_16px] flex items-center gap-4 group cursor-pointer transition-all duration-200 ease-out hover:shadow-md hover:border-slate-300 hover:-translate-y-0.5"
-          style={{ boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)' }}
-        >
-          <div className="w-12 h-12 rounded-[12px] bg-[#FAF5FF] flex items-center justify-center flex-shrink-0 transition-transform duration-200 ease-out group-hover:scale-105">
+        <div className="box-border h-[96px] bg-white border border-[#E2E8F0]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[12px] p-[23px_16px] flex flex-row items-center gap-4">
+          <div className="w-12 h-12 rounded-[12px] bg-[#FAF5FF] flex items-center justify-center shrink-0">
             <Users className="w-6 h-6 text-[#9333EA]" strokeWidth={2} />
           </div>
           <div className="flex flex-col gap-0.5 min-w-0">
-            <span
-              className="text-[12px] font-medium leading-[16px] text-[#64748B] group-hover:text-[#475569] transition-colors truncate"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
+            <span className="text-[12px] font-medium leading-[16px] text-[#64748B] truncate">
               Current Receivables
             </span>
-            <span
-              className="text-[20px] font-bold leading-[28px] tracking-[-0.5px] text-[#0F172A] truncate"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
+            <span className="text-[20px] font-bold leading-[28px] tracking-[-0.5px] text-[#0F172A] truncate">
               {formatRupeeAmount(kpis?.currentReceivables?.rawValue)}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Middle Section (Receivables Overview & Aging) */}
-      <div className={`w-full grid gap-4 transition-all duration-200 ${
-        isSidebarCollapsed
-          ? 'grid-cols-1 lg:grid-cols-12'
-          : 'grid-cols-1 xl:grid-cols-12'
+      {/* MiddleSection (Receivables Overview & Aging) */}
+      <div className={`w-full grid gap-4 ${
+        isSidebarCollapsed ? 'grid-cols-1 lg:grid-cols-12' : 'grid-cols-1 xl:grid-cols-12'
       }`}>
         {/* Left: Receivables Overview Chart Card */}
         <div
-          className={`${
+          className={`box-border w-full h-[318px] bg-white rounded-[12px] border border-[#E2E8F0]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-5 flex flex-col justify-between ${
             isSidebarCollapsed ? 'lg:col-span-7' : 'xl:col-span-7'
-          } h-[318px] bg-white rounded-[12px] border border-[#E2E8F0]/80 p-5 flex flex-col justify-between transition-all duration-200 hover:shadow-sm`}
-          style={{ boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)' }}
+          }`}
         >
           {/* Card Title */}
-          <h2
-            className="text-[14px] font-bold leading-[20px] tracking-[-0.35px] text-[#0F172A]"
-            style={{ fontFamily: "'Inter', sans-serif" }}
-          >
+          <h2 className="text-[14px] font-bold leading-[20px] tracking-[-0.35px] text-[#0F172A] m-0">
             Receivables Overview
           </h2>
 
@@ -443,15 +378,15 @@ export const FinanceDashboardPage: React.FC = () => {
           <div className="w-full h-[240px] flex flex-col justify-between pt-1">
             {/* Plot Area: Height 204px */}
             <div className="relative w-full h-[204px]">
-              {/* Y-Axis Labels Column (58px wide, right-aligned) */}
-              <div className="absolute left-0 top-0 bottom-0 w-[58px] flex flex-col justify-between text-right text-[11px] leading-[16px] text-[#94A3B8] pr-2 pointer-events-none z-10 font-['Inter']">
+              {/* Y-Axis Labels Column (32px wide, right-aligned) */}
+              <div className="absolute left-0 top-0 bottom-[26px] w-[32px] flex flex-col justify-between text-right text-[11px] leading-[16px] text-[#94A3B8] pr-2 pointer-events-none z-10">
                 <span className="leading-none pt-0.5">{hasReceivablesData ? formatCompactRupees(maxAgeingAmount) : '₹ 1.0'}</span>
                 <span className="leading-none">{hasReceivablesData ? formatCompactRupees(maxAgeingAmount / 2) : '₹ 0.5'}</span>
                 <span className="leading-none pb-0.5">₹ 0</span>
               </div>
 
               {/* Horizontal Grid Lines */}
-              <div className="absolute left-[58px] right-0 top-0 bottom-0 flex flex-col justify-between pointer-events-none z-0">
+              <div className="absolute left-[32px] right-0 top-0 bottom-[26px] flex flex-col justify-between pointer-events-none z-0">
                 <div className="w-full border-b border-[#F1F5F9]" />
                 <div className="w-full border-b border-[#F1F5F9]" />
                 <div className="w-full border-b border-[#E2E8F0]" />
@@ -459,26 +394,20 @@ export const FinanceDashboardPage: React.FC = () => {
 
               {/* If NO Receivables Data (Exact design empty state) */}
               {!hasReceivablesData ? (
-                <div className="absolute left-[58px] right-0 top-0 bottom-0 flex flex-col items-center justify-center z-20">
+                <div className="absolute left-[32px] right-0 top-0 bottom-[26px] flex flex-col items-center justify-center z-20">
                   <div className="mb-2 w-8 h-8 flex items-center justify-center">
                     <BarChart2 className="w-8 h-8 text-[#60A5FA]" strokeWidth={2.5} />
                   </div>
-                  <span
-                    className="font-semibold text-[12px] leading-[16px] text-[#334155] text-center"
-                    style={{ fontFamily: "'Inter', sans-serif" }}
-                  >
+                  <span className="font-semibold text-[12px] leading-[16px] text-[#334155] text-center">
                     No receivables data available
                   </span>
-                  <span
-                    className="font-normal text-[11px] leading-[16px] text-[#94A3B8] text-center mt-0.5"
-                    style={{ fontFamily: "'Inter', sans-serif" }}
-                  >
+                  <span className="font-normal text-[11px] leading-[16px] text-[#94A3B8] text-center mt-0.5">
                     All aging buckets are currently at ₹ 0.00
                   </span>
                 </div>
               ) : (
                 /* Active Bar Chart when data is present */
-                <div className="absolute left-[58px] right-0 top-0 bottom-0 flex items-end justify-around px-2 z-10">
+                <div className="absolute left-[32px] right-0 top-0 bottom-[26px] flex items-end justify-around px-2 z-10">
                   {ageingBuckets.map((bucket) => {
                     const isHovered = hoveredBucketKey === bucket.bucketKey;
                     const barHeightPct = maxAgeingAmount > 0 ? Math.max((Number(bucket.amount) / maxAgeingAmount) * 100, 3) : 3;
@@ -527,8 +456,8 @@ export const FinanceDashboardPage: React.FC = () => {
               )}
             </div>
 
-            {/* X-Axis Labels Row: Strictly below plot area, height 28px */}
-            <div className="w-full h-[28px] flex items-center pt-2 pl-[58px] z-10">
+            {/* X-Axis Labels Row: Strictly below plot area, height 26px */}
+            <div className="box-border w-full h-[26px] border-t border-[#E2E8F0] flex items-center pl-[32px] z-10">
               <div className="w-full flex items-center justify-around px-2">
                 {ageingBuckets.map((bucket) => {
                   const isHovered = hoveredBucketKey === bucket.bucketKey;
@@ -537,13 +466,12 @@ export const FinanceDashboardPage: React.FC = () => {
                       key={bucket.bucketKey}
                       onMouseEnter={() => setHoveredBucketKey(bucket.bucketKey)}
                       onMouseLeave={() => setHoveredBucketKey(null)}
-                      className="w-20 text-center flex-shrink-0 cursor-pointer"
+                      className="w-20 text-center shrink-0 cursor-pointer"
                     >
                       <span
                         className={`text-[11px] leading-[16px] block whitespace-nowrap transition-colors duration-150 ${
                           isHovered ? 'font-bold text-[#0F172A]' : 'font-normal text-[#64748B]'
                         }`}
-                        style={{ fontFamily: "'Inter', sans-serif" }}
                       >
                         {bucket.label}
                       </span>
@@ -557,21 +485,17 @@ export const FinanceDashboardPage: React.FC = () => {
 
         {/* Right: Receivables Aging Breakdown Card */}
         <div
-          className={`${
+          className={`box-border w-full h-[318px] bg-white rounded-[12px] border border-[#E2E8F0]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] p-5 flex flex-col justify-between ${
             isSidebarCollapsed ? 'lg:col-span-5' : 'xl:col-span-5'
-          } h-[318px] bg-white rounded-[12px] border border-[#E2E8F0]/80 p-5 flex flex-col justify-between transition-all duration-200 hover:shadow-sm`}
-          style={{ boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)' }}
+          }`}
         >
           {/* Header */}
-          <h2
-            className="text-[14px] font-bold leading-[20px] tracking-[-0.35px] text-[#0F172A]"
-            style={{ fontFamily: "'Inter', sans-serif" }}
-          >
+          <h2 className="text-[14px] font-bold leading-[20px] tracking-[-0.35px] text-[#0F172A] m-0">
             Receivables Aging
           </h2>
 
           {/* 5 Buckets List */}
-          <div className="flex flex-col gap-2.5 my-auto">
+          <div className="flex flex-col justify-center gap-4 my-auto h-[144px]">
             {ageingBuckets.map((bucket) => {
               const isHovered = hoveredBucketKey === bucket.bucketKey;
               return (
@@ -579,46 +503,30 @@ export const FinanceDashboardPage: React.FC = () => {
                   key={bucket.bucketKey}
                   onMouseEnter={() => setHoveredBucketKey(bucket.bucketKey)}
                   onMouseLeave={() => setHoveredBucketKey(null)}
-                  className={`w-full flex items-center h-8 px-2.5 rounded-lg transition-all duration-150 cursor-pointer ${
-                    isHovered
-                      ? 'bg-slate-100/90 shadow-2xs'
-                      : 'hover:bg-slate-50'
+                  className={`w-full flex flex-row items-center gap-3 h-4 px-1 rounded-lg transition-colors cursor-pointer ${
+                    isHovered ? 'bg-slate-50' : ''
                   }`}
                 >
                   {/* Dot & Label */}
-                  <div className="flex items-center gap-2 w-[110px] flex-shrink-0">
+                  <div className="flex items-center gap-2 w-[112px] shrink-0">
                     <span
-                      className={`w-2.5 h-2.5 rounded-full flex-shrink-0 transition-transform duration-150 ${
-                        isHovered ? 'scale-125 ring-2 ring-slate-300' : ''
-                      }`}
+                      className="w-2.5 h-2.5 rounded-full shrink-0"
                       style={{ backgroundColor: bucket.color }}
                     />
-                    <span
-                      className={`text-[12px] leading-[16px] transition-colors truncate ${
-                        isHovered ? 'font-bold text-[#0F172A]' : 'font-normal text-[#475569]'
-                      }`}
-                      style={{ fontFamily: "'Inter', sans-serif" }}
-                    >
+                    <span className="text-[12px] font-normal leading-[16px] text-[#475569] truncate">
                       {bucket.label}
                     </span>
                   </div>
 
                   {/* Amount */}
-                  <span
-                    className={`text-[12px] leading-[16px] text-right min-w-[100px] flex-shrink-0 truncate transition-colors ${
-                      isHovered ? 'font-bold text-[#0F172A]' : 'font-medium text-[#334155]'
-                    }`}
-                    style={{ fontFamily: "'Inter', sans-serif" }}
-                  >
+                  <span className="text-[12px] font-medium leading-[16px] text-[#334155] text-right min-w-[72px] shrink-0 truncate">
                     {formatRupeeAmount(bucket.amount)}
                   </span>
 
                   {/* Progress Bar Track */}
-                  <div className="flex-1 h-2 bg-[#F1F5F9] rounded-full overflow-hidden mx-3">
+                  <div className="flex-1 h-2 bg-[#F1F5F9] rounded-full overflow-hidden mx-2">
                     <div
-                      className={`h-full rounded-full transition-all duration-500 ${
-                        isHovered ? 'brightness-110 shadow-xs' : ''
-                      }`}
+                      className="h-full rounded-full transition-all duration-500"
                       style={{
                         width: `${bucket.percentage}%`,
                         backgroundColor: bucket.color,
@@ -627,12 +535,7 @@ export const FinanceDashboardPage: React.FC = () => {
                   </div>
 
                   {/* Percentage */}
-                  <span
-                    className={`text-[11px] leading-[16px] text-right w-9 flex-shrink-0 transition-colors ${
-                      isHovered ? 'font-bold text-[#0F172A]' : 'font-normal text-[#94A3B8]'
-                    }`}
-                    style={{ fontFamily: "'Inter', sans-serif" }}
-                  >
+                  <span className="text-[11px] font-normal leading-[16px] text-[#94A3B8] text-right w-8 shrink-0">
                     {bucket.percentage}%
                   </span>
                 </div>
@@ -643,110 +546,67 @@ export const FinanceDashboardPage: React.FC = () => {
       </div>
 
       {/* Section - Expense and Cash Performance */}
-      <div className="w-full bg-white rounded-[12px] border border-[#E2E8F0] p-[14px] flex flex-col gap-3 transition-all duration-200 hover:shadow-sm">
-        <h2
-          className="text-[14px] font-bold leading-[20px] tracking-[-0.35px] text-[#0F172A]"
-          style={{ fontFamily: "'Inter', sans-serif" }}
-        >
+      <div className="box-border w-full bg-white border border-[#E2E8F0] rounded-[12px] p-[14px] flex flex-col gap-3">
+        <h2 className="text-[14px] font-bold leading-[20px] tracking-[-0.35px] text-[#0F172A] m-0">
           Expense & Cash Performance
         </h2>
 
-        <div className={`w-full grid gap-4 transition-all duration-200 ${
-          isSidebarCollapsed
-            ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
-            : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-4'
-        }`}>
+        <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Card 1: Total Expenses */}
-          <div
-            className="h-[82px] bg-white rounded-[12px] border border-[#E2E8F0]/80 p-4 flex items-center gap-4 flex-1 group cursor-pointer transition-all duration-200 ease-out hover:shadow-md hover:border-slate-300 hover:-translate-y-0.5"
-            style={{ boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)' }}
-          >
-            <div className="w-12 h-12 rounded-[12px] bg-[#EFF6FF] flex items-center justify-center flex-shrink-0 transition-transform duration-200 ease-out group-hover:scale-105">
+          <div className="box-border h-[82px] bg-white border border-[#E2E8F0]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[12px] p-4 flex flex-row items-center gap-4">
+            <div className="w-12 h-12 rounded-[12px] bg-[#EFF6FF] flex items-center justify-center shrink-0">
               <Layers className="w-6 h-6 text-[#4F46E5]" strokeWidth={2} />
             </div>
             <div className="flex flex-col gap-0.5 min-w-0">
-              <span
-                className="text-[12px] font-medium leading-[16px] text-[#64748B] group-hover:text-[#475569] transition-colors truncate"
-                style={{ fontFamily: "'Inter', sans-serif" }}
-              >
+              <span className="text-[12px] font-medium leading-[16px] text-[#64748B] truncate">
                 Total Expenses
               </span>
-              <span
-                className="text-[20px] font-bold leading-[28px] tracking-[-0.5px] text-[#0F172A] truncate"
-                style={{ fontFamily: "'Inter', sans-serif" }}
-              >
+              <span className="text-[20px] font-bold leading-[28px] tracking-[-0.5px] text-[#0F172A] truncate">
                 {formatRupeeAmount(kpis?.totalExpenses?.rawValue)}
               </span>
             </div>
           </div>
 
           {/* Card 2: Project Expenses */}
-          <div
-            className="h-[82px] bg-white rounded-[12px] border border-[#E2E8F0]/80 p-4 flex items-center gap-4 flex-1 group cursor-pointer transition-all duration-200 ease-out hover:shadow-md hover:border-slate-300 hover:-translate-y-0.5"
-            style={{ boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)' }}
-          >
-            <div className="w-12 h-12 rounded-[12px] bg-[#ECFDF5] flex items-center justify-center flex-shrink-0 transition-transform duration-200 ease-out group-hover:scale-105">
+          <div className="box-border h-[82px] bg-white border border-[#E2E8F0]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[12px] p-4 flex flex-row items-center gap-4">
+            <div className="w-12 h-12 rounded-[12px] bg-[#ECFDF5] flex items-center justify-center shrink-0">
               <FileText className="w-6 h-6 text-[#059669]" strokeWidth={2} />
             </div>
             <div className="flex flex-col gap-0.5 min-w-0">
-              <span
-                className="text-[12px] font-medium leading-[16px] text-[#64748B] group-hover:text-[#475569] transition-colors truncate"
-                style={{ fontFamily: "'Inter', sans-serif" }}
-              >
+              <span className="text-[12px] font-medium leading-[16px] text-[#64748B] truncate">
                 Project Expenses
               </span>
-              <span
-                className="text-[20px] font-bold leading-[28px] tracking-[-0.5px] text-[#0F172A] truncate"
-                style={{ fontFamily: "'Inter', sans-serif" }}
-              >
+              <span className="text-[20px] font-bold leading-[28px] tracking-[-0.5px] text-[#0F172A] truncate">
                 {formatRupeeAmount(kpis?.projectExpenses?.rawValue)}
               </span>
             </div>
           </div>
 
           {/* Card 3: Operating Cash Result */}
-          <div
-            className="h-[82px] bg-white rounded-[12px] border border-[#E2E8F0]/80 p-4 flex items-center gap-4 flex-1 group cursor-pointer transition-all duration-200 ease-out hover:shadow-md hover:border-slate-300 hover:-translate-y-0.5"
-            style={{ boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)' }}
-          >
-            <div className="w-12 h-12 rounded-[12px] bg-[#FAF5FF] flex items-center justify-center flex-shrink-0 transition-transform duration-200 ease-out group-hover:scale-105">
+          <div className="box-border h-[82px] bg-white border border-[#E2E8F0]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[12px] p-4 flex flex-row items-center gap-4">
+            <div className="w-12 h-12 rounded-[12px] bg-[#FAF5FF] flex items-center justify-center shrink-0">
               <TrendingUp className="w-6 h-6 text-[#9333EA]" strokeWidth={2} />
             </div>
             <div className="flex flex-col gap-0.5 min-w-0">
-              <span
-                className="text-[12px] font-medium leading-[16px] text-[#64748B] group-hover:text-[#475569] transition-colors truncate"
-                style={{ fontFamily: "'Inter', sans-serif" }}
-              >
+              <span className="text-[12px] font-medium leading-[16px] text-[#64748B] truncate">
                 Operating Cash Result
               </span>
-              <span
-                className="text-[20px] font-bold leading-[28px] tracking-[-0.5px] text-[#0F172A] truncate"
-                style={{ fontFamily: "'Inter', sans-serif" }}
-              >
+              <span className="text-[20px] font-bold leading-[28px] tracking-[-0.5px] text-[#0F172A] truncate">
                 {formatRupeeAmount(kpis?.operatingCashResult?.rawValue)}
               </span>
             </div>
           </div>
 
           {/* Card 4: Collection Rate */}
-          <div
-            className="h-[82px] bg-white rounded-[12px] border border-[#E2E8F0]/80 p-4 flex items-center gap-4 flex-1 group cursor-pointer transition-all duration-200 ease-out hover:shadow-md hover:border-slate-300 hover:-translate-y-0.5"
-            style={{ boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)' }}
-          >
-            <div className="w-12 h-12 rounded-[12px] bg-[#FFF1F2] flex items-center justify-center flex-shrink-0 transition-transform duration-200 ease-out group-hover:scale-105">
+          <div className="box-border h-[82px] bg-white border border-[#E2E8F0]/80 shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[12px] p-4 flex flex-row items-center gap-4">
+            <div className="w-12 h-12 rounded-[12px] bg-[#FFF1F2] flex items-center justify-center shrink-0">
               <Percent className="w-6 h-6 text-[#F43F5E]" strokeWidth={2} />
             </div>
             <div className="flex flex-col gap-0.5 min-w-0">
-              <span
-                className="text-[12px] font-medium leading-[16px] text-[#64748B] group-hover:text-[#475569] transition-colors truncate"
-                style={{ fontFamily: "'Inter', sans-serif" }}
-              >
+              <span className="text-[12px] font-medium leading-[16px] text-[#64748B] truncate">
                 Collection Rate
               </span>
-              <span
-                className="text-[20px] font-bold leading-[28px] tracking-[-0.5px] text-[#0F172A] truncate"
-                style={{ fontFamily: "'Inter', sans-serif" }}
-              >
+              <span className="text-[20px] font-bold leading-[28px] tracking-[-0.5px] text-[#0F172A] truncate">
                 {formatPercentage(kpis?.collectionRate?.rawValue)}
               </span>
             </div>
@@ -756,44 +616,28 @@ export const FinanceDashboardPage: React.FC = () => {
 
       {/* Metric Summary Section */}
       <div className="w-full flex flex-col gap-3">
-        <h2
-          className="text-[14px] font-bold leading-[20px] tracking-[-0.35px] text-[#0F172A]"
-          style={{ fontFamily: "'Inter', sans-serif" }}
-        >
+        <h2 className="text-[14px] font-bold leading-[20px] tracking-[-0.35px] text-[#0F172A] m-0">
           Metric Summary
         </h2>
 
         {/* Table Container */}
         <div
-          className="w-full bg-white rounded-[12px] border border-[#E2E8F0] overflow-hidden transition-all duration-200 hover:shadow-sm"
-          style={{ boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)' }}
+          className="box-border w-full bg-white shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[12px] border border-[#E2E8F0] overflow-hidden"
         >
           <div className="w-full overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-[#EEF4FF] h-[41px]">
-                  <th
-                    className="w-1/4 text-left px-4 py-[11px] font-bold text-[12px] leading-[16px] text-[#334155] border-r border-[#E2E8F0]"
-                    style={{ fontFamily: "'Inter', sans-serif" }}
-                  >
+                  <th className="box-border w-1/4 text-left px-4 py-[11px] font-bold text-[12px] leading-[16px] text-[#334155] border border-[#E2E8F0]">
                     Metric
                   </th>
-                  <th
-                    className="w-1/4 text-center px-4 py-[11px] font-bold text-[12px] leading-[16px] text-[#334155] border-r border-[#E2E8F0]"
-                    style={{ fontFamily: "'Inter', sans-serif" }}
-                  >
+                  <th className="box-border w-1/4 text-center px-4 py-[11px] font-bold text-[12px] leading-[16px] text-[#334155] border border-[#E2E8F0]">
                     Value
                   </th>
-                  <th
-                    className="w-1/4 text-center px-4 py-[11px] font-bold text-[12px] leading-[16px] text-[#334155] border-r border-[#E2E8F0]"
-                    style={{ fontFamily: "'Inter', sans-serif" }}
-                  >
+                  <th className="box-border w-1/4 text-center px-4 py-[11px] font-bold text-[12px] leading-[16px] text-[#334155] border border-[#E2E8F0]">
                     Target
                   </th>
-                  <th
-                    className="w-1/4 text-center px-4 py-[11px] font-bold text-[12px] leading-[16px] text-[#334155]"
-                    style={{ fontFamily: "'Inter', sans-serif" }}
-                  >
+                  <th className="box-border w-1/4 text-center px-4 py-[11px] font-bold text-[12px] leading-[16px] text-[#334155] border border-[#E2E8F0]">
                     Status
                   </th>
                 </tr>
@@ -802,30 +646,18 @@ export const FinanceDashboardPage: React.FC = () => {
                 {metricSummary.map((row) => (
                   <tr
                     key={row.metricKey}
-                    className="h-[38px] border-t border-[#E2E8F0] hover:bg-indigo-50/30 transition-colors duration-150 group cursor-default"
+                    className="box-border h-[37px] hover:bg-[#F8FAFC] transition-colors"
                   >
-                    <td
-                      className="px-4 py-[9px] text-[12px] leading-[16px] font-normal text-[#475569] group-hover:text-[#1E293B] group-hover:font-medium transition-colors border-r border-[#E2E8F0]"
-                      style={{ fontFamily: "'Inter', sans-serif" }}
-                    >
+                    <td className="box-border w-1/4 px-4 py-[9px] text-[12px] leading-[16px] font-normal text-[#475569] border border-[#E2E8F0] text-left">
                       {row.metricName}
                     </td>
-                    <td
-                      className="px-4 py-[9px] text-[12px] leading-[16px] font-normal text-[#334155] text-center border-r border-[#E2E8F0]"
-                      style={{ fontFamily: "'Inter', sans-serif" }}
-                    >
+                    <td className="box-border w-1/4 px-4 py-[9px] text-[12px] leading-[16px] font-normal text-[#475569] border border-[#E2E8F0] text-center">
                       {formatRowValue(row.value, row.valueType)}
                     </td>
-                    <td
-                      className="px-4 py-[9px] text-[12px] leading-[16px] font-normal text-[#64748B] text-center border-r border-[#E2E8F0]"
-                      style={{ fontFamily: "'Inter', sans-serif" }}
-                    >
+                    <td className="box-border w-1/4 px-4 py-[9px] text-[12px] leading-[16px] font-normal text-[#475569] border border-[#E2E8F0] text-center">
                       {formatRowValue(row.target, row.valueType)}
                     </td>
-                    <td
-                      className="px-4 py-[9px] text-[12px] leading-[16px] font-normal text-[#475569] text-center"
-                      style={{ fontFamily: "'Inter', sans-serif" }}
-                    >
+                    <td className="box-border w-1/4 px-4 py-[9px] text-[12px] leading-[16px] font-normal text-[#475569] border border-[#E2E8F0] text-center">
                       {renderStatusBadge(row.status)}
                     </td>
                   </tr>

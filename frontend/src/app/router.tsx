@@ -10,7 +10,6 @@ import { OpportunitiesPage } from '../features/sales/pages/OpportunitiesPage';
 import { ContractsPage } from '../features/sales/pages/ContractsPage';
 import { ProposalsPage } from '../features/proposals/pages/ProposalsPage';
 import { CollectionsPage } from '../features/collections/pages/CollectionsPage';
-import { FinanceCollectionsPage } from '../features/collections/pages/FinanceCollectionsPage';
 import { EmployeeMasterPage } from '../features/hr/pages/EmployeeMasterPage';
 import { HrDashboardPage } from '../features/hr/pages/HrDashboardPage';
 import { LeadsPage } from '../features/sales/pages/LeadsPage';
@@ -29,10 +28,8 @@ import { AmcSlaPage } from '../features/support/pages/AmcSlaPage';
 import { InvoicesPage } from '../features/invoices/pages/InvoicesPage';
 import { TimesheetsRequirementsPage } from '../features/projects/pages/TimesheetsRequirementsPage';
 import { DevelopmentPage } from '../features/development/pages/DevelopmentPage';
-
-const FinanceDashboardPage = React.lazy(() =>
-  import('../features/finance/pages/FinanceDashboardPage').then((m) => ({ default: m.FinanceDashboardPage }))
-);
+import { DeploymentPage } from '../features/projects/pages/DeploymentPage';
+import { FinanceDashboardPage } from '../features/finance/pages/FinanceDashboardPage';
 
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
 import { LoginPage } from '../features/auth/pages/LoginPage';
@@ -72,7 +69,11 @@ export const AppRouter: React.FC = () => {
         <Route path="/management/approval-inbox" element={<ApprovalInboxPage />} />
         <Route path="/management/follow-up-queue" element={<FollowUpQueuePage />} />
         <Route path="/management/collections" element={<CollectionsPage />} />
-        <Route path="/finance/collections" element={<FinanceCollectionsPage />} />
+        <Route path="/finance/dashboard" element={<FinanceDashboardPage />} />
+        <Route path="/finance" element={<Navigate to="/finance/dashboard" replace />} />
+        <Route path="/reports/finance-dashboard" element={<Navigate to="/finance/dashboard" replace />} />
+        <Route path="/finance/collections" element={<CollectionsPage />} />
+        <Route path="/collections" element={<Navigate to="/finance/collections" replace />} />
         <Route path="/finance/invoices" element={<InvoicesPage />} />
         <Route path="/invoices" element={<Navigate to="/finance/invoices" replace />} />
         <Route path="/sales/leads" element={<LeadsPage />} />
@@ -109,6 +110,8 @@ export const AppRouter: React.FC = () => {
         <Route path="/projects/timesheets" element={<TimesheetsRequirementsPage />} />
         <Route path="/projects/timesheets-requirements" element={<Navigate to="/projects/timesheets" replace />} />
         <Route path="/projects/development" element={<DevelopmentPage />} />
+        <Route path="/projects/deployment-go-live" element={<DeploymentPage />} />
+        <Route path="/deployment-go-live" element={<Navigate to="/projects/deployment-go-live" replace />} />
 
         {/* Generate dynamic module engine routes for all other navigation items */}
         {navigationSections.map((section) =>
@@ -120,6 +123,7 @@ export const AppRouter: React.FC = () => {
                 item.path !== '/management/follow-up-queue' &&
                 item.path !== '/management/collections' &&
                 item.path !== '/finance/collections' &&
+                item.path !== '/collections' &&
                 item.path !== '/sales/leads' &&
                 item.path !== '/sales/opportunities' &&
                 item.path !== '/sales/proposals' &&
@@ -156,7 +160,9 @@ export const AppRouter: React.FC = () => {
                 item.path !== '/support/tickets' &&
                 item.path !== '/tickets' &&
                 item.path !== '/support/amc-sla' &&
-                item.path !== '/amc-sla'
+                item.path !== '/amc-sla' &&
+                item.path !== '/projects/deployment-go-live' &&
+                item.path !== '/deployment-go-live'
             )
             .map((item) => (
               <Route

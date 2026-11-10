@@ -12,6 +12,7 @@ import com.company.project.common.exception.BusinessValidationException;
 import com.company.project.common.exception.ConflictException;
 import com.company.project.common.exception.ResourceNotFoundException;
 import com.company.project.common.response.PageResponse;
+import com.company.project.finance.dto.ReceivablesAgeingBucketDto;
 import com.company.project.finance.service.ReceivablesCalculationService;
 import com.company.project.notification.service.NotificationService;
 import jakarta.persistence.criteria.Predicate;
@@ -616,9 +617,11 @@ public class CollectionsService {
 
     @Transactional(readOnly = true)
     public KpiSummaryResponse getKpiSummary() {
-        List<CollectionInvoiceEntity> allInvoices = invoiceRepository.findAll();
+        LocalDate today = LocalDate.now(KOLKATA_ZONE);
+        ReceivablesCalculationService.ReceivablesComputationResult receivables =
+                receivablesCalculationService.computeReceivablesAsOf(today);
 
-        BigDecimal totalOutstanding = BigDecimal.ZERO;
+        BigDecimal totalOutstanding = receivables.getTotalOutstanding() != null ? receivables.getTotalOutstanding() : BigDecimal.ZERO;
         long totalCount = 0;
         BigDecimal overdueAmount = BigDecimal.ZERO;
         long overdueCount = 0;
@@ -636,8 +639,8 @@ public class CollectionsService {
         // Invoices with status 'Due Soon'
         BigDecimal dueSoonAmount = BigDecimal.ZERO;
         long dueSoonCount = 0;
-        List<CollectionInvoiceEntity> allInvoices = invoiceRepository.findInvoicesIssuedOnOrBefore(today);
-        for (CollectionInvoiceEntity inv : allInvoices) {
+        List<CollectionInvoiceEntity> invoicesDueSoon = invoiceRepository.findInvoicesIssuedOnOrBefore(today);
+        for (CollectionInvoiceEntity inv : invoicesDueSoon) {
             if ("Due Soon".equalsIgnoreCase(inv.getStatus()) && inv.getOutstanding() != null && inv.getOutstanding().compareTo(BigDecimal.ZERO) > 0) {
                 dueSoonAmount = dueSoonAmount.add(inv.getOutstanding());
                 dueSoonCount++;

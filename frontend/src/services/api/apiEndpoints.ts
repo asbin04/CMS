@@ -151,6 +151,11 @@ export const API_ENDPOINTS = {
     UAT_KPIS: '/projects/uat/kpis',
     UAT_FILTERS: '/projects/uat/filters',
     UAT_BY_ID: (id: string | number) => `/projects/uat/${encodeURIComponent(String(id))}`,
+    DEPLOYMENTS: '/projects/deployments',
+    DEPLOYMENTS_KPIS: '/projects/deployments/kpis',
+    DEPLOYMENTS_FILTERS: '/projects/deployments/filters',
+    DEPLOYMENT_BY_ID: (id: string | number) => `/projects/deployments/${encodeURIComponent(String(id))}`,
+    DEPLOYMENTS_RESET: '/projects/deployments/reset',
   },
   SUPPORT: {
     TICKETS: '/support/tickets',
