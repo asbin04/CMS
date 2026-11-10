@@ -1,4 +1,4 @@
--- V17__create_expenses_and_finance_targets_tables.sql
+-- V19__create_expenses_and_finance_targets_tables.sql
 -- Description: DDL definitions for expenses and finance_targets tables, with composite indexes on invoices and payments
 
 -- 1. Expenses Table

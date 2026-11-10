@@ -40,7 +40,7 @@ public class AdminUserBootstrapper implements ApplicationRunner {
 
         List<AdminAccountSpec> admins = List.of(
                 new AdminAccountSpec("asbin.t.s@kalpanaaa.in", "asbin.t.s@kalpanaaa.in", "Asbin T S", defaultPass),
-                new AdminAccountSpec("founder@kalpanaaasoftwaresolutions.in", "founder@kalpanaaasoftwaresolutions.in", "Kalpanaaa Founder", defaultPass),
+                new AdminAccountSpec("founder@kalpanaaasoftwaresolutions.in", "founder@kalpanaaasoftwaresolutions.in", "Gaurav Kumar Tripathi", defaultPass),
                 new AdminAccountSpec("akshit.ujjain@kalpanaaasoftwaresolutions.in", "akshit.ujjain@kalpanaaasoftwaresolutions.in", "Akshit Ujjain", defaultPass)
         );
 

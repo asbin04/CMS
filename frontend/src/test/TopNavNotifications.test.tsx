@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { TopNav } from '../components/layout/TopNav';
 import { notificationService, NOTIFICATION_REFRESH_EVENT } from '../services/notificationService';
@@ -41,6 +42,10 @@ describe('TopNav Notification System', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   it('renders unread badge when unreadCount > 0 from database', async () => {
@@ -130,5 +135,27 @@ describe('TopNav Notification System', () => {
     await waitFor(() => {
       expect(screen.getByText('3')).toBeInTheDocument();
     });
+  });
+
+  it('renders long user profile name and down arrow without overlap', async () => {
+    vi.mocked(notificationService.getNotifications).mockResolvedValue({
+      unreadCount: 0,
+      notifications: [],
+    });
+
+    render(
+      <BrowserRouter>
+        <TopNav userName="Gaurav Kumar Tripathi" userRole="ADMIN" />
+      </BrowserRouter>
+    );
+
+    const nameEl = screen.getByText('Gaurav Kumar Tripathi');
+    expect(nameEl).toBeInTheDocument();
+    expect(screen.getByText('ADMIN')).toBeInTheDocument();
+
+    // The name element container should not have rigid 73px width
+    const parentContainer = nameEl.closest('.sm\\:flex');
+    expect(parentContainer).toBeInTheDocument();
+    expect(parentContainer).not.toHaveStyle({ width: '73px' });
   });
 });

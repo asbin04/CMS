@@ -42,19 +42,6 @@ public class FinanceController {
         return ResponseEntity.ok(ApiResponse.success("Finance dashboard data retrieved successfully", response));
     }
 
-    @PostMapping("/expenses")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CEO')")
-    @Operation(summary = "Record a new expense")
-    public ResponseEntity<ApiResponse<ExpenseResponse>> createExpense(
-            @Valid @RequestBody CreateExpenseRequest request,
-            Principal principal
-    ) {
-        String createdBy = principal != null && principal.getName() != null ? principal.getName() : "system";
-        ExpenseResponse response = financeService.createExpense(request, createdBy);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("Expense created successfully", response));
-    }
-
     @GetMapping("/export")
     @PreAuthorize("hasAnyRole('ADMIN', 'CEO')")
     @Operation(summary = "Export finance dashboard summary to CSV")

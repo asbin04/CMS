@@ -30,6 +30,18 @@ public class FlywayConfig {
                         "    SELECT 1 FROM information_schema.tables WHERE table_name = 'uiux_designs'" +
                         ")"
                 );
+                stmt.executeUpdate(
+                        "DELETE FROM public.flyway_schema_history " +
+                        "WHERE version = '26' AND NOT EXISTS (" +
+                        "    SELECT 1 FROM information_schema.tables WHERE table_name = 'project_uats'" +
+                        ")"
+                );
+                stmt.executeUpdate(
+                        "DELETE FROM public.flyway_schema_history " +
+                        "WHERE version = '32' AND NOT EXISTS (" +
+                        "    SELECT 1 FROM information_schema.columns WHERE table_name = 'expenses' AND column_name = 'expense_code'" +
+                        ")"
+                );
             } catch (Exception e) {
                 // Log and continue
             }

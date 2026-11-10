@@ -31,7 +31,7 @@ INSERT INTO public.app_users (
     'founder@kalpanaaasoftwaresolutions.in',
     'founder@kalpanaaasoftwaresolutions.in',
     '$2a$10$k5Jvdlu.U2F33o8hA1262.OwfcoEFZYjfHOgjTEbdZT9wADZxq6ZO',
-    'Kalpanaaa Founder',
+    'Gaurav Kumar Tripathi',
     'ADMIN',
     'ACTIVE',
     CURRENT_TIMESTAMP,

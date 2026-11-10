@@ -1,10 +1,7 @@
 package com.company.project.finance.dto;
 
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,32 +15,59 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateExpenseRequest {
+    private String expenseCode;
 
     @NotNull(message = "Expense date is required")
     private LocalDate expenseDate;
 
     @NotBlank(message = "Category is required")
-    @Size(max = 100, message = "Category must not exceed 100 characters")
     private String category;
 
-    @NotNull(message = "Amount is required")
-    @DecimalMin(value = "0.01", message = "Amount must be greater than zero")
-    @Digits(integer = 12, fraction = 2, message = "Amount must have at most 12 integer digits and 2 decimal places")
-    private BigDecimal amount;
+    private String vendorId;
+    private String projectId;
+    private String employeeId;
 
-    private boolean isProjectExpense;
-
-    @Size(max = 255, message = "Project label must not exceed 255 characters")
-    private String projectLabel;
-
-    @Size(max = 1000, message = "Description must not exceed 1000 characters")
+    @NotBlank(message = "Description is required")
     private String description;
 
+    private BigDecimal amountBeforeTax;
+    private BigDecimal taxAmount;
+    private BigDecimal totalAmount;
+
+    // For backwards compatibility with FinanceServiceImpl
+    private BigDecimal amount;
+    @Builder.Default
+    private boolean isProjectExpense = false;
+    private String projectLabel;
+
+    private String paymentMode;
+    private String status;
+    private String approvedBy;
+    private String monthLabel;
+    private String expenseBucket;
+
     public String getNormalizedCategory() {
-        if (category == null) return null;
-        String trimmed = category.trim();
-        if (trimmed.isEmpty()) return trimmed;
-        return trimmed.substring(0, 1).toUpperCase() + trimmed.substring(1);
+        return category != null ? category.trim() : null;
+    }
+
+    public BigDecimal getAmount() {
+        if (amount != null) {
+            return amount;
+        }
+        if (totalAmount != null) {
+            return totalAmount;
+        }
+        return amountBeforeTax != null ? amountBeforeTax : BigDecimal.ZERO;
+    }
+
+    public boolean isProjectExpense() {
+        return isProjectExpense || (projectId != null && !projectId.isBlank());
+    }
+
+    public String getProjectLabel() {
+        if (projectLabel != null && !projectLabel.isBlank()) {
+            return projectLabel;
+        }
+        return projectId;
     }
 }
-

@@ -30,20 +30,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AuthSecurityTest {
 
     static {
-        File[] envFiles = new File[]{ new File(".env"), new File("backend/.env"), new File("../.env") };
+        File[] envFiles = new File[] { new File(".env"), new File("backend/.env"), new File("../.env") };
         for (File envFile : envFiles) {
             if (envFile.exists()) {
                 try (BufferedReader reader = new BufferedReader(new FileReader(envFile))) {
                     String line;
                     while ((line = reader.readLine()) != null) {
                         line = line.trim();
-                        if (line.isEmpty() || line.startsWith("#")) continue;
+                        if (line.isEmpty() || line.startsWith("#"))
+                            continue;
                         int eqIdx = line.indexOf('=');
                         if (eqIdx > 0) {
                             String key = line.substring(0, eqIdx).trim();
                             String value = line.substring(eqIdx + 1).trim();
                             if ((value.startsWith("\"") && value.endsWith("\"")) ||
-                                (value.startsWith("'") && value.endsWith("'"))) {
+                                    (value.startsWith("'") && value.endsWith("'"))) {
                                 value = value.substring(1, value.length() - 1);
                             }
                             if (System.getProperty(key) == null && System.getenv(key) == null) {
@@ -51,7 +52,8 @@ class AuthSecurityTest {
                             }
                         }
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
                 break;
             }
         }
@@ -94,8 +96,8 @@ class AuthSecurityTest {
         AuthController.LoginRequest request = new AuthController.LoginRequest("asbin.t.s@kalpanaaa.in", "Admin123");
 
         mockMvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.token").isNotEmpty())
@@ -106,26 +108,29 @@ class AuthSecurityTest {
     @Test
     @DisplayName("Admin 2: founder@kalpanaaasoftwaresolutions.in logs in with Admin123 and receives ADMIN role")
     void testFounderAdminLoginSuccess() throws Exception {
-        AuthController.LoginRequest request = new AuthController.LoginRequest("founder@kalpanaaasoftwaresolutions.in", "Admin123");
+        AuthController.LoginRequest request = new AuthController.LoginRequest("founder@kalpanaaasoftwaresolutions.in",
+                "Admin123");
 
         mockMvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.token").isNotEmpty())
                 .andExpect(jsonPath("$.data.role").value("ADMIN"))
+                .andExpect(jsonPath("$.data.name").value("Gaurav Kumar Tripathi"))
                 .andExpect(jsonPath("$.data.email").value("founder@kalpanaaasoftwaresolutions.in"));
     }
 
     @Test
     @DisplayName("Admin 3: akshit.ujjain@kalpanaaasoftwaresolutions.in logs in with Admin123 and receives ADMIN role")
     void testAkshitAdminLoginSuccess() throws Exception {
-        AuthController.LoginRequest request = new AuthController.LoginRequest("akshit.ujjain@kalpanaaasoftwaresolutions.in", "Admin123");
+        AuthController.LoginRequest request = new AuthController.LoginRequest(
+                "akshit.ujjain@kalpanaaasoftwaresolutions.in", "Admin123");
 
         mockMvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.token").isNotEmpty())
@@ -145,7 +150,7 @@ class AuthSecurityTest {
         for (String email : adminEmails) {
             String token = "Bearer " + jwtTokenProvider.generateToken(email, "ADMIN");
             mockMvc.perform(post("/api/v1/contracts/reset")
-                            .header("Authorization", token))
+                    .header("Authorization", token))
                     .andExpect(status().isOk());
         }
     }
@@ -153,11 +158,12 @@ class AuthSecurityTest {
     @Test
     @DisplayName("Unauthorized email is rejected with 401 Unauthorized")
     void testUnauthorizedUserLoginRejected() throws Exception {
-        AuthController.LoginRequest request = new AuthController.LoginRequest("unauthorized.person@external.com", "Admin123");
+        AuthController.LoginRequest request = new AuthController.LoginRequest("unauthorized.person@external.com",
+                "Admin123");
 
         mockMvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.success").value(false));
     }
@@ -182,8 +188,8 @@ class AuthSecurityTest {
         AuthController.LoginRequest request = new AuthController.LoginRequest(adminUsername, adminPassword);
 
         mockMvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.token").isNotEmpty())
@@ -196,8 +202,8 @@ class AuthSecurityTest {
         AuthController.LoginRequest oldReq = new AuthController.LoginRequest("admin", "Admin#SecurePass123!");
 
         mockMvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(oldReq)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(oldReq)))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.status").value(401));
@@ -209,8 +215,8 @@ class AuthSecurityTest {
         AuthController.LoginRequest blankUser = new AuthController.LoginRequest("", adminPassword);
 
         mockMvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(blankUser)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(blankUser)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.status").value(400));
@@ -222,8 +228,8 @@ class AuthSecurityTest {
         AuthController.LoginRequest blankPass = new AuthController.LoginRequest(adminUsername, "");
 
         mockMvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(blankPass)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(blankPass)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.status").value(400));
@@ -237,22 +243,22 @@ class AuthSecurityTest {
         // 1st to 4th failed attempts return 401
         for (int i = 0; i < 4; i++) {
             mockMvc.perform(post("/api/v1/auth/login")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(invalidReq)))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(invalidReq)))
                     .andExpect(status().isUnauthorized());
         }
 
         // 5th failed attempt reaches the threshold -> returns 429
         mockMvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(invalidReq)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invalidReq)))
                 .andExpect(status().isTooManyRequests())
                 .andExpect(jsonPath("$.status").value(429));
 
         // 6th attempt is blocked immediately -> returns 429
         mockMvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(invalidReq)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invalidReq)))
                 .andExpect(status().isTooManyRequests())
                 .andExpect(jsonPath("$.status").value(429));
     }
@@ -275,17 +281,17 @@ class AuthSecurityTest {
     void testDeleteAndResetRequireAdminRole() throws Exception {
         // CEO role attempting to reset contracts -> 403 Forbidden
         mockMvc.perform(post("/api/v1/contracts/reset")
-                        .header("Authorization", validCeoToken))
+                .header("Authorization", validCeoToken))
                 .andExpect(status().isForbidden());
 
         // CEO role attempting to DELETE contract -> 403 Forbidden
         mockMvc.perform(delete("/api/v1/contracts/999999")
-                        .header("Authorization", validCeoToken))
+                .header("Authorization", validCeoToken))
                 .andExpect(status().isForbidden());
 
         // ADMIN role attempting reset -> succeeds (200 OK)
         mockMvc.perform(post("/api/v1/contracts/reset")
-                        .header("Authorization", validAdminToken))
+                .header("Authorization", validAdminToken))
                 .andExpect(status().isOk());
     }
 
@@ -293,7 +299,7 @@ class AuthSecurityTest {
     @DisplayName("Authenticated request with valid Bearer token accesses /api/v1/dashboard/sidebar/counts")
     void testAuthenticatedSidebarCounts() throws Exception {
         mockMvc.perform(get("/api/v1/dashboard/sidebar/counts")
-                        .header("Authorization", validCeoToken))
+                .header("Authorization", validCeoToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.pendingApprovals").isNumber())
@@ -305,15 +311,15 @@ class AuthSecurityTest {
     void testUpdateDashboardSettings() throws Exception {
         DashboardSettings updateSettings = new DashboardSettings();
         updateSettings.setCompanyName("KALPANAAA SOFTWARE SOLUTIONS");
-        updateSettings.setDashboardTitle("CEO Executive Dashboard");
+        updateSettings.setDashboardTitle("CEO Dashboard");
 
         CeoDashboardUpdateRequest request = new CeoDashboardUpdateRequest();
         request.setSettings(updateSettings);
 
         mockMvc.perform(put("/api/v1/dashboard/ceo")
-                        .header("Authorization", validCeoToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                .header("Authorization", validCeoToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.settings.company_name").value("KALPANAAA SOFTWARE SOLUTIONS"));
@@ -325,13 +331,12 @@ class AuthSecurityTest {
         Map<String, Object> reminderRequest = Map.of(
                 "channels", Map.of("email", true, "whatsapp", true),
                 "template", "Standard Overdue Notice",
-                "recipient", "finance@example.com"
-        );
+                "recipient", "finance@example.com");
 
         mockMvc.perform(post("/api/v1/collections/invoices/INV-2024-001/reminders")
-                        .header("Authorization", validCeoToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(reminderRequest)))
+                .header("Authorization", validCeoToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(reminderRequest)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value(true));
     }
@@ -343,13 +348,12 @@ class AuthSecurityTest {
                 "communicationType", "EMAIL",
                 "recipient", "finance@acme.com",
                 "subject", "Payment Reminder for INV-2024-001",
-                "message", "Please settle the outstanding balance."
-        );
+                "message", "Please settle the outstanding balance.");
 
         mockMvc.perform(post("/api/v1/collections/invoices/INV-2024-001/communications")
-                        .header("Authorization", validCeoToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(commRequest)))
+                .header("Authorization", validCeoToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(commRequest)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value(true));
     }
@@ -358,7 +362,7 @@ class AuthSecurityTest {
     @DisplayName("Invalid token to protected endpoint returns 401 Unauthorized")
     void testInvalidTokenReturns401() throws Exception {
         mockMvc.perform(get("/api/v1/dashboard/ceo")
-                        .header("Authorization", "Bearer invalid.fake.token"))
+                .header("Authorization", "Bearer invalid.fake.token"))
                 .andExpect(status().isUnauthorized());
     }
 }
