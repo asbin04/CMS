@@ -1,5 +1,5 @@
 # Spring Boot Development Profile Configuration
 spring:
   flyway:
-    locations: classpath:db/migration,classpath:db/dev-migration
+    locations: classpath:db/migration
 

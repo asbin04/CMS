@@ -11,6 +11,7 @@ export interface DevelopmentRecord {
   requirementId: string;
   taskId: string;
   developer: string;
+  developerId?: string;
   developerAvatar?: string;
   repositoryUrl: string;
   branch: string;

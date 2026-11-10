@@ -36,14 +36,22 @@ public class ProjectDto {
     private OffsetDateTime createdAt;
 
     public String getId() {
-        return id != null ? id : projectId;
+        return id != null ? id : (projectId != null ? projectId : projectCode);
+    }
+
+    public String getProjectId() {
+        return projectId != null ? projectId : (projectCode != null ? projectCode : id);
+    }
+
+    public String getProjectCode() {
+        return projectCode != null ? projectCode : (projectId != null ? projectId : id);
     }
 
     public String getName() {
         return name != null ? name : projectName;
     }
 
-    public String getProjectCode() {
-        return projectCode != null ? projectCode : (id != null ? id : projectId);
+    public String getProjectName() {
+        return projectName != null ? projectName : name;
     }
 }

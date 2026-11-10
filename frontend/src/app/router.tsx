@@ -33,6 +33,7 @@ import { FinanceDashboardPage } from '../features/finance/pages/FinanceDashboard
 
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
 import { LoginPage } from '../features/auth/pages/LoginPage';
+import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
 
 const CeoDashboardRoute: React.FC = () => {
   const context = useOutletContext<AppLayoutContextType>();

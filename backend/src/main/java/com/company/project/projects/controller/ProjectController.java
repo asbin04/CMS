@@ -23,7 +23,7 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @GetMapping
-    @Operation(summary = "List all projects")
+    @Operation(summary = "Get all projects")
     public ResponseEntity<ApiResponse<List<ProjectDto>>> getAllProjects() {
         return ResponseEntity.ok(ApiResponse.success(projectService.getAllProjects()));
     }

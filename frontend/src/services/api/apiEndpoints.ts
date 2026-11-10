@@ -200,4 +200,13 @@ export const API_ENDPOINTS = {
     CODE_REVIEW_STATUS: (id: string) => `/developments/${encodeURIComponent(id)}/code-review-status`,
     EXPORT: '/developments/export',
   },
+  CASH_FLOW: {
+    BASE: '/finance/cash-flows',
+    BY_ID: (id: string | number) => `/finance/cash-flows/${encodeURIComponent(String(id))}`,
+    KPIS: '/finance/cash-flows/kpis',
+    TRENDS: '/finance/cash-flows/trends',
+    SUGGESTED_OPENING_CASH: '/finance/cash-flows/suggested-opening-cash',
+    NEXT_ID: '/finance/cash-flows/next-id',
+    EXPORT: '/finance/cash-flows/export',
+  },
 };
