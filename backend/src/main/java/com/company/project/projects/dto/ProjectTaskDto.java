@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 @Data
@@ -12,13 +14,27 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProjectTaskDto {
-    private String taskId;
     private String id;
+    private String taskId;
     private String projectId;
+    private String milestone;
     private String taskName;
     private String name;
-    private Boolean billableDefault;
+    private String assignedTo;
+    private String priority;
+    private LocalDate startDate;
+    private LocalDate dueDate;
+    private BigDecimal estimatedHours;
+    private BigDecimal actualHours;
     private String status;
+    private Integer progress;
+    private String dependencies;
+    private Integer subtasksCompleted;
+    private Integer subtasksTotal;
+    private String health;
+    private Boolean billable;
+    private Boolean billableDefault;
+    private Integer daysRemaining;
     private OffsetDateTime createdAt;
 
     public String getId() {

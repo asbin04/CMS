@@ -26,6 +26,9 @@ import { PaymentsPage } from '../features/finance/payments/pages/PaymentsPage';
 import { ExpensesPage } from '../features/finance/pages/ExpensesPage';
 import { SupportTicketsPage } from '../features/support/pages/SupportTicketsPage';
 import { AmcSlaPage } from '../features/support/pages/AmcSlaPage';
+import { InvoicesPage } from '../features/invoices/pages/InvoicesPage';
+import { TimesheetsRequirementsPage } from '../features/projects/pages/TimesheetsRequirementsPage';
+import { DevelopmentPage } from '../features/development/pages/DevelopmentPage';
 
 const FinanceDashboardPage = React.lazy(() =>
   import('../features/finance/pages/FinanceDashboardPage').then((m) => ({ default: m.FinanceDashboardPage }))
@@ -103,6 +106,9 @@ export const AppRouter: React.FC = () => {
         <Route path="/tickets" element={<Navigate to="/support/tickets" replace />} />
         <Route path="/support/amc-sla" element={<AmcSlaPage />} />
         <Route path="/amc-sla" element={<Navigate to="/support/amc-sla" replace />} />
+        <Route path="/projects/timesheets" element={<TimesheetsRequirementsPage />} />
+        <Route path="/projects/timesheets-requirements" element={<Navigate to="/projects/timesheets" replace />} />
+        <Route path="/projects/development" element={<DevelopmentPage />} />
 
         {/* Generate dynamic module engine routes for all other navigation items */}
         {navigationSections.map((section) =>
@@ -130,6 +136,10 @@ export const AppRouter: React.FC = () => {
                 item.path !== '/finance/dashboard' &&
                 item.path !== '/finance' &&
                 item.path !== '/reports/finance-dashboard' &&
+                item.path !== '/finance/invoices' &&
+                item.path !== '/invoices' &&
+                item.path !== '/projects/timesheets' &&
+                item.path !== '/projects/development' &&
                 item.path !== '/projects/tasks' &&
                 item.path !== '/projects' &&
                 item.path !== '/projects/ui-ux' &&
