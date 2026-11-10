@@ -56,6 +56,7 @@ export const DevelopmentPage: React.FC = () => {
     openViewModal,
     openEditModal,
     openDeleteModal,
+    showToast,
     closeToast,
   } = useDevelopmentState();
 
@@ -65,7 +66,12 @@ export const DevelopmentPage: React.FC = () => {
         {
           id: 'dev-toast',
           type: toast.type,
-          title: toast.type === 'error' ? 'Action Failed' : 'Success',
+          title:
+            toast.type === 'error'
+              ? 'Action Failed'
+              : toast.type === 'info'
+              ? 'Information'
+              : 'Success',
           message: toast.message,
           timestamp: 'Just now',
         },
@@ -115,6 +121,7 @@ export const DevelopmentPage: React.FC = () => {
             onDelete={openDeleteModal}
             onUpdateCodeReviewStatus={handleUpdateCodeReviewStatus}
             onUpdateStatus={handleUpdateStatus}
+            onShowToast={showToast}
             sortField={sortField}
             sortOrder={sortOrder}
             onSort={handleSort}

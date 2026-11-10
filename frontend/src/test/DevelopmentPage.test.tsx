@@ -369,20 +369,37 @@ describe('DevelopmentPage UI Component Tests', () => {
     const addBtn = screen.getByRole('button', { name: /Add Development/i });
     fireEvent.click(addBtn);
 
-    // Modal should be visible with title "Add Development Activity"
-    expect(screen.getByRole('heading', { name: /Add Development Activity/i })).toBeInTheDocument();
+    // Modal should be visible with title "Add Development"
+    expect(screen.getByRole('heading', { name: /^Add Development$/i })).toBeInTheDocument();
+
+    // Fill required Project ID, Requirement ID, Task ID, Developer, Status
+    const projectSelect = screen.getByDisplayValue('Select project');
+    fireEvent.change(projectSelect, { target: { value: 'PRJ-001' } });
+
+    const reqSelect = screen.getByDisplayValue('Select requirement');
+    fireEvent.change(reqSelect, { target: { value: 'REQ-2026-0184' } });
+
+    const taskSelect = screen.getByDisplayValue('Select task / ticket');
+    fireEvent.change(taskSelect, { target: { value: 'TSK-00128' } });
+
+    const devSelect = screen.getByDisplayValue('Select developer');
+    fireEvent.change(devSelect, { target: { value: 'EMP-001' } });
+
+    const statusSelect = screen.getAllByDisplayValue('Select status')[1]; // [0: review, 1: status]
+    fireEvent.change(statusSelect, { target: { value: 'In Progress' } });
 
     // Fill branch and repository if needed
-    const branchInput = screen.getByPlaceholderText('feature/login');
+    const branchInput = screen.getByPlaceholderText('e.g., feature/login');
     fireEvent.change(branchInput, { target: { value: 'feature/new-feature' } });
 
-    // Submit form using Save Development button
-    const saveBtn = screen.getByRole('button', { name: /Save Development/i });
-    fireEvent.click(saveBtn);
+    // Submit form using Add Development button inside modal footer
+    const dialog = screen.getByRole('dialog');
+    const modalSubmitBtn = within(dialog).getByRole('button', { name: /^Add Development$/i });
+    fireEvent.click(modalSubmitBtn);
 
     // Modal should close and new entry DEV-2026-0433 should be in table
     await waitFor(() => {
-      expect(screen.queryByRole('heading', { name: /Add Development Activity/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('heading', { name: /^Add Development$/i })).not.toBeInTheDocument();
       expect(screen.getByText('DEV-2026-0433')).toBeInTheDocument();
     });
   });
@@ -509,7 +526,7 @@ describe('DevelopmentPage UI Component Tests', () => {
     fireEvent.click(actionBtn);
 
     // Click "Edit Development" in menu
-    const editOption = screen.getByRole('button', { name: /Edit Development/i });
+    const editOption = screen.getByRole('button', { name: /Edit/i });
     fireEvent.click(editOption);
 
     // Modal opens
@@ -520,7 +537,7 @@ describe('DevelopmentPage UI Component Tests', () => {
     fireEvent.change(branchInput, { target: { value: 'feature/login-v2' } });
 
     // Submit form
-    const saveBtn = screen.getByRole('button', { name: /Save Changes/i });
+    const saveBtn = screen.getByRole('button', { name: /Update Development/i });
     fireEvent.click(saveBtn);
 
     await waitFor(() => {
@@ -543,8 +560,8 @@ describe('DevelopmentPage UI Component Tests', () => {
     const actionBtn = within(row!).getByRole('button', { name: /Actions/i });
     fireEvent.click(actionBtn);
 
-    // Click "Delete Development" in menu
-    const deleteOption = screen.getByRole('button', { name: /Delete Development/i });
+    // Click "Delete" in menu
+    const deleteOption = screen.getByRole('button', { name: /^Delete$/i });
     fireEvent.click(deleteOption);
 
     // Delete confirmation modal appears
@@ -607,5 +624,75 @@ describe('DevelopmentPage UI Component Tests', () => {
     await waitFor(() => {
       expect(screen.getByText('Development data refreshed')).toBeInTheDocument();
     });
+  });
+
+  it('16. View Details in Actions menu opens the read-only Development Details modal', async () => {
+    await renderComponent();
+
+    const row = screen.getByText('DEV-2026-0432').closest('tr');
+    expect(row).toBeInTheDocument();
+
+    // Click 3-dot action button
+    const actionBtn = within(row!).getByRole('button', { name: /Actions/i });
+    fireEvent.click(actionBtn);
+
+    // Click "View Details" in menu
+    const viewOption = screen.getByRole('button', { name: /View Details/i });
+    fireEvent.click(viewOption);
+
+    // Details modal opens in read-only mode
+    const dialog = screen.getByRole('dialog');
+    expect(within(dialog).getByText('Development Details & Technical Tracking')).toBeInTheDocument();
+    expect(within(dialog).getByText('v1.2.0')).toBeInTheDocument();
+    expect(within(dialog).getByRole('button', { name: /Close/i })).toBeInTheDocument();
+  });
+
+  it('17. View Document opens valid documentation URL in a new browser tab without opening details modal', async () => {
+    const windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+    await renderComponent();
+
+    const row = screen.getByText('DEV-2026-0432').closest('tr');
+    expect(row).toBeInTheDocument();
+
+    // Click "View Doc" button in row
+    const viewDocBtn = within(row!).getByRole('button', { name: /View Doc/i });
+    fireEvent.click(viewDocBtn);
+
+    // Window open should be called with documentation URL
+    expect(windowOpenSpy).toHaveBeenCalledWith(
+      'https://docs.kalpanaa.com/dev/DEV-2026-0432',
+      '_blank',
+      'noopener,noreferrer'
+    );
+
+    // Details modal must NOT open
+    expect(screen.queryByText('Development Details & Technical Tracking')).not.toBeInTheDocument();
+    windowOpenSpy.mockRestore();
+  });
+
+  it('18. View Document with missing or empty URL displays message and does not open details modal', async () => {
+    mockStore[0].documentationLink = '';
+
+    await renderComponent();
+
+    const row = screen.getByText('DEV-2026-0432').closest('tr');
+    expect(row).toBeInTheDocument();
+
+    // Click 3-dot action menu and click "View Document"
+    const actionBtn = within(row!).getByRole('button', { name: /Actions/i });
+    fireEvent.click(actionBtn);
+
+    const viewDocOption = screen.getByRole('button', { name: /View Document/i });
+    fireEvent.click(viewDocOption);
+
+    // Toast message displayed
+    await waitFor(() => {
+      expect(
+        screen.getByText('No documentation link is available for this development.')
+      ).toBeInTheDocument();
+    });
+
+    // Details modal must NOT open
+    expect(screen.queryByText('Development Details & Technical Tracking')).not.toBeInTheDocument();
   });
 });

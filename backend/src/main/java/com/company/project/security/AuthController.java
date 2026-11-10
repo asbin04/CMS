@@ -244,6 +244,7 @@ public class AuthController {
             role = "USER";
             displayName = username;
         }
+        String userEmail = username != null && username.contains("@") ? username.trim().toLowerCase() : (username + "@kalpanaaa.in");
         String token = tokenProvider.generateToken(username, role);
 
         LoginResponse response = LoginResponse.builder()
@@ -307,6 +308,7 @@ public class AuthController {
 
         String displayName = "akshit.ujjain".equalsIgnoreCase(username) ? "Akshit Ujjain" :
                 ("gaurav.tripathy".equalsIgnoreCase(username) ? "Gaurav Tripathy" : username);
+        String userEmail = (username != null && username.contains("@")) ? username : (username + "@kalpanaaa.in");
 
         return ResponseEntity.ok(ApiResponse.success("Current user profile", Map.of(
                 "username", username,
