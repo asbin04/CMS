@@ -285,13 +285,13 @@ export const AmcRenewalsTable: React.FC<AmcRenewalsTableProps> = ({
     <div
       style={{
         boxSizing: 'border-box',
-        width: '972px',
+        width: '100%',
         background: '#FFFFFF',
         border: '1px solid #E2E8F0',
         boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
         borderRadius: '12px',
       }}
-      className="flex flex-col items-start w-full max-w-[972px] font-['Inter'] overflow-hidden"
+      className="flex flex-col items-start w-full font-['Inter'] overflow-hidden"
     >
       {/* Frame 8: Single-line Filter Bar */}
       <div
@@ -485,44 +485,37 @@ export const AmcRenewalsTable: React.FC<AmcRenewalsTableProps> = ({
         </div>
       </div>
 
-      {/* Horizontally Scrollable Table Container */}
+      {/* Table Container */}
       <div className="w-full overflow-x-auto">
-        <table className="w-full min-w-[1631.88px] border-collapse text-left font-['Inter']">
+        <table className="w-full border-collapse text-left font-['Inter']">
           <thead>
             <tr className="bg-[rgba(248,250,252,0.75)] border-b border-[#E2E8F0] text-[11px] font-bold uppercase tracking-[0.55px] text-[#475569] h-[41px]">
-              <th style={{ width: '109.95px', minWidth: '109.95px', maxWidth: '109.95px', padding: '12px 16px' }}>AMC / SLA ID</th>
-              <th style={{ width: '90.45px', minWidth: '90.45px', maxWidth: '90.45px', padding: '12px 16px' }}>CLIENT ID</th>
-              <th style={{ width: '102.56px', minWidth: '102.56px', maxWidth: '102.56px', padding: '12px 16px' }}>PROJECT ID</th>
-              <th style={{ width: '167.08px', minWidth: '167.08px', maxWidth: '167.08px', padding: '12px 16px' }}>SERVICE TYPE</th>
-              <th style={{ width: '105.44px', minWidth: '105.44px', maxWidth: '105.44px', padding: '12px 16px' }}>END DATE</th>
-              <th style={{ width: '123.98px', minWidth: '123.98px', maxWidth: '123.98px', padding: '12px 16px' }}>RENEWAL DATE</th>
-              <th style={{ width: '145.03px', minWidth: '145.03px', maxWidth: '145.03px', padding: '12px 16px', textAlign: 'center' }}>DAYS TO RENEWAL</th>
-              <th style={{ width: '131.47px', minWidth: '131.47px', maxWidth: '131.47px', padding: '12px 16px', textAlign: 'center' }}>RENEWAL ALERT</th>
-              <th style={{ width: '94.89px', minWidth: '94.89px', maxWidth: '94.89px', padding: '12px 16px', textAlign: 'center' }}>STATUS</th>
-              <th style={{ width: '141.61px', minWidth: '141.61px', maxWidth: '141.61px', padding: '12px 16px' }}>CONTRACT VALUE</th>
-              <th style={{ width: '107.67px', minWidth: '107.67px', maxWidth: '107.67px', padding: '12px 16px' }}>OWNER</th>
-              <th style={{ width: '233.5px', minWidth: '233.5px', maxWidth: '233.5px', padding: '12px 16px' }}>NOTES</th>
-              <th style={{ width: '78.23px', minWidth: '78.23px', maxWidth: '78.23px', padding: '12px', textAlign: 'center' }}>ACTIONS</th>
+              <th style={{ width: '120px', padding: '12px 16px' }}>AMC / SLA ID</th>
+              <th style={{ width: '100px', padding: '12px 16px' }}>CLIENT ID</th>
+              <th style={{ width: '105px', padding: '12px 16px' }}>PROJECT ID</th>
+              <th style={{ width: '175px', padding: '12px 16px' }}>SERVICE TYPE</th>
+              <th style={{ width: '125px', padding: '12px 16px' }}>END DATE</th>
+              <th style={{ width: '125px', padding: '12px 16px' }}>RENEWAL DATE</th>
+              <th style={{ width: '110px', padding: '12px 16px', textAlign: 'center' }}>DAYS TO RENEWAL</th>
+              <th style={{ width: '112px', padding: '12px 16px', textAlign: 'center' }}>RENEWAL ALERT</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={13} className="py-12 text-center text-[13px] text-[#64748B]">
+                <td colSpan={8} className="py-12 text-center text-[13px] text-[#64748B]">
                   Loading renewals &amp; alerts...
                 </td>
               </tr>
             ) : paginatedContracts.length === 0 ? (
               <tr>
-                <td colSpan={13} className="py-12 text-center text-[13px] text-[#64748B]">
+                <td colSpan={8} className="py-12 text-center text-[13px] text-[#64748B]">
                   No contracts found matching your filters.
                 </td>
               </tr>
             ) : (
               paginatedContracts.map((c) => {
                 const { value: daysValue, badgeType } = calculateDaysToRenewal(c);
-                const owner = getOwner(c);
-                const notes = getNotes(c);
 
                 // Days badge styling
                 let daysBg = '#ECFDF5';
@@ -548,47 +541,47 @@ export const AmcRenewalsTable: React.FC<AmcRenewalsTableProps> = ({
                     className="h-[53px] border-t border-[#F1F5F9] hover:bg-[#F8FAFC] transition-colors text-[12px]"
                   >
                     {/* 1. AMC / SLA ID */}
-                    <td style={{ width: '109.95px', minWidth: '109.95px', maxWidth: '109.95px', padding: '18px 16px 19px' }}>
+                    <td style={{ width: '120px', padding: '18px 16px 19px' }}>
                       <span className="font-semibold text-[12px] leading-[16px] text-[#4F46E5] whitespace-nowrap cursor-pointer">
                         {c.contractCode}
                       </span>
                     </td>
 
                     {/* 2. CLIENT ID */}
-                    <td style={{ width: '90.45px', minWidth: '90.45px', maxWidth: '90.45px', padding: '18px 16px 19px' }}>
+                    <td style={{ width: '100px', padding: '18px 16px 19px' }}>
                       <span className="font-medium text-[12px] leading-[16px] text-[#475569] whitespace-nowrap">
                         {c.clientId}
                       </span>
                     </td>
 
                     {/* 3. PROJECT ID */}
-                    <td style={{ width: '102.56px', minWidth: '102.56px', maxWidth: '102.56px', padding: '18px 16px 19px' }}>
+                    <td style={{ width: '105px', padding: '18px 16px 19px' }}>
                       <span className="font-medium text-[12px] leading-[16px] text-[#475569] whitespace-nowrap">
                         {c.projectId}
                       </span>
                     </td>
 
                     {/* 4. SERVICE TYPE */}
-                    <td style={{ width: '167.08px', minWidth: '167.08px', maxWidth: '167.08px', padding: '15.5px 16px' }}>
+                    <td style={{ width: '175px', padding: '15.5px 16px' }}>
                       {renderServiceTypeBadge(c.serviceType)}
                     </td>
 
                     {/* 5. END DATE */}
-                    <td style={{ width: '105.44px', minWidth: '105.44px', maxWidth: '105.44px', padding: '18px 16px 19px' }}>
+                    <td style={{ width: '125px', padding: '18px 16px 19px' }}>
                       <span className="font-normal text-[12px] leading-[16px] text-[#475569] whitespace-nowrap">
                         {formatDate(c.endDate)}
                       </span>
                     </td>
 
                     {/* 6. RENEWAL DATE */}
-                    <td style={{ width: '123.98px', minWidth: '123.98px', maxWidth: '123.98px', padding: '18px 16px 19px' }}>
+                    <td style={{ width: '125px', padding: '18px 16px 19px' }}>
                       <span className="font-normal text-[12px] leading-[16px] text-[#475569] whitespace-nowrap">
                         {formatDate(c.renewalDate)}
                       </span>
                     </td>
 
                     {/* 7. DAYS TO RENEWAL */}
-                    <td style={{ width: '145.03px', minWidth: '145.03px', maxWidth: '145.03px', padding: '15.5px 16px', textAlign: 'center' }}>
+                    <td style={{ width: '110px', padding: '15.5px 16px', textAlign: 'center' }}>
                       <span
                         style={{
                           boxSizing: 'border-box',
@@ -606,76 +599,8 @@ export const AmcRenewalsTable: React.FC<AmcRenewalsTableProps> = ({
                     </td>
 
                     {/* 8. RENEWAL ALERT */}
-                    <td style={{ width: '131.47px', minWidth: '131.47px', maxWidth: '131.47px', padding: '15.5px 16px', textAlign: 'center' }}>
+                    <td style={{ width: '112px', padding: '15.5px 16px', textAlign: 'center' }}>
                       {getRenewalAlertBadge(c)}
-                    </td>
-
-                    {/* 9. STATUS */}
-                    <td style={{ width: '94.89px', minWidth: '94.89px', maxWidth: '94.89px', padding: '16.5px 16px', textAlign: 'center' }}>
-                      {renderStatusBadge(c.status)}
-                    </td>
-
-                    {/* 10. CONTRACT VALUE */}
-                    <td style={{ width: '141.61px', minWidth: '141.61px', maxWidth: '141.61px', padding: '18px 16px 19px' }}>
-                      <span className="font-bold text-[12px] leading-[16px] text-[#0F172A] whitespace-nowrap">
-                        {formatCurrency(c.contractValue)}
-                      </span>
-                    </td>
-
-                    {/* 11. OWNER */}
-                    <td style={{ width: '107.67px', minWidth: '107.67px', maxWidth: '107.67px', padding: '18px 16px 19px' }}>
-                      <span className="font-normal text-[12px] leading-[16px] text-[#475569] whitespace-nowrap">
-                        {owner}
-                      </span>
-                    </td>
-
-                    {/* 12. NOTES */}
-                    <td style={{ width: '233.5px', minWidth: '233.5px', maxWidth: '233.5px', padding: '18px 16px 19px' }}>
-                      <span
-                        className="font-normal text-[12px] leading-[16px] text-[#64748B] block truncate"
-                        title={notes}
-                      >
-                        {notes}
-                      </span>
-                    </td>
-
-                    {/* 13. ACTIONS */}
-                    <td style={{ width: '78.23px', minWidth: '78.23px', maxWidth: '78.23px', padding: '14.5px 12px', textAlign: 'center', position: 'relative' }}>
-                      <button
-                        type="button"
-                        aria-label="Actions"
-                        onClick={() => setActiveMenuId(activeMenuId === c.id ? null : c.id)}
-                        className="w-6 h-6 inline-flex items-center justify-center rounded-[4px] text-[#4F46E5] hover:bg-slate-100 transition-colors cursor-pointer"
-                      >
-                        <MoreVertical className="w-4 h-4 text-[#4F46E5]" strokeWidth={2} />
-                      </button>
-
-                      {activeMenuId === c.id && (
-                        <div className="absolute right-2 top-10 w-36 bg-white border border-[#E2E8F0] rounded-lg shadow-lg py-1 z-30 text-left">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setActiveMenuId(null);
-                              onEdit?.(c);
-                            }}
-                            className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50 cursor-pointer"
-                          >
-                            <Edit className="w-3.5 h-3.5 text-slate-500" />
-                            Edit Contract
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setActiveMenuId(null);
-                              onDelete?.(c);
-                            }}
-                            className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-red-600 hover:bg-red-50 cursor-pointer"
-                          >
-                            <Trash2 className="w-3.5 h-3.5 text-red-500" />
-                            Delete
-                          </button>
-                        </div>
-                      )}
                     </td>
                   </tr>
                 );
@@ -684,7 +609,6 @@ export const AmcRenewalsTable: React.FC<AmcRenewalsTableProps> = ({
           </tbody>
         </table>
       </div>
-
       {/* Pagination Footer Bar */}
       <div
         style={{

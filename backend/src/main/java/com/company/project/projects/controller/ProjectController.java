@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/projects")
 @RequiredArgsConstructor
-@Tag(name = "Projects & Tasks", description = "Management APIs for Projects and Delivery Tasks")
+@Tag(name = "Projects API", description = "Endpoints for project and task management")
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -35,8 +35,8 @@ public class ProjectController {
     }
 
     @GetMapping("/filters")
-    @Operation(summary = "Get distinct filter options for projects")
-    public ResponseEntity<ApiResponse<ProjectFilterOptionsResponse>> getProjectFilterOptions() {
+    @Operation(summary = "Get distinct project filter options")
+    public ResponseEntity<ApiResponse<ProjectFilterOptionsResponse>> getProjectFilters() {
         return ResponseEntity.ok(ApiResponse.success(projectService.getProjectFilterOptions()));
     }
 
@@ -78,59 +78,61 @@ public class ProjectController {
         return ResponseEntity.ok(ApiResponse.success("Project deleted successfully", null));
     }
 
+    // --- Project Tasks Endpoints ---
+
     @GetMapping("/tasks")
-    @Operation(summary = "Get all project tasks")
+    @Operation(summary = "List all project tasks")
     public ResponseEntity<ApiResponse<List<ProjectTaskDto>>> getAllTasks() {
         return ResponseEntity.ok(ApiResponse.success(projectService.getAllTasks()));
     }
 
     @GetMapping("/tasks/filters")
-    @Operation(summary = "Get distinct filter options for tasks")
-    public ResponseEntity<ApiResponse<TaskFilterOptionsResponse>> getTaskFilterOptions() {
+    @Operation(summary = "Get distinct project task filter options")
+    public ResponseEntity<ApiResponse<TaskFilterOptionsResponse>> getTaskFilters() {
         return ResponseEntity.ok(ApiResponse.success(projectService.getTaskFilterOptions()));
     }
 
-    @GetMapping("/tasks/{id}")
-    @Operation(summary = "Get task by ID")
-    public ResponseEntity<ApiResponse<ProjectTaskDto>> getTaskById(@PathVariable String id) {
-        ProjectTaskDto dto = projectService.getTaskById(id);
+    @GetMapping("/{id}/tasks")
+    @Operation(summary = "List all tasks for a specific project")
+    public ResponseEntity<ApiResponse<List<ProjectTaskDto>>> getTasksByProject(@PathVariable String id) {
+        return ResponseEntity.ok(ApiResponse.success(projectService.getTasksByProjectId(id)));
+    }
+
+    @GetMapping("/tasks/{taskId}")
+    @Operation(summary = "Get project task by ID")
+    public ResponseEntity<ApiResponse<ProjectTaskDto>> getTaskById(@PathVariable String taskId) {
+        ProjectTaskDto dto = projectService.getTaskById(taskId);
         if (dto == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(ApiResponse.success(dto));
     }
 
-    @GetMapping("/{projectId}/tasks")
-    @Operation(summary = "Get tasks for a specific project")
-    public ResponseEntity<ApiResponse<List<ProjectTaskDto>>> getTasksByProject(@PathVariable String projectId) {
-        return ResponseEntity.ok(ApiResponse.success(projectService.getTasksByProjectId(projectId)));
-    }
-
     @PostMapping("/tasks")
     @PreAuthorize("hasAnyRole('ADMIN', 'CEO')")
-    @Operation(summary = "Create a new task")
+    @Operation(summary = "Create a new project task")
     public ResponseEntity<ApiResponse<ProjectTaskDto>> createTask(@Valid @RequestBody CreateProjectTaskRequest request) {
         ProjectTaskDto created = projectService.createTask(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Task created successfully", created));
     }
 
-    @PutMapping("/tasks/{id}")
+    @PutMapping("/tasks/{taskId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'CEO')")
     @Operation(summary = "Update an existing task")
-    public ResponseEntity<ApiResponse<ProjectTaskDto>> updateTask(@PathVariable String id, @RequestBody UpdateProjectTaskRequest request) {
-        ProjectTaskDto updated = projectService.updateTask(id, request);
+    public ResponseEntity<ApiResponse<ProjectTaskDto>> updateTask(@PathVariable String taskId, @RequestBody UpdateProjectTaskRequest request) {
+        ProjectTaskDto updated = projectService.updateTask(taskId, request);
         if (updated == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(ApiResponse.success("Task updated successfully", updated));
     }
 
-    @DeleteMapping("/tasks/{id}")
+    @DeleteMapping("/tasks/{taskId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'CEO')")
     @Operation(summary = "Delete a task")
-    public ResponseEntity<ApiResponse<Void>> deleteTask(@PathVariable String id) {
-        projectService.deleteTask(id);
+    public ResponseEntity<ApiResponse<Void>> deleteTask(@PathVariable String taskId) {
+        projectService.deleteTask(taskId);
         return ResponseEntity.ok(ApiResponse.success("Task deleted successfully", null));
     }
 }

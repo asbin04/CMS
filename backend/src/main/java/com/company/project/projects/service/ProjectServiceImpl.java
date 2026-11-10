@@ -35,6 +35,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional(readOnly = true)
     public ProjectDto getProjectById(String id) {
         return projectRepository.findById(id)
+                .or(() -> projectRepository.findByProjectId(id))
                 .map(this::mapToProjectDto)
                 .orElse(null);
     }

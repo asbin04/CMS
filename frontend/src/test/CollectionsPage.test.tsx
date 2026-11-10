@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, act, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import { CollectionsPage } from '@/features/collections/pages/CollectionsPage';
 import { collectionsApiService } from '@/features/collections/services/collectionsApiService';
 import { INITIAL_INVOICES, INITIAL_PAYMENTS } from './testFixtures';
@@ -134,6 +134,33 @@ describe('CollectionsPage Component', () => {
     });
 
     // Invoice INV-2024-001 is loaded and selected
+    expect(screen.getAllByText('INV-2024-001')[0]).toBeInTheDocument();
+  });
+
+  it('renders correctly when routed from /finance/collections', async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter initialEntries={['/finance/collections']}>
+          <CollectionsPage />
+        </MemoryRouter>
+      );
+    });
+
+    expect(screen.getByText('Collections')).toBeInTheDocument();
+    expect(screen.getByText('Monitor outstanding invoices and follow up on expected payments.')).toBeInTheDocument();
+    expect(screen.getAllByText('INV-2024-001')[0]).toBeInTheDocument();
+  });
+
+  it('renders correctly when routed from /management/collections', async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter initialEntries={['/management/collections']}>
+          <CollectionsPage />
+        </MemoryRouter>
+      );
+    });
+
+    expect(screen.getByText('Collections')).toBeInTheDocument();
     expect(screen.getAllByText('INV-2024-001')[0]).toBeInTheDocument();
   });
 });

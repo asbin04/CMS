@@ -79,16 +79,16 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    @DisplayName("handleAccessDeniedException returns 403 Forbidden")
+    @DisplayName("handleAccessDenied returns 403 Forbidden")
     void testHandleAccessDeniedException() {
         org.springframework.security.access.AccessDeniedException ex =
                 new org.springframework.security.access.AccessDeniedException("Access is denied");
-        ResponseEntity<ApiResponse<Void>> response = handler.handleAccessDeniedException(ex);
+        ResponseEntity<ApiResponse<Void>> response = handler.handleAccessDenied(ex);
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         assertNotNull(response.getBody());
         assertFalse(response.getBody().isSuccess());
-        assertEquals("FORBIDDEN", response.getBody().getError());
+        assertEquals("Forbidden", response.getBody().getError());
     }
 
     @Test
