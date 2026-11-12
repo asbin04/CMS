@@ -1,4 +1,4 @@
-# CMS (Content Management System)
+# CMS (Company Management System)
 
 A full-stack Content Management System built with a **Spring Boot 3** REST API and a **React + TypeScript (Vite)** frontend.
 
