@@ -1,8 +1,23 @@
-import React, { useState } from 'react';
-import { MoreVertical, ChevronLeft, ChevronRight, Eye, CheckCircle2, XCircle, Trash2 } from 'lucide-react';
+import React from 'react';
+import { ChevronDown, ChevronLeft, ChevronRight, Eye, CheckCircle2, XCircle, Trash2 } from 'lucide-react';
 import { LeaveRecord } from '../types/leave';
 import { Skeleton } from '../../../components/ui/Skeleton';
 import { EmptyState } from '../../../components/ui/EmptyState';
+import { StatusDropdownMenu, StatusItemConfig } from '@/components/ui/StatusDropdownMenu';
+import { TableActionMenu, TableActionMenuItem } from '@/components/ui/TableActionMenu';
+
+export const LEAVE_APPROVAL_CONFIGS: StatusItemConfig[] = [
+  { value: 'Approved', label: 'Approved', dotColor: '#059669', textColor: '#059669' },
+  { value: 'Pending', label: 'Pending', dotColor: '#F59E0B', textColor: '#D97706' },
+  { value: 'Rejected', label: 'Rejected', dotColor: '#EF4444', textColor: '#EF4444' },
+];
+
+export const LEAVE_STATUS_CONFIGS: StatusItemConfig[] = [
+  { value: 'Approved', label: 'Approved', dotColor: '#059669', textColor: '#059669' },
+  { value: 'Pending', label: 'Pending', dotColor: '#F59E0B', textColor: '#D97706' },
+  { value: 'Rejected', label: 'Rejected', dotColor: '#EF4444', textColor: '#EF4444' },
+  { value: 'Cancelled', label: 'Cancelled', dotColor: '#64748B', textColor: '#64748B' },
+];
 
 interface LeaveTableProps {
   records: LeaveRecord[];
@@ -18,6 +33,7 @@ interface LeaveTableProps {
   onApprove: (id: string) => void;
   onReject: (id: string) => void;
   onDelete: (id: string) => void;
+  onUpdateStatus?: (id: string, field: 'approvalStatus' | 'leaveStatus', newStatus: string) => void;
 }
 
 export const LeaveTable: React.FC<LeaveTableProps> = ({
@@ -34,12 +50,49 @@ export const LeaveTable: React.FC<LeaveTableProps> = ({
   onApprove,
   onReject,
   onDelete,
+  onUpdateStatus,
 }) => {
-  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
-
   const totalPages = Math.max(1, Math.ceil(totalRecords / pageSize));
   const startIdx = totalRecords === 0 ? 0 : (currentPage - 1) * pageSize + 1;
   const endIdx = Math.min(currentPage * pageSize, totalRecords);
+
+  const getActionItems = (row: LeaveRecord): TableActionMenuItem[] => {
+    const items: TableActionMenuItem[] = [
+      {
+        key: 'view',
+        label: 'View Details',
+        icon: <Eye className="w-3.5 h-3.5 text-slate-500 shrink-0" />,
+        onClick: () => onViewDetails(row),
+      },
+    ];
+
+    if (row.approvalStatus === 'Pending') {
+      items.push({
+        key: 'approve',
+        label: 'Approve',
+        icon: <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />,
+        onClick: () => onApprove(row.id),
+      });
+      items.push({
+        key: 'reject',
+        label: 'Reject',
+        icon: <XCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />,
+        onClick: () => onReject(row.id),
+        variant: 'danger',
+      });
+    }
+
+    items.push({
+      key: 'delete',
+      label: 'Delete',
+      icon: <Trash2 className="w-3.5 h-3.5 text-rose-500 shrink-0" />,
+      onClick: () => onDelete(row.id),
+      variant: 'danger',
+      hasDividerAbove: true,
+    });
+
+    return items;
+  };
 
   const renderBadge = (status: string) => {
     switch (status) {
@@ -65,55 +118,26 @@ export const LeaveTable: React.FC<LeaveTableProps> = ({
     }
   };
 
-  // Generate pagination buttons
-  const renderPageButtons = () => {
-    const pages: (number | string)[] = [];
-    if (totalPages <= 7) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else {
-      pages.push(1);
-      if (currentPage > 3) pages.push('...');
-      const start = Math.max(2, currentPage - 1);
-      const end = Math.min(totalPages - 1, currentPage + 1);
-      for (let i = start; i <= end; i++) {
-        if (!pages.includes(i)) pages.push(i);
-      }
-      if (currentPage < totalPages - 2) pages.push('...');
-      if (!pages.includes(totalPages)) pages.push(totalPages);
+  // Generate page numbers for pagination
+  const getPageNumbers = () => {
+    const pages: number[] = [];
+    const maxVisible = 5;
+    let start = Math.max(1, currentPage - 2);
+    let end = Math.min(totalPages, start + maxVisible - 1);
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
     }
-
-    return pages.map((page, idx) => {
-      if (page === '...') {
-        return (
-          <span key={`dots-${idx}`} className="px-2 text-xs text-slate-400 select-none">
-            ...
-          </span>
-        );
-      }
-      const pageNum = Number(page);
-      const isActive = pageNum === currentPage;
-      return (
-        <button
-          key={pageNum}
-          type="button"
-          onClick={() => onPageChange(pageNum)}
-          className={`min-w-[28px] h-7 px-2 text-xs font-medium rounded-md transition-colors ${
-            isActive
-              ? 'bg-indigo-600 text-white font-semibold'
-              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-          }`}
-        >
-          {pageNum}
-        </button>
-      );
-    });
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
   };
 
   return (
     <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden mb-6">
       {/* Top Header of the table card */}
       <div className="px-5 py-4 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <h3 className="text-sm font-semibold text-slate-800">
+        <h3 className="text-[14px] font-bold text-[#0F172A] leading-5 m-0">
           Leave Requests ({loading ? '...' : totalRecords})
         </h3>
 
@@ -134,23 +158,23 @@ export const LeaveTable: React.FC<LeaveTableProps> = ({
       </div>
 
       {/* Horizontal Scroll Table Container */}
-      <div className="overflow-x-auto min-h-[300px]" onClick={() => setActiveMenuId(null)}>
+      <div className="overflow-x-auto min-h-[300px]">
         <table className="w-full text-left border-collapse min-w-[1300px]">
           <thead>
-            <tr className="bg-slate-50/70 border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-              <th className="py-3 px-4 font-semibold">LEAVE ID</th>
-              <th className="py-3 px-4 font-semibold">EMPLOYEE ID</th>
-              <th className="py-3 px-4 font-semibold">EMPLOYEE NAME</th>
-              <th className="py-3 px-4 font-semibold">LEAVE TYPE</th>
-              <th className="py-3 px-4 font-semibold">FROM DATE</th>
-              <th className="py-3 px-4 font-semibold">TO DATE</th>
-              <th className="py-3 px-4 font-semibold">DAYS</th>
-              <th className="py-3 px-4 font-semibold">REASON</th>
-              <th className="py-3 px-4 font-semibold">APPROVAL STATUS</th>
-              <th className="py-3 px-4 font-semibold">APPROVED BY</th>
-              <th className="py-3 px-4 font-semibold">CALCULATED DAYS</th>
-              <th className="py-3 px-4 font-semibold">LEAVE STATUS</th>
-              <th className="py-3 px-4 font-semibold text-center">ACTIONS</th>
+            <tr className="h-[42px] bg-[#F8FAFC]/80 border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.55px] select-none">
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">LEAVE ID</th>
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">EMPLOYEE ID</th>
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">EMPLOYEE NAME</th>
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">LEAVE TYPE</th>
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">FROM DATE</th>
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">TO DATE</th>
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">DAYS</th>
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">REASON</th>
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">APPROVAL STATUS</th>
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">APPROVED BY</th>
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">CALCULATED DAYS</th>
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">LEAVE STATUS</th>
+              <th className="px-[14px] py-[12px] text-center whitespace-nowrap">ACTIONS</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 text-xs">
@@ -244,8 +268,21 @@ export const LeaveTable: React.FC<LeaveTableProps> = ({
                   </td>
 
                   {/* APPROVAL STATUS */}
-                  <td className="py-3.5 px-4">
-                    {renderBadge(row.approvalStatus)}
+                  <td className="py-3 px-4 whitespace-nowrap">
+                    <StatusDropdownMenu
+                      currentStatus={row.approvalStatus}
+                      options={LEAVE_APPROVAL_CONFIGS}
+                      headerTitle="CHANGE STATE"
+                      onSelect={(newStatus) => {
+                        if (onUpdateStatus) {
+                          onUpdateStatus(row.id, 'approvalStatus', newStatus);
+                        } else if (newStatus === 'Approved') {
+                          onApprove(row.id);
+                        } else if (newStatus === 'Rejected') {
+                          onReject(row.id);
+                        }
+                      }}
+                    />
                   </td>
 
                   {/* APPROVED BY */}
@@ -259,77 +296,22 @@ export const LeaveTable: React.FC<LeaveTableProps> = ({
                   </td>
 
                   {/* LEAVE STATUS */}
-                  <td className="py-3.5 px-4">
-                    {renderBadge(row.leaveStatus)}
+                  <td className="py-3 px-4 whitespace-nowrap">
+                    <StatusDropdownMenu
+                      currentStatus={row.leaveStatus}
+                      options={LEAVE_STATUS_CONFIGS}
+                      headerTitle="CHANGE STATE"
+                      onSelect={(newStatus) => {
+                        if (onUpdateStatus) {
+                          onUpdateStatus(row.id, 'leaveStatus', newStatus);
+                        }
+                      }}
+                    />
                   </td>
 
                   {/* ACTIONS */}
-                  <td className="py-3.5 px-4 text-center relative" onClick={(e) => e.stopPropagation()}>
-                    <button
-                      type="button"
-                      onClick={() => setActiveMenuId(activeMenuId === row.id ? null : row.id)}
-                      className="p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
-                    >
-                      <MoreVertical className="w-4 h-4" />
-                    </button>
-
-                    {activeMenuId === row.id && (
-                      <div className="absolute right-4 top-10 w-40 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-30 text-left">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setActiveMenuId(null);
-                            onViewDetails(row);
-                          }}
-                          className="w-full px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2"
-                        >
-                          <Eye className="w-3.5 h-3.5 text-slate-500" />
-                          <span>View Details</span>
-                        </button>
-
-                        {row.approvalStatus === 'Pending' && (
-                          <>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setActiveMenuId(null);
-                                onApprove(row.id);
-                              }}
-                              className="w-full px-3 py-2 text-xs text-emerald-600 hover:bg-emerald-50 flex items-center gap-2"
-                            >
-                              <CheckCircle2 className="w-3.5 h-3.5" />
-                              <span>Approve</span>
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setActiveMenuId(null);
-                                onReject(row.id);
-                              }}
-                              className="w-full px-3 py-2 text-xs text-rose-600 hover:bg-rose-50 flex items-center gap-2"
-                            >
-                              <XCircle className="w-3.5 h-3.5" />
-                              <span>Reject</span>
-                            </button>
-                          </>
-                        )}
-
-                        <div className="my-1 border-t border-slate-100" />
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setActiveMenuId(null);
-                            onDelete(row.id);
-                          }}
-                          className="w-full px-3 py-2 text-xs text-rose-600 hover:bg-rose-50 flex items-center gap-2"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                          <span>Delete</span>
-                        </button>
-                      </div>
-                    )}
+                  <td className="py-3.5 px-4 text-center">
+                    <TableActionMenu items={getActionItems(row)} />
                   </td>
                 </tr>
               ))
@@ -338,49 +320,65 @@ export const LeaveTable: React.FC<LeaveTableProps> = ({
         </table>
       </div>
 
-      {/* Pagination Footer */}
-      <div className="px-5 py-3.5 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-        <div>
-          Showing {startIdx}–{endIdx} of {totalRecords} records
+      {/* Table Pagination Footer matching Designer Reference */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 border-t border-slate-200 bg-white">
+        {/* Record count info */}
+        <div className="text-xs font-normal text-slate-500 leading-4">
+          Showing {startIdx} – {endIdx} of {totalRecords} leave records
         </div>
 
-        {/* Page Nav */}
-        <div className="flex items-center gap-1">
+        {/* Page navigation controls */}
+        <div className="flex items-center gap-1.5">
+          {/* Previous Button */}
           <button
             type="button"
-            disabled={currentPage <= 1}
             onClick={() => onPageChange(currentPage - 1)}
-            aria-label="Previous Page"
-            className="p-1 rounded hover:bg-slate-100 disabled:opacity-40 disabled:hover:bg-transparent transition-colors text-slate-600"
+            disabled={currentPage <= 1}
+            className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
 
-          {renderPageButtons()}
+          {/* Page Numbers */}
+          {getPageNumbers().map((pageNum) => (
+            <button
+              key={pageNum}
+              type="button"
+              onClick={() => onPageChange(pageNum)}
+              className={`w-8 h-8 rounded-lg text-xs flex items-center justify-center transition-all cursor-pointer ${
+                pageNum === currentPage
+                  ? 'bg-[#4F46E5] text-white font-semibold shadow-xs'
+                  : 'text-slate-700 hover:bg-slate-100 font-medium'
+              }`}
+            >
+              {pageNum}
+            </button>
+          ))}
 
+          {/* Next Button */}
           <button
             type="button"
-            disabled={currentPage >= totalPages}
             onClick={() => onPageChange(currentPage + 1)}
-            aria-label="Next Page"
-            className="p-1 rounded hover:bg-slate-100 disabled:opacity-40 disabled:hover:bg-transparent transition-colors text-slate-600"
+            disabled={currentPage >= totalPages}
+            className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
-        </div>
 
-        {/* Page Size Dropdown */}
-        <div className="flex items-center gap-2">
-          <select
-            value={pageSize}
-            onChange={(e) => onPageSizeChange(Number(e.target.value))}
-            aria-label="Records per page"
-            className="border border-slate-200 rounded-md px-2 py-1 text-xs text-slate-700 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
-          >
-            <option value={10}>10 per page</option>
-            <option value={25}>25 per page</option>
-            <option value={50}>50 per page</option>
-          </select>
+          {/* Page Size Selector */}
+          <div className="relative ml-2">
+            <select
+              value={pageSize}
+              onChange={(e) => onPageSizeChange(Number(e.target.value))}
+              style={{ border: '1px solid #E2E8F0', borderRadius: '8px', backgroundColor: '#FFFFFF', boxSizing: 'border-box' }}
+              className="bg-white border border-[#E2E8F0] rounded-lg px-2.5 py-1.5 text-xs font-medium leading-4 text-slate-700 appearance-none pr-7 cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500/20"
+            >
+              <option value={10}>10 per page</option>
+              <option value={20}>20 per page</option>
+              <option value={50}>50 per page</option>
+            </select>
+            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+          </div>
         </div>
       </div>
     </div>

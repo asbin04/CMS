@@ -32,7 +32,7 @@ export const FULL_AND_FINAL_CONFIGS: StatusItemConfig[] = [
 export const EXIT_READINESS_CONFIGS: StatusItemConfig[] = [
   { value: 'Completed', label: 'Completed', dotColor: '#2563EB', textColor: '#2563EB' },
   { value: 'In Progress', label: 'In Progress', dotColor: '#F59E0B', textColor: '#D97706' },
-  { value: 'Not Started', label: 'Not Started', dotColor: '#E11D48', textColor: '#E11D48' },
+  { value: 'Not Started', label: 'Not Started', dotColor: '#EF4444', textColor: '#EF4444' },
 ];
 
 interface EmployeeExitTableProps {
@@ -107,11 +107,18 @@ export const EmployeeExitTable: React.FC<EmployeeExitTableProps> = ({
     }
     const rect = e.currentTarget.getBoundingClientRect();
     const dropdownHeight = 135;
-    const openUpward = rect.bottom + dropdownHeight > window.innerHeight;
+    const tableContainer = e.currentTarget.closest('.table-horizontal-scroll, table, tbody');
+    let containerSpaceBelow = window.innerHeight - rect.bottom;
+    if (tableContainer) {
+      containerSpaceBelow = tableContainer.getBoundingClientRect().bottom - rect.bottom;
+    }
+    const neededSpace = dropdownHeight + 10;
+    const isConstrainedBelow = containerSpaceBelow < neededSpace || (window.innerHeight - rect.bottom) < neededSpace;
+    const openUpward = isConstrainedBelow && rect.top >= neededSpace;
 
     setMenuRecord(record);
     setMenuPosition({
-      top: openUpward ? rect.top - dropdownHeight : rect.bottom + 4,
+      top: openUpward ? rect.top - dropdownHeight - 4 : rect.bottom + 4,
       right: Math.max(16, window.innerWidth - rect.right),
     });
   };
@@ -214,7 +221,7 @@ export const EmployeeExitTable: React.FC<EmployeeExitTableProps> = ({
     >
       {/* Table Header Row: Title & Sort Dropdown */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
-        <h2 className="text-base font-bold text-slate-900 m-0">
+        <h2 className="text-[14px] font-bold text-[#0F172A] leading-5 m-0">
           Employee Exit Records ({filteredCount})
         </h2>
 
@@ -252,54 +259,54 @@ export const EmployeeExitTable: React.FC<EmployeeExitTableProps> = ({
       <div className="overflow-x-auto w-full table-horizontal-scroll border border-[#E2E8F0] rounded-xl">
         <table className="w-full text-left border-collapse text-xs min-w-[1550px]">
           <thead>
-            <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
-              <th className="py-3 px-3.5 font-semibold text-[11px] text-slate-500 whitespace-nowrap">
-                Exit ID
+            <tr className="h-[42px] bg-[#F8FAFC]/80 border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.55px] select-none">
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                EXIT ID
               </th>
-              <th className="py-3 px-3.5 font-semibold text-[11px] text-slate-500 whitespace-nowrap">
-                Employee ID
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                EMPLOYEE ID
               </th>
-              <th className="py-3 px-3.5 font-semibold text-[11px] text-slate-500 whitespace-nowrap">
-                Employee Name
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                EMPLOYEE NAME
               </th>
-              <th className="py-3 px-3.5 font-semibold text-[11px] text-slate-500 whitespace-nowrap">
-                Resignation Date
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                RESIGNATION DATE
               </th>
-              <th className="py-3 px-3.5 font-semibold text-[11px] text-slate-500 whitespace-nowrap">
-                Approval Date
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                APPROVAL DATE
               </th>
-              <th className="py-3 px-3.5 font-semibold text-[11px] text-slate-500 whitespace-nowrap text-center">
-                Notice Period Days
+              <th className="px-[14px] py-[12px] text-center whitespace-nowrap">
+                NOTICE PERIOD DAYS
               </th>
-              <th className="py-3 px-3.5 font-semibold text-[11px] text-slate-500 whitespace-nowrap">
-                Last Working Day
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                LAST WORKING DAY
               </th>
-              <th className="py-3 px-3.5 font-semibold text-[11px] text-slate-500 whitespace-nowrap">
-                Exit Type
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                EXIT TYPE
               </th>
-              <th className="py-3 px-3.5 font-semibold text-[11px] text-slate-500 whitespace-nowrap">
-                Reason
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                REASON
               </th>
-              <th className="py-3 px-3.5 font-semibold text-[11px] text-slate-500 whitespace-nowrap">
-                Exit Status
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                EXIT STATUS
               </th>
-              <th className="py-3 px-3.5 font-semibold text-[11px] text-slate-500 whitespace-nowrap">
-                Assets Returned
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                ASSETS RETURNED
               </th>
-              <th className="py-3 px-3.5 font-semibold text-[11px] text-slate-500 whitespace-nowrap">
-                Full & Final Status
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                FULL & FINAL STATUS
               </th>
-              <th className="py-3 px-3.5 font-semibold text-[11px] text-slate-500 whitespace-nowrap">
-                Notes
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                NOTES
               </th>
-              <th className="py-3 px-3.5 font-semibold text-[11px] text-slate-500 whitespace-nowrap">
-                Notice Completion Date
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                NOTICE COMPLETION DATE
               </th>
-              <th className="py-3 px-3.5 font-semibold text-[11px] text-slate-500 whitespace-nowrap">
-                Exit Readiness
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                EXIT READINESS
               </th>
-              <th className="py-3 px-3.5 font-semibold text-[11px] text-slate-500 whitespace-nowrap text-center sticky right-0 bg-[#F8FAFC]">
-                Actions
+              <th className="px-[14px] py-[12px] text-center whitespace-nowrap sticky right-0 bg-[#F8FAFC]">
+                ACTIONS
               </th>
             </tr>
           </thead>
@@ -384,7 +391,7 @@ export const EmployeeExitTable: React.FC<EmployeeExitTableProps> = ({
                     <StatusDropdownMenu
                       currentStatus={r.exitStatus}
                       options={EXIT_STATUS_CONFIGS}
-                      headerTitle="CHANGE EXIT STATUS"
+                      headerTitle="CHANGE STATE"
                       onSelect={(newStatus) => onUpdateStatus?.(r.id, 'exitStatus', newStatus)}
                     />
                   </td>
@@ -495,10 +502,10 @@ export const EmployeeExitTable: React.FC<EmployeeExitTableProps> = ({
                   key={p}
                   type="button"
                   onClick={() => onPageChange(p)}
-                  className={`w-8 h-8 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  className={`w-8 h-8 rounded-lg text-xs flex items-center justify-center transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-[#4338CA] text-white shadow-2xs'
-                      : 'bg-white border border-[#E2E8F0] text-slate-700 hover:bg-slate-50 shadow-2xs'
+                      ? 'bg-[#4F46E5] text-white font-semibold shadow-xs'
+                      : 'text-slate-700 hover:bg-slate-100 font-medium'
                   }`}
                 >
                   {p}

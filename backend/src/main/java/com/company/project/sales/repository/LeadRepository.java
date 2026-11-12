@@ -35,4 +35,25 @@ public interface LeadRepository extends JpaRepository<LeadEntity, String>, JpaSp
 
     @Query(value = "SELECT COALESCE(MAX(NULLIF(regexp_replace(id, '^L-[0-9]{4}-', ''), '')), '0')::bigint FROM leads WHERE id LIKE :prefixPattern", nativeQuery = true)
     Long findMaxSequenceByPrefix(@Param("prefixPattern") String prefixPattern);
+
+    // Sales Dashboard Aggregations
+    @Query("SELECT COUNT(l) FROM LeadEntity l WHERE l.leadDate >= :start AND l.leadDate <= :end")
+    long countLeadsInPeriod(@Param("start") LocalDate start, @Param("end") LocalDate end);
+
+    @Query("SELECT COUNT(l) FROM LeadEntity l WHERE l.leadDate >= :start AND l.leadDate <= :end AND LOWER(l.status) NOT IN ('won', 'lost') AND LOWER(l.stage) NOT IN ('won', 'closed won', 'converted', 'lost', 'closed lost')")
+    long countOpenLeadsInPeriod(@Param("start") LocalDate start, @Param("end") LocalDate end);
+
+    @Query("SELECT COUNT(l) FROM LeadEntity l WHERE l.leadDate >= :start AND l.leadDate <= :end AND (LOWER(l.status) = 'won' OR LOWER(l.stage) IN ('won', 'closed won', 'converted'))")
+    long countWonLeadsInPeriod(@Param("start") LocalDate start, @Param("end") LocalDate end);
+
+    @Query("SELECT COUNT(l) FROM LeadEntity l WHERE l.leadDate >= :start AND l.leadDate <= :end AND (LOWER(l.status) = 'lost' OR LOWER(l.stage) IN ('lost', 'closed lost'))")
+    long countLostLeadsInPeriod(@Param("start") LocalDate start, @Param("end") LocalDate end);
+
+    // Relationship-Based Funnel: Count distinct eligible leads that have at least one linked opportunity
+    @Query("SELECT COUNT(DISTINCT l.id) FROM LeadEntity l WHERE l.leadDate >= :start AND l.leadDate <= :end AND EXISTS (SELECT 1 FROM com.company.project.dashboard.entity.Opportunity o WHERE o.leadId = l.id)")
+    long countDistinctLeadsWithLinkedOpportunities(@Param("start") LocalDate start, @Param("end") LocalDate end);
+
+    // Relationship-Based Funnel: Count distinct eligible leads that have at least one linked contract (Overall Conversion)
+    @Query("SELECT COUNT(DISTINCT l.id) FROM LeadEntity l WHERE l.leadDate >= :start AND l.leadDate <= :end AND EXISTS (SELECT 1 FROM com.company.project.dashboard.entity.Opportunity o WHERE o.leadId = l.id AND EXISTS (SELECT 1 FROM com.company.project.proposals.entity.ProposalEntity p WHERE p.opportunityId = o.opportunityId AND EXISTS (SELECT 1 FROM com.company.project.dashboard.entity.Contract c WHERE c.proposalId = p.id)))")
+    long countDistinctLeadsWithLinkedContracts(@Param("start") LocalDate start, @Param("end") LocalDate end);
 }

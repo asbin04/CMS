@@ -204,4 +204,11 @@ export const API_ENDPOINTS = {
     NEXT_ID: '/finance/cash-flows/next-id',
     EXPORT: '/finance/cash-flows/export',
   },
+  REPORTS: {
+    SALES_DASHBOARD: '/reports/sales-dashboard',
+    SALES_DASHBOARD_KPIS: '/reports/sales-dashboard/kpis',
+    SALES_DASHBOARD_PERFORMANCE: '/reports/sales-dashboard/performance',
+    SALES_DASHBOARD_FUNNEL: '/reports/sales-dashboard/funnel',
+    SALES_DASHBOARD_EXPORT: '/reports/sales-dashboard/export',
+  },
 };

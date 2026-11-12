@@ -67,8 +67,19 @@ export const TableActionMenu: React.FC<TableActionMenuProps> = ({
     const spaceBelow = vh - rect.bottom;
     const spaceAbove = rect.top;
 
-    // Open upward if insufficient space below and more space available above
-    const openUpward = spaceBelow < dropdownHeight + 10 && spaceAbove > spaceBelow;
+    // Detect if within a table or scroll container whose bottom boundary is near
+    const tableContainer = buttonRef.current.closest('.table-horizontal-scroll, table, tbody');
+    let containerSpaceBelow = spaceBelow;
+    if (tableContainer) {
+      const containerRect = tableContainer.getBoundingClientRect();
+      containerSpaceBelow = containerRect.bottom - rect.bottom;
+    }
+
+    // Open upward if insufficient space below in table container or viewport, and space is available above
+    const neededSpace = dropdownHeight + 10;
+    const isConstrainedBelow = containerSpaceBelow < neededSpace || spaceBelow < neededSpace;
+    const canFitAbove = spaceAbove >= neededSpace;
+    const openUpward = isConstrainedBelow ? canFitAbove || spaceAbove > spaceBelow : false;
 
     const top = openUpward
       ? Math.max(8, rect.top - dropdownHeight - 4)

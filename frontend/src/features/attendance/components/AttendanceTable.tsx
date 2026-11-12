@@ -1,6 +1,16 @@
-import React, { useState } from 'react';
-import { ChevronDown, ChevronLeft, ChevronRight, Eye, Edit, Trash2, MoreVertical } from 'lucide-react';
+import React from 'react';
+import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { AttendanceRecord, AttendanceSortOption } from '../types/attendance';
+import { StatusDropdownMenu, StatusItemConfig } from '@/components/ui/StatusDropdownMenu';
+import { TableActionMenu } from '@/components/ui/TableActionMenu';
+
+export const ATTENDANCE_STATUS_CONFIGS: StatusItemConfig[] = [
+  { value: 'Present', label: 'Present', dotColor: '#059669', textColor: '#059669' },
+  { value: 'Half Day', label: 'Half Day', dotColor: '#F59E0B', textColor: '#D97706' },
+  { value: 'Late', label: 'Late', dotColor: '#EF4444', textColor: '#EF4444' },
+  { value: 'Absent', label: 'Absent', dotColor: '#EF4444', textColor: '#EF4444' },
+  { value: 'Leave', label: 'Leave', dotColor: '#2563EB', textColor: '#2563EB' },
+];
 
 interface AttendanceTableProps {
   records: AttendanceRecord[];
@@ -14,6 +24,7 @@ interface AttendanceTableProps {
   onViewRecord: (record: AttendanceRecord) => void;
   onEditRecord: (record: AttendanceRecord) => void;
   onDeleteRecord: (id: string) => void;
+  onUpdateStatus?: (recordId: string, newStatus: string) => void;
 }
 
 export const AttendanceTable: React.FC<AttendanceTableProps> = ({
@@ -28,9 +39,8 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
   onViewRecord,
   onEditRecord,
   onDeleteRecord,
+  onUpdateStatus,
 }) => {
-  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
-
   // Status Badge Pill Styling
   const getStatusBadgeStyle = (status: string) => {
     switch (status) {
@@ -190,12 +200,13 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
         <h2
           style={{
             fontFamily: "'Inter', sans-serif",
-            fontSize: '16px',
+            fontSize: '14px',
             fontWeight: 700,
-            lineHeight: '24px',
+            lineHeight: '20px',
             color: '#0F172A',
             margin: 0,
           }}
+          className="text-[14px] font-bold text-[#0F172A] leading-5 m-0"
         >
           Attendance Records ({totalCount.toLocaleString()})
         </h2>
@@ -272,57 +283,51 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
         >
           {/* Header Row - Matching Exact Image Headers */}
           <thead>
-            <tr
-              style={{
-                height: '44px',
-                backgroundColor: '#FFFFFF',
-                borderBottom: '1px solid #E2E8F0',
-              }}
-            >
-              <th style={{ padding: '12px 18px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
-                Attendance ID
+            <tr className="h-[42px] bg-[#F8FAFC]/80 border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.55px] select-none">
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                ATTENDANCE ID
               </th>
-              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
-                Date
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                DATE
               </th>
-              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
-                Employee ID
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                EMPLOYEE ID
               </th>
-              <th style={{ padding: '12px 18px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
-                Employee Name
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                EMPLOYEE NAME
               </th>
-              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
-                Status
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                STATUS
               </th>
-              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
-                Check In
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                CHECK IN
               </th>
-              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
-                Check Out
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                CHECK OUT
               </th>
-              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
-                Work Hours
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                WORK HOURS
               </th>
-              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
-                Overtime Hours
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                OVERTIME HOURS
               </th>
-              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
-                Day Type
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                DAY TYPE
               </th>
-              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
-                Paid Day Equivalent
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                PAID DAY EQUIVALENT
               </th>
-              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
-                Late Flag
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                LATE FLAG
               </th>
-              <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
-                Overtime Value
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                OVERTIME VALUE
               </th>
-              <th style={{ padding: '12px 18px', fontSize: '12px', fontWeight: 600, color: '#64748B', whiteSpace: 'nowrap' }}>
-                Remarks
+              <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
+                REMARKS
               </th>
-              <th style={{ width: '56px', padding: '12px 14px', fontSize: '12px', fontWeight: 600, color: '#64748B', textAlign: 'center', whiteSpace: 'nowrap' }}>
-                Actions
+              <th className="px-[14px] py-[12px] text-center whitespace-nowrap" style={{ width: '56px' }}>
+                ACTIONS
               </th>
             </tr>
           </thead>
@@ -341,7 +346,6 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
                 const dayTypeBadge = getDayTypeBadgeStyle(rec.dayType);
                 const lateFlagBadge = getLateFlagBadgeStyle(rec.lateFlag);
                 const avatarStyle = getAvatarStyle(rec.avatarColor);
-                const isMenuOpen = activeMenuId === rec.id;
 
                 return (
                   <tr
@@ -417,22 +421,14 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
                     </td>
 
                     {/* 5. STATUS */}
-                    <td style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>
-                      <div
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          padding: '3px 10px',
-                          borderRadius: '6px',
-                          fontSize: '11px',
-                          fontWeight: 600,
-                          lineHeight: '16px',
-                          ...statusBadge,
-                        }}
-                      >
-                        {rec.status}
-                      </div>
+                    <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                      <StatusDropdownMenu
+                        currentStatus={rec.status}
+                        options={ATTENDANCE_STATUS_CONFIGS}
+                        headerTitle="CHANGE STATE"
+                        onSelect={(newStatus) => onUpdateStatus?.(rec.id, newStatus)}
+                        disabled={!onUpdateStatus}
+                      />
                     </td>
 
                     {/* 6. CHECK IN */}
@@ -509,130 +505,19 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
                     </td>
 
                     {/* 15. ACTIONS (⋮ Menu) */}
-                    <td style={{ padding: '14px 14px', textAlign: 'center', position: 'relative' }}>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveMenuId(isMenuOpen ? null : rec.id);
+                    <td style={{ padding: '14px 14px', textAlign: 'center' }}>
+                      <TableActionMenu
+                        onViewDetails={() => onViewRecord(rec)}
+                        onEdit={() => onEditRecord(rec)}
+                        onDelete={() => {
+                          if (window.confirm(`Delete attendance record ${rec.id}?`)) {
+                            onDeleteRecord(rec.id);
+                          }
                         }}
-                        style={{
-                          width: '28px',
-                          height: '28px',
-                          borderRadius: '6px',
-                          border: 'none',
-                          backgroundColor: 'transparent',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          cursor: 'pointer',
-                          color: '#94A3B8',
-                        }}
-                        className="hover:bg-slate-100"
-                        title="Actions"
-                      >
-                        <MoreVertical size={16} />
-                      </button>
-
-                      {isMenuOpen && (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            right: '18px',
-                            top: '40px',
-                            width: '134px',
-                            backgroundColor: '#FFFFFF',
-                            border: '1px solid #E2E8F0',
-                            borderRadius: '8px',
-                            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
-                            zIndex: 50,
-                            padding: '4px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '2px',
-                          }}
-                        >
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setActiveMenuId(null);
-                              onViewRecord(rec);
-                            }}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '8px',
-                              padding: '6px 10px',
-                              fontSize: '12px',
-                              color: '#334155',
-                              backgroundColor: 'transparent',
-                              border: 'none',
-                              borderRadius: '4px',
-                              cursor: 'pointer',
-                              width: '100%',
-                              textAlign: 'left',
-                            }}
-                            className="hover:bg-slate-50"
-                          >
-                            <Eye size={13} color="#64748B" />
-                            <span>View Details</span>
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setActiveMenuId(null);
-                              onEditRecord(rec);
-                            }}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '8px',
-                              padding: '6px 10px',
-                              fontSize: '12px',
-                              color: '#334155',
-                              backgroundColor: 'transparent',
-                              border: 'none',
-                              borderRadius: '4px',
-                              cursor: 'pointer',
-                              width: '100%',
-                              textAlign: 'left',
-                            }}
-                            className="hover:bg-slate-50"
-                          >
-                            <Edit size={13} color="#2563EB" />
-                            <span>Edit Record</span>
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setActiveMenuId(null);
-                              if (window.confirm(`Delete attendance record ${rec.id}?`)) {
-                                onDeleteRecord(rec.id);
-                              }
-                            }}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '8px',
-                              padding: '6px 10px',
-                              fontSize: '12px',
-                              color: '#DC2626',
-                              backgroundColor: 'transparent',
-                              border: 'none',
-                              borderRadius: '4px',
-                              cursor: 'pointer',
-                              width: '100%',
-                              textAlign: 'left',
-                            }}
-                            className="hover:bg-red-50"
-                          >
-                            <Trash2 size={13} color="#DC2626" />
-                            <span>Delete</span>
-                          </button>
-                        </div>
-                      )}
+                        viewLabel="View Details"
+                        editLabel="Edit Record"
+                        deleteLabel="Delete"
+                      />
                     </td>
                   </tr>
                 );
@@ -663,130 +548,74 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
           <span style={{ fontWeight: 600, color: '#1E293B' }}>{totalCount.toLocaleString()}</span> records
         </div>
 
-        {/* Center / Right: Page Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          {/* Page Buttons: < 1 2 3 4 5 ... 125 > */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <button
-              type="button"
-              disabled={currentPage <= 1}
-              onClick={() => onPageChange(currentPage - 1)}
-              style={{
-                width: '30px',
-                height: '30px',
-                borderRadius: '6px',
-                border: '1px solid #E2E8F0',
-                backgroundColor: '#FFFFFF',
-                color: currentPage <= 1 ? '#CBD5E1' : '#64748B',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: currentPage <= 1 ? 'not-allowed' : 'pointer',
-              }}
-            >
-              <ChevronLeft size={15} />
-            </button>
+        {/* Page navigation controls */}
+        <div className="flex items-center gap-1.5">
+          {/* Previous Button */}
+          <button
+            type="button"
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage <= 1}
+            className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer bg-white"
+          >
+            <ChevronLeft size={16} />
+          </button>
 
-            {renderPaginationButtons().map((p, idx) => {
-              if (p === '...') {
-                return (
-                  <span
-                    key={`ellipsis-${idx}`}
-                    style={{
-                      width: '26px',
-                      textAlign: 'center',
-                      fontSize: '13px',
-                      color: '#94A3B8',
-                    }}
-                  >
-                    ...
-                  </span>
-                );
-              }
-
-              const pageNum = Number(p);
-              const isActive = pageNum === currentPage;
-
+          {/* Page Numbers */}
+          {renderPaginationButtons().map((p, idx) => {
+            if (p === '...') {
               return (
-                <button
-                  key={`page-${pageNum}`}
-                  type="button"
-                  onClick={() => onPageChange(pageNum)}
-                  style={{
-                    width: '30px',
-                    height: '30px',
-                    borderRadius: '6px',
-                    border: isActive ? 'none' : '1px solid #E2E8F0',
-                    backgroundColor: isActive ? '#2563EB' : '#FFFFFF',
-                    color: isActive ? '#FFFFFF' : '#334155',
-                    fontSize: '13px',
-                    fontWeight: isActive ? 600 : 500,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                  }}
+                <span
+                  key={`ellipsis-${idx}`}
+                  className="w-8 h-8 flex items-center justify-center text-xs text-slate-400 select-none"
                 >
-                  {pageNum}
-                </button>
+                  ...
+                </span>
               );
-            })}
+            }
 
-            <button
-              type="button"
-              disabled={currentPage >= totalPages}
-              onClick={() => onPageChange(currentPage + 1)}
-              style={{
-                width: '30px',
-                height: '30px',
-                borderRadius: '6px',
-                border: '1px solid #E2E8F0',
-                backgroundColor: '#FFFFFF',
-                color: currentPage >= totalPages ? '#CBD5E1' : '#64748B',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
-              }}
-            >
-              <ChevronRight size={15} />
-            </button>
-          </div>
+            const pageNum = Number(p);
+            const isActive = pageNum === currentPage;
+
+            return (
+              <button
+                key={`page-${pageNum}`}
+                type="button"
+                onClick={() => onPageChange(pageNum)}
+                className={`w-8 h-8 rounded-lg text-xs flex items-center justify-center transition-all cursor-pointer ${
+                  isActive
+                    ? 'bg-[#4F46E5] text-white font-semibold shadow-xs'
+                    : 'text-slate-700 hover:bg-slate-100 font-medium'
+                }`}
+              >
+                {pageNum}
+              </button>
+            );
+          })}
+
+          {/* Next Button */}
+          <button
+            type="button"
+            disabled={currentPage >= totalPages}
+            onClick={() => onPageChange(currentPage + 1)}
+            className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer bg-white"
+          >
+            <ChevronRight size={16} />
+          </button>
 
           {/* Page Size Selector */}
-          <div style={{ position: 'relative' }}>
+          <div className="relative ml-2">
             <select
               value={pageSize}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
-              style={{
-                appearance: 'none',
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #E2E8F0',
-                borderRadius: '8px',
-                padding: '6px 28px 6px 12px',
-                fontSize: '13px',
-                fontWeight: 500,
-                color: '#334155',
-                cursor: 'pointer',
-                outline: 'none',
-              }}
+              style={{ border: '1px solid #E2E8F0', borderRadius: '8px', backgroundColor: '#FFFFFF', boxSizing: 'border-box' }}
+              className="bg-white border border-[#E2E8F0] rounded-lg px-2.5 py-1.5 text-xs font-medium leading-4 text-slate-700 appearance-none pr-7 cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500/20"
             >
               <option value={10}>10 per page</option>
               <option value={20}>20 per page</option>
               <option value={50}>50 per page</option>
               <option value={100}>100 per page</option>
             </select>
-            <div
-              style={{
-                position: 'absolute',
-                right: '8px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                pointerEvents: 'none',
-              }}
-            >
-              <ChevronDown size={14} color="#94A3B8" />
-            </div>
+            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
           </div>
         </div>
       </div>

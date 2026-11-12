@@ -30,6 +30,8 @@ import { InvoicesPage } from '../features/invoices/pages/InvoicesPage';
 import { TimesheetsRequirementsPage } from '../features/projects/pages/TimesheetsRequirementsPage';
 import { DevelopmentPage } from '../features/development/pages/DevelopmentPage';
 import { CashFlowPage } from '../features/finance/cash-flow/pages/CashFlowPage';
+import { SalesDashboardPage } from '../features/reports/sales-dashboard';
+import { HrDashboardPage as HrReportsDashboardPage } from '../features/reports/hr-dashboard';
 import { LoginPage } from '../features/auth/pages/LoginPage';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
 
@@ -106,6 +108,10 @@ export const AppRouter: React.FC = () => {
         <Route path="/projects/timesheets-requirements" element={<Navigate to="/projects/timesheets" replace />} />
         <Route path="/projects/development" element={<DevelopmentPage />} />
         <Route path="/finance/cash-flow" element={<CashFlowPage />} />
+        <Route path="/reports/sales-dashboard" element={<SalesDashboardPage />} />
+        <Route path="/sales-dashboard" element={<Navigate to="/reports/sales-dashboard" replace />} />
+        <Route path="/reports/hr-dashboard" element={<HrReportsDashboardPage />} />
+        <Route path="/hr-dashboard" element={<Navigate to="/reports/hr-dashboard" replace />} />
 
         {/* Generate dynamic module engine routes for all other navigation items */}
         {navigationSections.map((section) =>
@@ -137,7 +143,9 @@ export const AppRouter: React.FC = () => {
                 item.path !== '/invoices' &&
                 item.path !== '/projects/timesheets' &&
                 item.path !== '/projects/development' &&
-                item.path !== '/finance/cash-flow'
+                item.path !== '/finance/cash-flow' &&
+                item.path !== '/reports/sales-dashboard' &&
+                item.path !== '/reports/hr-dashboard'
             )
             .map((item) => (
               <Route
