@@ -3,38 +3,8 @@ import { Routes, Route, Navigate, useOutletContext } from 'react-router-dom';
 import { AppLayout, AppLayoutContextType } from '../components/layout/AppLayout';
 import { ModulePlaceholder } from '../components/common/ModulePlaceholder';
 import { navigationSections, footerNavigationItems } from '../config/navigation';
-import { CeoDashboardPage } from '../features/dashboard/pages/CeoDashboardPage';
-import { ApprovalInboxPage } from '../features/dashboard/pages/ApprovalInboxPage';
-import { FollowUpQueuePage } from '../features/dashboard/pages/FollowUpQueuePage';
-import { OpportunitiesPage } from '../features/sales/pages/OpportunitiesPage';
-import { ContractsPage } from '../features/sales/pages/ContractsPage';
-import { ProposalsPage } from '../features/proposals/pages/ProposalsPage';
-import { CollectionsPage } from '../features/collections/pages/CollectionsPage';
-import { FinanceCollectionsPage } from '../features/collections/pages/FinanceCollectionsPage';
-import { EmployeeMasterPage } from '../features/hr/pages/EmployeeMasterPage';
-import { HrDashboardPage } from '../features/hr/pages/HrDashboardPage';
-import { LeadsPage } from '../features/sales/pages/LeadsPage';
-import { ClientsPage } from '../features/clients/pages/ClientsPage';
-import { AttendancePage } from '../features/attendance/pages/AttendancePage';
-import { LeaveManagementPage } from '../features/leave/pages/LeaveManagementPage';
-import { ProjectsTasksPage } from '../features/projects/pages/ProjectsTasksPage';
-import { UiuxPage } from '../features/projects/pages/UiuxPage';
-import { UatPage } from '../features/projects/pages/UatPage';
-import { EmployeeExitPage } from '../features/hr/pages/EmployeeExitPage';
-import { PayrollSalaryPage } from '../features/hr/pages/PayrollSalaryPage';
-import { PaymentsPage } from '../features/finance/payments/pages/PaymentsPage';
-import { ExpensesPage } from '../features/finance/pages/ExpensesPage';
-import { SupportTicketsPage } from '../features/support/pages/SupportTicketsPage';
-import { AmcSlaPage } from '../features/support/pages/AmcSlaPage';
-import { InvoicesPage } from '../features/invoices/pages/InvoicesPage';
-import { TimesheetsRequirementsPage } from '../features/projects/pages/TimesheetsRequirementsPage';
-import { DevelopmentPage } from '../features/development/pages/DevelopmentPage';
-import { CashFlowPage } from '../features/finance/cash-flow/pages/CashFlowPage';
-import { SalesDashboardPage } from '../features/reports/sales-dashboard';
-import { HrDashboardPage as HrReportsDashboardPage } from '../features/reports/hr-dashboard';
 import { LoginPage } from '../features/auth/pages/LoginPage';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
-import { LoginPage } from '../features/auth/pages/LoginPage';
 
 const CeoDashboardPage = lazy(() =>
   import('../features/dashboard/pages/CeoDashboardPage').then((m) => ({ default: m.CeoDashboardPage }))
@@ -136,6 +106,15 @@ const SettingsPage = lazy(() =>
   import('../features/settings/pages/SettingsPage').then((m) => ({
     default: m.SettingsPage,
   }))
+);
+const CashFlowPage = lazy(() =>
+  import('../features/finance/cash-flow/pages/CashFlowPage').then((m) => ({ default: m.CashFlowPage }))
+);
+const SalesDashboardPage = lazy(() =>
+  import('../features/reports/sales-dashboard').then((m) => ({ default: m.SalesDashboardPage }))
+);
+const HrReportsDashboardPage = lazy(() =>
+  import('../features/reports/hr-dashboard').then((m) => ({ default: m.HrDashboardPage }))
 );
 
 const CeoDashboardRoute: React.FC = () => {
