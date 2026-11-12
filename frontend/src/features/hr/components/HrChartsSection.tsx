@@ -23,7 +23,7 @@ export const HrChartsSection: React.FC<HrChartsSectionProps> = ({
 }) => {
   const barData: BarDataPoint[] = generateHeadcountChartData(employees);
   const donutData = generateAttendanceDonutData(attendance);
-  const trendData = generateMonthlyCtcTrendData();
+  const trendData = generateMonthlyCtcTrendData(employees);
 
   return (
     <div className="flex flex-col gap-5 animate-fade-in">
@@ -61,7 +61,7 @@ export const HrChartsSection: React.FC<HrChartsSectionProps> = ({
             <div className="flex items-center justify-center py-2">
               <UniversalDonutChart
                 data={donutData}
-                centerPrimaryText={String(attendance.length * 100)}
+                centerPrimaryText={String(attendance.length)}
                 centerSecondaryText="Total Logs"
                 showLegend={true}
               />

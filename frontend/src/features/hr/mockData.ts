@@ -429,10 +429,18 @@ export function calculateHrMetrics(
 }
 
 /**
- * Generate Chart Data from the live filtered records
+ * Generate Chart Data dynamically from the live filtered records
  */
 export function generateHeadcountChartData(employees: EmployeeRecord[]) {
-  const departments: Department[] = ['Engineering', 'Sales', 'Product', 'Design', 'HR', 'Finance'];
+  const deptSet = new Set<Department>();
+  employees.forEach((e) => {
+    if (e.department) deptSet.add(e.department);
+  });
+  const departments: Department[] =
+    deptSet.size > 0
+      ? Array.from(deptSet)
+      : ['Engineering', 'Sales', 'Product', 'Design', 'HR', 'Finance'];
+
   return departments.map((dept) => {
     const active = employees.filter((e) => e.department === dept && e.status === 'Active').length;
     const onNotice = employees.filter((e) => e.department === dept && e.status === 'On Notice').length;
@@ -446,28 +454,80 @@ export function generateHeadcountChartData(employees: EmployeeRecord[]) {
 }
 
 export function generateAttendanceDonutData(attendance: AttendanceRecord[]) {
-  const present = attendance.filter((a) => a.status === 'Present').length;
-  const halfDay = attendance.filter((a) => a.status === 'Half Day').length;
-  const late = attendance.filter((a) => a.status === 'Late').length;
-  const absent = Math.max(1, 10 - (present + halfDay + late));
+  const present = attendance.filter((a) => (a.status || '').toLowerCase() === 'present').length;
+  const halfDay = attendance.filter((a) => (a.status || '').toLowerCase() === 'half day').length;
+  const late = attendance.filter(
+    (a) => (a.status || '').toLowerCase() === 'late' || Boolean((a as any).isLate)
+  ).length;
+  const leave = attendance.filter((a) => (a.status || '').toLowerCase() === 'leave').length;
+  const absent = attendance.filter((a) => (a.status || '').toLowerCase() === 'absent').length;
 
-  return [
-    { label: 'Present', value: present * 90 + 720, color: '#10B981' },
-    { label: 'Half Day', value: halfDay * 40 + 60, color: '#F59E0B' },
-    { label: 'Late Check-in', value: late * 40 + 80, color: '#EF4444' },
-    { label: 'Absent', value: absent * 20 + 30, color: '#94A3B8' },
-  ];
+  const slices = [
+    { label: 'Present', value: present, color: '#10B981' },
+    { label: 'Half Day', value: halfDay, color: '#F59E0B' },
+    { label: 'Late Check-in', value: late, color: '#EF4444' },
+    { label: 'Leave', value: leave, color: '#3B82F6' },
+    { label: 'Absent', value: absent, color: '#94A3B8' },
+  ].filter((s) => s.value > 0);
+
+  return slices.length > 0 ? slices : [{ label: 'No Records', value: 1, color: '#E2E8F0' }];
 }
 
-export function generateMonthlyCtcTrendData() {
-  return [
-    { label: 'Oct 24', 'Monthly CTC (₹k)': 1120, 'Headcount': 8 },
-    { label: 'Nov 24', 'Monthly CTC (₹k)': 1250, 'Headcount': 9 },
-    { label: 'Dec 24', 'Monthly CTC (₹k)': 1250, 'Headcount': 9 },
-    { label: 'Jan 25', 'Monthly CTC (₹k)': 1375, 'Headcount': 10 },
-    { label: 'Feb 25', 'Monthly CTC (₹k)': 1515, 'Headcount': 11 },
-    { label: 'Mar 25', 'Monthly CTC (₹k)': 1745, 'Headcount': 12 },
-  ];
+function parseDateForTrend(dateStr?: string): Date | null {
+  if (!dateStr || dateStr === '-') return null;
+  const parts = dateStr.trim().split(/\s+/);
+  if (parts.length === 3) {
+    const day = parseInt(parts[0], 10);
+    const mStr = parts[1].toLowerCase().slice(0, 3);
+    const yr = parseInt(parts[2], 10);
+    const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+    const mIdx = months.indexOf(mStr);
+    if (!isNaN(day) && mIdx !== -1 && !isNaN(yr)) {
+      return new Date(yr, mIdx, day);
+    }
+  }
+  const d = new Date(dateStr);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+export function generateMonthlyCtcTrendData(employees: EmployeeRecord[] = []) {
+  if (!employees || employees.length === 0) {
+    return [];
+  }
+
+  // Generate 6 months ending with current month
+  const months: { label: string; year: number; month: number }[] = [];
+  const now = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const label = d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+    months.push({ label, year: d.getFullYear(), month: d.getMonth() });
+  }
+
+  return months.map(({ label, year, month }) => {
+    const endOfMonth = new Date(year, month + 1, 0);
+
+    const eligible = employees.filter((e) => {
+      if (e.status !== 'Active' && e.status !== 'On Notice') return false;
+      const joined = parseDateForTrend(e.joiningDate);
+      return !joined || joined <= endOfMonth;
+    });
+
+    const headcount = eligible.length;
+    const totalCtc = eligible.reduce((sum, e) => {
+      const ctc =
+        typeof e.monthlyCtc === 'number'
+          ? e.monthlyCtc
+          : parseFloat(String(e.monthlyCtc || 0).replace(/[^0-9.]/g, '')) || 0;
+      return sum + ctc;
+    }, 0);
+
+    return {
+      label,
+      'Monthly CTC (₹k)': Math.round(totalCtc / 1000),
+      Headcount: headcount,
+    };
+  });
 }
 
 export const INITIAL_HR_DASHBOARD_DATA: HrDashboardData = {

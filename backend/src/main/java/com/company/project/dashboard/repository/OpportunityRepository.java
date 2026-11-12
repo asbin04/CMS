@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,4 +42,28 @@ public interface OpportunityRepository extends JpaRepository<Opportunity, Long> 
 
     @Query("SELECT COALESCE(SUM(o.weightedPipeline), 0) FROM Opportunity o")
     BigDecimal sumWeightedPipeline();
+
+    // Sales Dashboard Aggregations
+    @Query("SELECT COUNT(o) FROM Opportunity o WHERE o.createdAt >= :start AND o.createdAt < :end")
+    long countOpportunitiesInPeriod(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COUNT(o) FROM Opportunity o WHERE o.createdAt >= :start AND o.createdAt < :end AND LOWER(o.status) IN ('open', 'in progress') AND LOWER(o.stage) NOT IN ('closed won', 'closed lost')")
+    long countOpenOpportunitiesInPeriod(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COALESCE(SUM(o.estimatedValue), 0) FROM Opportunity o WHERE o.createdAt >= :start AND o.createdAt < :end AND LOWER(o.status) IN ('open', 'in progress') AND LOWER(o.stage) NOT IN ('closed won', 'closed lost')")
+    BigDecimal sumPipelineValueInPeriod(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COALESCE(SUM(o.estimatedValue * (CAST(o.probability AS double) / 100.0)), 0) FROM Opportunity o WHERE o.createdAt >= :start AND o.createdAt < :end AND LOWER(o.status) IN ('open', 'in progress') AND LOWER(o.stage) NOT IN ('closed won', 'closed lost')")
+    BigDecimal sumWeightedPipelineInPeriod(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COALESCE(SUM(o.estimatedValue), 0) FROM Opportunity o WHERE o.createdAt >= :start AND o.createdAt < :end AND (LOWER(o.stage) IN ('closed won', 'won') OR LOWER(o.status) IN ('closed won', 'won'))")
+    BigDecimal sumWonOpportunityValueInPeriod(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    // Relationship-Based Funnel: Count distinct opportunities linked to leads in cohort
+    @Query("SELECT COUNT(DISTINCT o.opportunityId) FROM Opportunity o WHERE o.leadId IN (SELECT l.id FROM com.company.project.sales.entity.LeadEntity l WHERE l.leadDate >= :start AND l.leadDate <= :end)")
+    long countDistinctLinkedOpportunitiesByLeadCohort(@Param("start") LocalDate start, @Param("end") LocalDate end);
+
+    // Relationship-Based Funnel: Count distinct cohort opportunities that have at least one linked proposal
+    @Query("SELECT COUNT(DISTINCT o.opportunityId) FROM Opportunity o WHERE o.leadId IN (SELECT l.id FROM com.company.project.sales.entity.LeadEntity l WHERE l.leadDate >= :start AND l.leadDate <= :end) AND EXISTS (SELECT 1 FROM com.company.project.proposals.entity.ProposalEntity p WHERE p.opportunityId = o.opportunityId)")
+    long countDistinctOpportunitiesWithLinkedProposals(@Param("start") LocalDate start, @Param("end") LocalDate end);
 }

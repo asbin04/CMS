@@ -247,19 +247,18 @@ export const CashFlowPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-full bg-[#F8FAFC] p-4 sm:p-6 lg:p-7">
-      <div className="max-w-[1280px] mx-auto">
-        {/* Page Header */}
-        <CashFlowHeader
-          lastUpdated={lastUpdated}
-          isRefreshing={isRefreshing}
-          onRefresh={handleRefresh}
-          onExport={handleExport}
-          onAddCashFlow={() => setIsAddModalOpen(true)}
-        />
+    <div className="min-h-full bg-[#F8FAFC] p-4 sm:p-6 lg:p-7 w-full flex flex-col font-sans">
+      {/* Page Header */}
+      <CashFlowHeader
+        lastUpdated={lastUpdated}
+        isRefreshing={isRefreshing}
+        onRefresh={handleRefresh}
+        onExport={handleExport}
+        onAddCashFlow={() => setIsAddModalOpen(true)}
+      />
 
-        {/* Tab Navigation */}
-        <CashFlowTabs activeTab={activeTab} onTabChange={setActiveTab} />
+      {/* Tab Navigation */}
+      <CashFlowTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
         {/* Tab 1: Cash Flow (Main Dashboard) */}
         {activeTab === 'cash-flow' && (
@@ -421,7 +420,6 @@ export const CashFlowPage: React.FC = () => {
 
         {/* Toast Notification Popup (Matching CMS Standard) */}
         <ToastNotification toasts={toasts} onDismiss={removeToast} position="top-right" />
-      </div>
     </div>
   );
 };

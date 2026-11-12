@@ -7,7 +7,7 @@ interface RecentActivitiesSectionProps {
 }
 
 export const RecentActivitiesSection: React.FC<RecentActivitiesSectionProps> = ({
-  activities = INITIAL_RECENT_ACTIVITIES,
+  activities = [],
 }) => {
   // Only display Leave, Attendance, Employee activities and filter out old/seed items
   const validActivities = activities.filter(

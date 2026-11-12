@@ -2,7 +2,37 @@ import React, { lazy } from 'react';
 import { Routes, Route, Navigate, useOutletContext } from 'react-router-dom';
 import { AppLayout, AppLayoutContextType } from '../components/layout/AppLayout';
 import { ModulePlaceholder } from '../components/common/ModulePlaceholder';
-import { navigationSections } from '../config/navigation';
+import { navigationSections, footerNavigationItems } from '../config/navigation';
+import { CeoDashboardPage } from '../features/dashboard/pages/CeoDashboardPage';
+import { ApprovalInboxPage } from '../features/dashboard/pages/ApprovalInboxPage';
+import { FollowUpQueuePage } from '../features/dashboard/pages/FollowUpQueuePage';
+import { OpportunitiesPage } from '../features/sales/pages/OpportunitiesPage';
+import { ContractsPage } from '../features/sales/pages/ContractsPage';
+import { ProposalsPage } from '../features/proposals/pages/ProposalsPage';
+import { CollectionsPage } from '../features/collections/pages/CollectionsPage';
+import { FinanceCollectionsPage } from '../features/collections/pages/FinanceCollectionsPage';
+import { EmployeeMasterPage } from '../features/hr/pages/EmployeeMasterPage';
+import { HrDashboardPage } from '../features/hr/pages/HrDashboardPage';
+import { LeadsPage } from '../features/sales/pages/LeadsPage';
+import { ClientsPage } from '../features/clients/pages/ClientsPage';
+import { AttendancePage } from '../features/attendance/pages/AttendancePage';
+import { LeaveManagementPage } from '../features/leave/pages/LeaveManagementPage';
+import { ProjectsTasksPage } from '../features/projects/pages/ProjectsTasksPage';
+import { UiuxPage } from '../features/projects/pages/UiuxPage';
+import { UatPage } from '../features/projects/pages/UatPage';
+import { EmployeeExitPage } from '../features/hr/pages/EmployeeExitPage';
+import { PayrollSalaryPage } from '../features/hr/pages/PayrollSalaryPage';
+import { PaymentsPage } from '../features/finance/payments/pages/PaymentsPage';
+import { ExpensesPage } from '../features/finance/pages/ExpensesPage';
+import { SupportTicketsPage } from '../features/support/pages/SupportTicketsPage';
+import { AmcSlaPage } from '../features/support/pages/AmcSlaPage';
+import { InvoicesPage } from '../features/invoices/pages/InvoicesPage';
+import { TimesheetsRequirementsPage } from '../features/projects/pages/TimesheetsRequirementsPage';
+import { DevelopmentPage } from '../features/development/pages/DevelopmentPage';
+import { CashFlowPage } from '../features/finance/cash-flow/pages/CashFlowPage';
+import { SalesDashboardPage } from '../features/reports/sales-dashboard';
+import { HrDashboardPage as HrReportsDashboardPage } from '../features/reports/hr-dashboard';
+import { LoginPage } from '../features/auth/pages/LoginPage';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
 import { LoginPage } from '../features/auth/pages/LoginPage';
 
@@ -185,11 +215,11 @@ export const AppRouter: React.FC = () => {
         <Route path="/projects/timesheets" element={<TimesheetsRequirementsPage />} />
         <Route path="/projects/timesheets-requirements" element={<Navigate to="/projects/timesheets" replace />} />
         <Route path="/projects/development" element={<DevelopmentPage />} />
-        <Route path="/projects/deployment-go-live" element={<DeploymentPage />} />
-        <Route path="/deployment-go-live" element={<Navigate to="/projects/deployment-go-live" replace />} />
-        <Route path="/reports/project-dashboard" element={<ProjectDashboardPage />} />
-        <Route path="/project-dashboard" element={<Navigate to="/reports/project-dashboard" replace />} />
-        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/finance/cash-flow" element={<CashFlowPage />} />
+        <Route path="/reports/sales-dashboard" element={<SalesDashboardPage />} />
+        <Route path="/sales-dashboard" element={<Navigate to="/reports/sales-dashboard" replace />} />
+        <Route path="/reports/hr-dashboard" element={<HrReportsDashboardPage />} />
+        <Route path="/hr-dashboard" element={<Navigate to="/reports/hr-dashboard" replace />} />
 
         {/* Generate dynamic module engine routes for all other navigation items */}
         {navigationSections.map((section) =>
@@ -225,25 +255,9 @@ export const AppRouter: React.FC = () => {
                 item.path !== '/invoices' &&
                 item.path !== '/projects/timesheets' &&
                 item.path !== '/projects/development' &&
-                item.path !== '/projects/tasks' &&
-                item.path !== '/projects' &&
-                item.path !== '/projects/ui-ux' &&
-                item.path !== '/ui-ux' &&
-                item.path !== '/projects/uat' &&
-                item.path !== '/uat' &&
-                item.path !== '/hr/employee-exit' &&
-                item.path !== '/hr/payroll' &&
-                item.path !== '/hr/payroll-salary' &&
-                item.path !== '/finance/payments' &&
-                item.path !== '/payments' &&
-                item.path !== '/finance/expenses' &&
-                item.path !== '/expenses' &&
-                item.path !== '/support/tickets' &&
-                item.path !== '/tickets' &&
-                item.path !== '/support/amc-sla' &&
-                item.path !== '/amc-sla' &&
-                item.path !== '/projects/deployment-go-live' &&
-                item.path !== '/deployment-go-live'
+                item.path !== '/finance/cash-flow' &&
+                item.path !== '/reports/sales-dashboard' &&
+                item.path !== '/reports/hr-dashboard'
             )
             .map((item) => (
               <Route

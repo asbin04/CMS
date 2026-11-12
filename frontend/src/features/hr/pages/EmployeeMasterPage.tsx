@@ -21,6 +21,14 @@ import { EmployeeData, EmployeeSummaryData, CreateEmployeePayload } from '@/type
 import { employeeService } from '@/services/employeeService';
 import { AddEmployeeModal } from '../components/AddEmployeeModal';
 import { EmployeeDetailModal } from '../components/EmployeeDetailModal';
+import { StatusDropdownMenu, StatusItemConfig } from '@/components/ui/StatusDropdownMenu';
+
+const EMPLOYEE_STATUS_CONFIGS: StatusItemConfig[] = [
+  { value: 'Active', label: 'Active', dotColor: '#059669', textColor: '#059669' },
+  { value: 'On Notice', label: 'On Notice', dotColor: '#F59E0B', textColor: '#D97706' },
+  { value: 'Probation', label: 'Probation', dotColor: '#2563EB', textColor: '#2563EB' },
+  { value: 'Inactive', label: 'Inactive', dotColor: '#EF4444', textColor: '#EF4444' },
+];
 
 const formatCurrency = (val: number | string | undefined | null): string => {
   if (val === undefined || val === null || val === '') return '₹ 0';
@@ -761,7 +769,7 @@ export const EmployeeMasterPage: React.FC = () => {
 
           {/* Horizontal Scrollable Table Wrapper: 26 Columns with Exact Figma Layout */}
           <div className="overflow-x-auto horizontal-table-scroll">
-            <table className="table-fixed border-collapse" style={{ width: '3311.64px', minWidth: '3311.64px' }}>
+            <table className="table-fixed border-collapse" style={{ width: '3430px', minWidth: '3430px' }}>
               <thead>
                 <tr className="h-[42px] bg-[#F8FAFC]/80 border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.55px] select-none">
                   {/* 1. EMPLOYEE ID */}
@@ -786,7 +794,7 @@ export const EmployeeMasterPage: React.FC = () => {
                   </th>
 
                   {/* 4. WORK EMAIL */}
-                  <th className="px-[14px] py-[12px] text-left" style={{ width: '189.17px' }}>
+                  <th className="px-[14px] py-[12px] text-left" style={{ width: '260px', minWidth: '240px' }}>
                     <div className="flex items-center gap-1">
                       <span>WORK EMAIL</span>
                       <span className="text-[#94A3B8] font-sans text-[10px]">⇅</span>
@@ -794,7 +802,7 @@ export const EmployeeMasterPage: React.FC = () => {
                   </th>
 
                   {/* 5. PHONE */}
-                  <th className="px-[14px] py-[12px] text-left" style={{ width: '128.53px' }}>
+                  <th className="px-[14px] py-[12px] text-left" style={{ width: '150px', minWidth: '140px' }}>
                     <div className="flex items-center gap-1">
                       <span>PHONE</span>
                       <span className="text-[#94A3B8] font-sans text-[10px]">⇅</span>
@@ -839,7 +847,7 @@ export const EmployeeMasterPage: React.FC = () => {
                   </th>
 
                   {/* 11. STATUS */}
-                  <th className="px-[14px] py-[12px] text-left" style={{ width: '98.28px' }}>
+                  <th className="px-[14px] py-[12px] text-left" style={{ width: '135px', minWidth: '130px' }}>
                     <div className="flex items-center gap-1">
                       <span>STATUS</span>
                       <span className="text-[#94A3B8] font-sans text-[10px]">⇅</span>
@@ -1000,15 +1008,19 @@ export const EmployeeMasterPage: React.FC = () => {
                         </td>
 
                         {/* 4. WORK EMAIL */}
-                        <td className="px-[14px] py-[16px] whitespace-nowrap" style={{ width: '189.17px' }}>
-                          <a href={`mailto:${emp.workEmail}`} className="text-[#2563EB] hover:underline font-normal leading-4">
+                        <td className="px-[14px] py-[16px] whitespace-nowrap" style={{ width: '260px', minWidth: '240px' }}>
+                          <a
+                            href={`mailto:${emp.workEmail}`}
+                            title={emp.workEmail}
+                            className="text-[#2563EB] hover:underline font-normal leading-4 block truncate max-w-[230px]"
+                          >
                             {emp.workEmail}
                           </a>
                         </td>
 
                         {/* 5. PHONE */}
-                        <td className="px-[14px] py-[16px] whitespace-nowrap text-[#475569] font-normal leading-4" style={{ width: '128.53px' }}>
-                          {emp.phone}
+                        <td className="px-[14px] py-[16px] whitespace-nowrap text-[#475569] font-normal leading-4" style={{ width: '150px', minWidth: '140px' }}>
+                          {emp.phone || '-'}
                         </td>
 
                         {/* 6. DEPARTMENT */}
@@ -1037,8 +1049,13 @@ export const EmployeeMasterPage: React.FC = () => {
                         </td>
 
                         {/* 11. STATUS */}
-                        <td className="px-[14px] py-[13.5px] whitespace-nowrap" style={{ width: '98.28px' }}>
-                          {getStatusBadge(emp.status)}
+                        <td className="px-[14px] py-[12px] whitespace-nowrap" style={{ width: '135px', minWidth: '130px' }}>
+                          <StatusDropdownMenu
+                            currentStatus={emp.status || 'Active'}
+                            options={EMPLOYEE_STATUS_CONFIGS}
+                            headerTitle="CHANGE STATE"
+                            onSelect={(newStatus) => handleUpdateEmployee(emp.id, { status: newStatus as any })}
+                          />
                         </td>
 
                         {/* 12. LOCATION */}
