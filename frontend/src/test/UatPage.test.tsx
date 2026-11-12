@@ -84,7 +84,7 @@ describe('UatPage Component', () => {
     expect(screen.getByDisplayValue('All Status')).toBeInTheDocument();
     expect(screen.getByDisplayValue('All')).toBeInTheDocument();
     expect(screen.getByDisplayValue('All incubation/Testers')).toBeInTheDocument();
-    expect(screen.getByText('Filters (0)')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Filters/i })).toBeInTheDocument();
     expect(screen.getByText('Clear Filters')).toBeInTheDocument();
   });
 
@@ -210,7 +210,7 @@ describe('UatPage Component', () => {
     });
 
     // Click Filters button -> closes all filters
-    const filterBtn = screen.getByRole('button', { name: /Filters \(/i });
+    const filterBtn = screen.getByRole('button', { name: /^Filters/i });
     fireEvent.click(filterBtn);
 
     expect(screen.queryByTestId('uat-filter-dropdowns-row')).not.toBeInTheDocument();

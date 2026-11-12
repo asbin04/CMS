@@ -156,7 +156,7 @@ export const UatFilterBar: React.FC<UatFilterBarProps> = ({
             aria-expanded={isFiltersOpen}
           >
             <SlidersHorizontal size={14} color="#64748B" />
-            <span>Filters ({activeFilterCount})</span>
+            <span>Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}</span>
           </button>
 
           <button

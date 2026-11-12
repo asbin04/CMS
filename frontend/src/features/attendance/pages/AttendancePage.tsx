@@ -413,19 +413,6 @@ export const AttendancePage: React.FC = () => {
 
         {/* Right Header Actions */}
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-          <span
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontSize: '12px',
-              fontWeight: 400,
-              color: '#64748B',
-              whiteSpace: 'nowrap',
-              marginRight: '2px',
-            }}
-          >
-            Last Updated: {lastRefreshed}
-          </span>
-
           {/* Refresh Button */}
           <button
             type="button"

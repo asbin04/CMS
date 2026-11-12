@@ -90,8 +90,6 @@ public class SupportTicketServiceImpl implements SupportTicketService {
                     .build();
         }
 
-        long open = allTickets.stream().filter(t -> t.getStatus() != null &&
-                (t.getStatus().equalsIgnoreCase("In Progress") || t.getStatus().equalsIgnoreCase("Pending") || t.getStatus().equalsIgnoreCase("Open"))).count();
         long resolved = allTickets.stream().filter(t -> t.getStatus() != null &&
                 (t.getStatus().equalsIgnoreCase("Resolved") || t.getStatus().equalsIgnoreCase("Closed"))).count();
         long breaches = allTickets.stream().filter(t -> t.getSlaStatus() != null &&

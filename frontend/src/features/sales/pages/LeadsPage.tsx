@@ -293,12 +293,9 @@ export const LeadsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Actions: Last Updated + Add Lead Button */}
+        {/* Right Actions: Refresh + Add Lead Button */}
         <div className="flex items-center gap-3 sm:gap-4">
           <div className="flex flex-row items-center gap-2 text-xs text-[#64748B]">
-            <span>
-              Last Updated: <strong className="font-semibold text-slate-700">{lastRefreshed}</strong>
-            </span>
             <button
               onClick={handleRefresh}
               disabled={isRefreshing}

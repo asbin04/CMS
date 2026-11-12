@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, act, within } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { Sidebar } from '../components/layout/Sidebar';
 
 describe('Sidebar Component - Search & Rail interaction', () => {
@@ -204,11 +204,11 @@ describe('Sidebar Component - Search & Rail interaction', () => {
     const searchDialog = screen.getByRole('dialog', { name: /navigation search/i });
     expect(searchDialog).toBeInTheDocument();
 
-    // Click on CEO Dashboard
-    const ceoRow = within(searchDialog).getByRole('link', { name: /ceo dashboard/i });
+    // Click on Admin Dashboard
+    const ceoRow = within(searchDialog).getByRole('link', { name: /admin dashboard/i });
     fireEvent.click(ceoRow);
 
-    // Verify localStorage has CEO Dashboard
+    // Verify localStorage has Admin Dashboard
     const stored = JSON.parse(localStorage.getItem('cms_recent_modules') || '[]');
     expect(stored).toContain('/management/ceo-dashboard');
   });
@@ -236,5 +236,34 @@ describe('Sidebar Component - Search & Rail interaction', () => {
     expect(collapseBtn).toBeInTheDocument();
     fireEvent.click(collapseBtn);
     expect(handleToggleCollapse).toHaveBeenCalledTimes(2);
+  });
+
+  it('renders Log out button below Settings and logs out to /login', () => {
+    localStorage.setItem('auth_token', 'test-token');
+    sessionStorage.setItem('auth_user_name', 'Admin');
+
+    render(
+      <MemoryRouter initialEntries={['/settings']}>
+        <Routes>
+          <Route path="/login" element={<div>Login Page</div>} />
+          <Route path="*" element={<Sidebar isCollapsed={false} />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    const settingsLink = screen.getByRole('link', { name: 'Settings' });
+    const logoutBtn = screen.getByRole('button', { name: 'Log out' });
+    expect(settingsLink).toBeInTheDocument();
+    expect(logoutBtn).toBeInTheDocument();
+    expect(
+      Boolean(settingsLink.compareDocumentPosition(logoutBtn) & Node.DOCUMENT_POSITION_FOLLOWING)
+    ).toBe(true);
+
+    fireEvent.click(logoutBtn);
+
+    expect(sessionStorage.getItem('logged_out')).toBe('true');
+    expect(localStorage.getItem('auth_token')).toBeNull();
+    expect(sessionStorage.getItem('auth_user_name')).toBeNull();
+    expect(screen.getByText('Login Page')).toBeInTheDocument();
   });
 });

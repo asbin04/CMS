@@ -22,8 +22,6 @@ public class InvoiceIdGeneratorService {
     private static final String REVERSAL_PREFIX = "REV";
 
     private static final Pattern INVOICE_ID_PATTERN = Pattern.compile("^INV-(\\d{4})-(\\d+)$");
-    private static final Pattern PAYMENT_ID_PATTERN = Pattern.compile("^PAY-(\\d{4})-(\\d+)$");
-    private static final Pattern REVERSAL_ID_PATTERN = Pattern.compile("^REV-(\\d{4})-(\\d+)$");
 
     private final JdbcTemplate jdbcTemplate;
     private final CollectionInvoiceRepository invoiceRepository;

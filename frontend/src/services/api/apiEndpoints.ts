@@ -137,6 +137,10 @@ export const API_ENDPOINTS = {
   PROJECTS: {
     BASE: '/projects',
     KPIS: '/projects/kpis',
+    PERFORMANCE_DASHBOARD: '/projects/performance/dashboard',
+    PERFORMANCE_SUMMARY: '/projects/performance/summary',
+    PERFORMANCE_PROFITABILITY: '/projects/performance/profitability',
+    PERFORMANCE_EXPORT: '/projects/performance/export',
     FILTERS: '/projects/filters',
     BY_ID: (id: string | number) => `/projects/${encodeURIComponent(String(id))}`,
     TASKS: '/projects/tasks',
@@ -208,5 +212,21 @@ export const API_ENDPOINTS = {
     SUGGESTED_OPENING_CASH: '/finance/cash-flows/suggested-opening-cash',
     NEXT_ID: '/finance/cash-flows/next-id',
     EXPORT: '/finance/cash-flows/export',
+  },
+  REPORTS: {
+    TRANSACTION_CONTROL: '/reports/transaction-control',
+    TRANSACTION_CONTROL_RECHECK: '/reports/transaction-control/recheck',
+  },
+  SETTINGS: {
+    BASE: '/settings',
+    PROFILE: '/settings/profile',
+    PASSWORD: '/settings/password',
+    MFA: '/settings/mfa',
+    SESSIONS: '/settings/sessions',
+    REVOKE_SESSION: (sessionId: string) => `/settings/sessions/${encodeURIComponent(sessionId)}/revoke`,
+    REVOKE_OTHER_SESSIONS: '/settings/sessions/revoke-others',
+    LOGIN_HISTORY: '/settings/login-history',
+    NOTIFICATIONS: '/settings/notifications',
+    APPEARANCE: '/settings/appearance',
   },
 };

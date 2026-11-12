@@ -82,6 +82,7 @@ interface TopNavProps {
   userName?: string;
   userRole?: string;
   userEmail?: string;
+  userAvatar?: string;
   onToggleMobileMenu?: () => void;
   onToggleSidebar?: () => void;
 }
@@ -93,12 +94,13 @@ export const TopNav: React.FC<TopNavProps> = ({
   onDateRangeChange,
   userName = '—',
   userRole = '—',
-  userEmail = '',
+  userAvatar = '',
   onToggleMobileMenu,
   onToggleSidebar,
 }) => {
   const navigate = useNavigate();
   const [isDateOpen, setIsDateOpen] = useState(false);
+  const [avatarLoadError, setAvatarLoadError] = useState(false);
   const [notifications, setNotifications] = useState<PortalNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [isLoadingNotifs, setIsLoadingNotifs] = useState<boolean>(false);
@@ -143,6 +145,10 @@ export const TopNav: React.FC<TopNavProps> = ({
   };
 
   useEffect(() => {
+    setAvatarLoadError(false);
+  }, [userAvatar]);
+
+  useEffect(() => {
     isStoppedRef.current = false;
     backoffRef.current = 15000;
     fetchLiveNotifications(true);
@@ -172,11 +178,9 @@ export const TopNav: React.FC<TopNavProps> = ({
     };
   }, []);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const dateRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
-  const profileRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -185,9 +189,6 @@ export const TopNav: React.FC<TopNavProps> = ({
       }
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
         setIsNotifOpen(false);
-      }
-      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
-        setIsProfileOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -640,10 +641,8 @@ export const TopNav: React.FC<TopNavProps> = ({
         </div>
 
         {/* User Profile */}
-        <div style={{ position: 'relative', flexShrink: 0 }} ref={profileRef}>
+        <div style={{ position: 'relative', flexShrink: 0 }}>
           <div
-            onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className="group hover:opacity-90 transition-opacity"
             style={{
               boxSizing: 'border-box',
               display: 'flex',
@@ -654,7 +653,6 @@ export const TopNav: React.FC<TopNavProps> = ({
               gap: '8px',
               width: 'auto',
               height: '32px',
-              cursor: 'pointer',
               userSelect: 'none',
               flex: 'none',
               order: 2,
@@ -697,8 +695,9 @@ export const TopNav: React.FC<TopNavProps> = ({
 
               {/* image 117 */}
               <img
-                src="/avatar.jpg"
-                alt="Akshit Ujjain"
+                src={(!avatarLoadError && userAvatar) ? userAvatar : '/avatar.jpg'}
+                alt={userName && userName !== '—' ? userName : 'User'}
+                onError={() => setAvatarLoadError(true)}
                 style={{
                   boxSizing: 'border-box',
                   width: '32px',
@@ -799,77 +798,7 @@ export const TopNav: React.FC<TopNavProps> = ({
                 </span>
               </div>
             </div>
-
-            {/* SVG: chevron */}
-            <svg
-              className="hidden sm:block"
-              style={{
-                width: '12px',
-                height: '12px',
-                color: '#94A3B8',
-                flex: 'none',
-                order: 2,
-                flexGrow: 0,
-                flexShrink: 0,
-                alignSelf: 'center',
-                marginLeft: '2px',
-              }}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#94A3B8"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
           </div>
-
-          {isProfileOpen && (
-            <div className="absolute right-0 mt-1.5 w-52 bg-white border border-[#E2E8F0] rounded-xl shadow-lg py-1 z-50">
-              <div className="px-3.5 py-2.5 border-b border-slate-100">
-                <p className="text-xs font-bold text-slate-900 leading-tight">
-                  {userName && userName !== '—' ? userName : 'Asbin'}
-                </p>
-                <p className="text-[11px] text-slate-500 truncate mt-0.5">
-                  {userEmail || (userName && userName.includes('@') ? userName : (userName && userName !== '—' ? `${userName.toLowerCase().replace(/\s+/g, '.')}@gmail.com` : 'asbin.t.s@gmail.com'))}
-                </p>
-              </div>
-              <div className="py-1">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsProfileOpen(false);
-                    navigate('/settings');
-                  }}
-                  className="w-full text-left px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 cursor-pointer"
-                >
-                  Settings
-                </button>
-              </div>
-              <div className="border-t border-slate-100 py-1">
-                <button
-                  type="button"
-                  onClick={() => {
-                    sessionStorage.setItem('logged_out', 'true');
-                    localStorage.removeItem('auth_token');
-                    localStorage.removeItem('auth_user_name');
-                    localStorage.removeItem('auth_user_role');
-                    localStorage.removeItem('auth_user_email');
-                    sessionStorage.removeItem('auth_token');
-                    sessionStorage.removeItem('auth_user_name');
-                    sessionStorage.removeItem('auth_user_role');
-                    sessionStorage.removeItem('auth_user_email');
-                    setIsProfileOpen(false);
-                    navigate('/login', { replace: true });
-                  }}
-                  className="w-full text-left px-3.5 py-2 text-xs text-rose-600 hover:bg-rose-50 font-medium cursor-pointer"
-                >
-                  Log out
-                </button>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </header>

@@ -50,7 +50,7 @@ export const AddRequirementModal: React.FC<AddRequirementModalProps> = ({
 
   const [ownerId, setOwnerId] = useState('EMP-004');
   const [status, setStatus] = useState<RequirementStatus>('In Progress');
-  const [assignedApprover, setAssignedApprover] = useState('CEO – Akshit Ujjain');
+  const [assignedApprover, setAssignedApprover] = useState('Admin – Akshit Ujjain');
   const [approvedBy, setApprovedBy] = useState('EMP-007');
   const [approvalDate, setApprovalDate] = useState('2026-10-28');
   const [completionPercentage, setCompletionPercentage] = useState<number | string>(55);
@@ -119,7 +119,7 @@ export const AddRequirementModal: React.FC<AddRequirementModalProps> = ({
       const hasEmp004 = employeeOptions.some((e) => e.id === 'EMP-004');
       setOwnerId(hasEmp004 ? 'EMP-004' : (employeeOptions[0]?.id || 'EMP-001'));
       setStatus('In Progress');
-      setAssignedApprover('CEO – Akshit Ujjain');
+      setAssignedApprover('Admin – Akshit Ujjain');
 
       const hasEmp007 = employeeOptions.some((e) => e.id === 'EMP-007');
       setApprovedBy(hasEmp007 ? 'EMP-007' : (employeeOptions[1]?.id || 'EMP-002'));
@@ -536,7 +536,7 @@ export const AddRequirementModal: React.FC<AddRequirementModalProps> = ({
                     onChange={(e) => setAssignedApprover(e.target.value)}
                     className="w-full h-[30px] px-2.5 bg-white border border-[#CBD5E1] rounded-[8px] text-xs font-normal text-[#0F172A] focus:outline-none focus:ring-1 focus:ring-[#4F46E5] appearance-none pr-7 cursor-pointer"
                   >
-                    <option value="CEO – Akshit Ujjain">CEO – Akshit Ujjain</option>
+                    <option value="Admin – Akshit Ujjain">Admin – Akshit Ujjain</option>
                     <option value="MD – Gaurav Tripathy">MD – Gaurav Tripathy</option>
                   </select>
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />

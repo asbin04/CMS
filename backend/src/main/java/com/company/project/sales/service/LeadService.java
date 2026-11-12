@@ -7,11 +7,10 @@ import com.company.project.sales.dto.*;
 import com.company.project.sales.entity.LeadEntity;
 import com.company.project.sales.repository.LeadRepository;
 import jakarta.persistence.criteria.Predicate;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.company.project.notification.service.NotificationService;
@@ -23,14 +22,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class LeadService {
 
     private final LeadRepository leadRepository;
     private final LeadIdGeneratorService leadIdGeneratorService;
+    private final NotificationService notificationService;
 
-    @Autowired(required = false)
-    private NotificationService notificationService;
+    public LeadService(
+            LeadRepository leadRepository,
+            LeadIdGeneratorService leadIdGeneratorService,
+            @Nullable NotificationService notificationService) {
+        this.leadRepository = leadRepository;
+        this.leadIdGeneratorService = leadIdGeneratorService;
+        this.notificationService = notificationService;
+    }
 
     @Transactional(readOnly = true)
     public PageResponse<LeadResponse> getLeads(

@@ -5,7 +5,6 @@ import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -78,4 +77,3 @@ class EmailServiceSecurityTest {
         verify(mailSender, times(1)).send(any(MimeMessage.class));
     }
 }
-

@@ -1,12 +1,10 @@
 package com.company.project.collections;
 
-import com.company.project.collections.entity.CollectionInvoiceCounterEntity;
 import com.company.project.collections.entity.CollectionInvoiceEntity;
 import com.company.project.collections.entity.CollectionPaymentCounterEntity;
 import com.company.project.collections.entity.CollectionPaymentEntity;
 import com.company.project.collections.entity.CollectionPaymentReversalEntity;
 import com.company.project.collections.entity.CollectionReversalCounterEntity;
-import com.company.project.collections.repository.CollectionInvoiceCounterRepository;
 import com.company.project.collections.repository.CollectionInvoiceRepository;
 import com.company.project.collections.repository.CollectionPaymentCounterRepository;
 import com.company.project.collections.repository.CollectionPaymentRepository;
@@ -65,9 +63,6 @@ class Phase2EntityAndRepositoryTest {
 
     @Autowired
     private CollectionPaymentRepository paymentRepository;
-
-    @Autowired
-    private CollectionInvoiceCounterRepository invoiceCounterRepository;
 
     @Autowired
     private CollectionPaymentCounterRepository paymentCounterRepository;

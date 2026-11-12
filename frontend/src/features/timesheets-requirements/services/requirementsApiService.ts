@@ -34,7 +34,7 @@ export function mapBackendRequirementToRecord(raw: any): RequirementRecord {
     ownerId: raw.ownerId || '',
     status: (raw.status || 'Draft') as RequirementStatus,
     scopeFreeze: isFrozen ? 'Yes' : 'No',
-    assignedApprover: rawAssignedApprover || 'CEO – Akshit Ujjain',
+    assignedApprover: rawAssignedApprover || 'Admin – Akshit Ujjain',
     approvedBy:
       raw.status === 'Completed' || (!raw.status && rawApprovedBy)
         ? (rawApprovedBy && rawApprovedBy !== '-'
@@ -141,7 +141,7 @@ export const requirementsApiService = {
       scopeFreeze: Boolean(payload.scopeFreeze),
       completionPercentage: status === 'Completed' ? 100 : (payload.completionPercentage ?? 0),
       requirementDate: formatDateForInput(payload.requirementDate),
-      assignedApprover: payload.assignedApprover || 'CEO – Akshit Ujjain',
+      assignedApprover: payload.assignedApprover || 'Admin – Akshit Ujjain',
     };
 
     if (payload.approvedBy && payload.approvedBy !== '-') {

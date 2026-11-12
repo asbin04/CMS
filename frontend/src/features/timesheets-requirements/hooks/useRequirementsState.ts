@@ -251,7 +251,7 @@ export const useRequirementsState = (initialList?: RequirementRecord[]) => {
           scopeFreeze: formData.scopeFreeze === 'Yes',
           completionPercentage: formData.completionPercentage,
           requirementDate: formData.requirementDate,
-          assignedApprover: formData.assignedApprover || 'CEO – Akshit Ujjain',
+          assignedApprover: formData.assignedApprover || 'Admin – Akshit Ujjain',
           approvedBy: formData.approvedBy,
           approvalDate: formData.approvalDate,
         });

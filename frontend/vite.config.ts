@@ -23,6 +23,9 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true,
+        headers: {
+          origin: 'http://localhost:5173',
+        },
       },
     },
   },

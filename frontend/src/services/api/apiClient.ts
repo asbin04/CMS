@@ -22,14 +22,39 @@ export class ApiError extends Error {
   }
 }
 
+const GET_CACHE_TTL_MS = 20_000;
+const MAX_CACHE_ENTRIES = 200;
+const inFlightGetRequests = new Map<string, Promise<ApiResponse<unknown>>>();
+const getResponseCache = new Map<string, { data: ApiResponse<unknown>; expiresAt: number }>();
+
+function isTestEnvironment(): boolean {
+  return typeof process !== 'undefined' && process.env?.NODE_ENV === 'test';
+}
+
+export function clearApiCache(): void {
+  getResponseCache.clear();
+}
+
 export function clearAuthStorage(): void {
+  clearApiCache();
   if (typeof window === 'undefined') return;
   localStorage.removeItem('auth_token');
   localStorage.removeItem('auth_user_name');
   localStorage.removeItem('auth_user_role');
+  localStorage.removeItem('auth_user_email');
+  localStorage.removeItem('auth_user_avatar');
   sessionStorage.removeItem('auth_token');
   sessionStorage.removeItem('auth_user_name');
   sessionStorage.removeItem('auth_user_role');
+  sessionStorage.removeItem('auth_user_email');
+  sessionStorage.removeItem('auth_user_avatar');
+}
+
+export function logoutSession(): void {
+  if (typeof window !== 'undefined') {
+    sessionStorage.setItem('logged_out', 'true');
+  }
+  clearAuthStorage();
 }
 
 export function redirectToLogin(): void {
@@ -44,34 +69,46 @@ export function redirectToLogin(): void {
 let devTokenPromise: Promise<string | null> | null = null;
 
 async function acquireDevToken(): Promise<string | null> {
-  try {
-    const preferredUsername =
-      (typeof window !== 'undefined' ? localStorage.getItem('auth_user_username') : null) ||
-      'asbin.t.s@kalpanaaa.in';
-    const authRes = await fetch(`${BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ username: preferredUsername, password: 'Admin123' }),
-    });
-    if (authRes.ok) {
-      const resData = await authRes.json();
-      const jwt = resData?.data?.token;
-      if (jwt) {
-        localStorage.setItem('auth_token', jwt);
-        if (resData?.data?.username) {
-          localStorage.setItem('auth_user_name', resData.data.name || resData.data.username);
-          localStorage.setItem('auth_user_username', resData.data.username);
-        }
-        if (resData?.data?.role) {
-          localStorage.setItem('auth_user_role', resData.data.role);
-        }
-        return jwt;
-      }
-    }
-  } catch {
-    // ignore
+  if (devTokenPromise) {
+    return devTokenPromise;
   }
-  return null;
+
+  devTokenPromise = (async () => {
+    try {
+      const preferredUsername =
+        (typeof window !== 'undefined' ? localStorage.getItem('auth_user_username') : null) ||
+        'admin';
+      const authRes = await fetch(`${BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ username: preferredUsername, password: 'Admin@123' }),
+      });
+      if (authRes.ok) {
+        const resData = await authRes.json();
+        const jwt = resData?.data?.token;
+        if (jwt) {
+          localStorage.setItem('auth_token', jwt);
+          if (resData?.data?.username) {
+            localStorage.setItem('auth_user_name', resData.data.name || resData.data.username);
+            localStorage.setItem('auth_user_username', resData.data.username);
+          }
+          if (resData?.data?.role) {
+            localStorage.setItem('auth_user_role', resData.data.role);
+          }
+          return jwt;
+        }
+      }
+    } catch {
+      // ignore
+    }
+    return null;
+  })();
+
+  try {
+    return await devTokenPromise;
+  } finally {
+    devTokenPromise = null;
+  }
 }
 
 export function getStoredAuthToken(): string | null {
@@ -81,10 +118,6 @@ export function getStoredAuthToken(): string | null {
 
 interface RequestOptions extends RequestInit {
   isRetry?: boolean;
-}
-
-interface CustomRequestInit extends RequestInit {
-  _isRetry?: boolean;
 }
 
 async function executeRequest<T>(
@@ -101,7 +134,7 @@ async function executeRequest<T>(
   const isAuthLogin = endpoint.includes('/auth/login');
   let token = getStoredAuthToken();
 
-  const isTestEnv = typeof process !== 'undefined' && process.env?.NODE_ENV === 'test';
+  const isTestEnv = isTestEnvironment();
 
   // In dev browser sessions without token, if not logged out and not /auth/login, try acquiring dev token
   if (!token && import.meta.env.DEV && !isTestEnv && !isAuthLogin) {
@@ -154,6 +187,11 @@ async function executeRequest<T>(
     throw new ApiError('Unauthorized: Please log in again.', 401);
   }
 
+  const method = (options.method || 'GET').toUpperCase();
+  if (method !== 'GET' && !isAuthLogin && response.ok) {
+    clearApiCache();
+  }
+
   // Handle 204 No Content
   if (response.status === 204) {
     return {
@@ -191,7 +229,13 @@ async function executeRequest<T>(
 }
 
 export const apiClient = {
-  get: <T>(endpoint: string, params?: Record<string, string | number | boolean | undefined | null>) => {
+  clearCache: clearApiCache,
+
+  get: <T>(
+    endpoint: string,
+    params?: Record<string, string | number | boolean | undefined | null>,
+    options?: { skipCache?: boolean }
+  ): Promise<ApiResponse<T>> => {
     let query = '';
     if (params) {
       const searchParams = new URLSearchParams();
@@ -205,7 +249,50 @@ export const apiClient = {
         query = `?${queryString}`;
       }
     }
-    return executeRequest<T>(`${endpoint}${query}`, { method: 'GET' });
+
+    const fullEndpoint = `${endpoint}${query}`;
+    const shouldUseCacheAndDedup = !isTestEnvironment() && !options?.skipCache;
+
+    if (shouldUseCacheAndDedup) {
+      const cached = getResponseCache.get(fullEndpoint);
+      if (cached) {
+        if (cached.expiresAt > Date.now()) {
+          return Promise.resolve(cached.data as ApiResponse<T>);
+        }
+        getResponseCache.delete(fullEndpoint);
+      }
+
+      const inFlight = inFlightGetRequests.get(fullEndpoint);
+      if (inFlight) {
+        return inFlight as Promise<ApiResponse<T>>;
+      }
+    }
+
+    const requestPromise = executeRequest<T>(fullEndpoint, { method: 'GET' })
+      .then((res) => {
+        if (!isTestEnvironment()) {
+          if (getResponseCache.size >= MAX_CACHE_ENTRIES) {
+            const oldestKey = getResponseCache.keys().next().value;
+            if (oldestKey !== undefined) {
+              getResponseCache.delete(oldestKey);
+            }
+          }
+          getResponseCache.set(fullEndpoint, {
+            data: res as ApiResponse<unknown>,
+            expiresAt: Date.now() + GET_CACHE_TTL_MS,
+          });
+        }
+        return res;
+      })
+      .finally(() => {
+        inFlightGetRequests.delete(fullEndpoint);
+      });
+
+    if (shouldUseCacheAndDedup) {
+      inFlightGetRequests.set(fullEndpoint, requestPromise as Promise<ApiResponse<unknown>>);
+    }
+
+    return requestPromise;
   },
 
   post: <T>(endpoint: string, body?: unknown) =>

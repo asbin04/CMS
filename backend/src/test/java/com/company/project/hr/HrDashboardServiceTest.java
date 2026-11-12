@@ -460,7 +460,7 @@ class HrDashboardServiceTest {
                 .build();
 
         Page<EmployeeEntity> page = new PageImpl<>(List.of(emp));
-        when(employeeRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
+        when(employeeRepository.findAll(org.mockito.ArgumentMatchers.<Specification<EmployeeEntity>>any(), any(Pageable.class))).thenReturn(page);
 
         PageResponse<EmployeeDto> result = hrDashboardService.getEmployees("Priya", "Engineering", "Active", 0, 10);
 

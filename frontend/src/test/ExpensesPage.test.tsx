@@ -172,7 +172,7 @@ describe('ExpensesPage', () => {
     expect(screen.getByTestId('expense-filter-dropdowns-row')).toBeInTheDocument();
 
     // Click Filters button -> closes all filters
-    const filterBtn = screen.getByRole('button', { name: /Filters \(/i });
+    const filterBtn = screen.getByRole('button', { name: /^Filters$/i });
     fireEvent.click(filterBtn);
 
     expect(screen.queryByTestId('expense-filter-dropdowns-row')).not.toBeInTheDocument();

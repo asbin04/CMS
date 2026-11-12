@@ -52,8 +52,7 @@ public class TimesheetService {
             String dateTo,
             String sort,
             int page,
-            int size
-    ) {
+            int size) {
         int pageIdx = Math.max(0, page > 0 ? page - 1 : page);
         int pageSize = size > 0 ? size : 10;
 
@@ -71,8 +70,7 @@ public class TimesheetService {
                         cb.like(cb.lower(root.get("taskId")), term),
                         cb.like(cb.lower(root.get("employeeId")), term),
                         cb.like(cb.lower(root.get("employeeName")), term),
-                        cb.like(cb.lower(root.get("notes")), term)
-                ));
+                        cb.like(cb.lower(root.get("notes")), term)));
             }
 
             if (employee != null && !employee.isBlank() && !employee.trim().toLowerCase().startsWith("all")) {
@@ -80,7 +78,8 @@ public class TimesheetService {
                 List<String> matchedIds = new ArrayList<>();
                 matchedIds.add(empTerm);
                 for (EmployeeMaster em : employeeMasterRepository.findAll()) {
-                    if (em.getFullName() != null && (em.getFullName().toLowerCase().contains(empTerm.toLowerCase()) || empTerm.toLowerCase().contains(em.getFullName().toLowerCase()))) {
+                    if (em.getFullName() != null && (em.getFullName().toLowerCase().contains(empTerm.toLowerCase())
+                            || empTerm.toLowerCase().contains(em.getFullName().toLowerCase()))) {
                         matchedIds.add(em.getEmployeeId());
                     }
                     if (em.getEmployeeId() != null && em.getEmployeeId().equalsIgnoreCase(empTerm)) {
@@ -94,7 +93,8 @@ public class TimesheetService {
                 predicates.add(cb.equal(root.get("projectId"), project.trim()));
             }
 
-            if (approvalStatus != null && !approvalStatus.isBlank() && !approvalStatus.trim().toLowerCase().startsWith("all")) {
+            if (approvalStatus != null && !approvalStatus.isBlank()
+                    && !approvalStatus.trim().toLowerCase().startsWith("all")) {
                 predicates.add(cb.equal(cb.lower(root.get("approvalStatus")), approvalStatus.trim().toLowerCase()));
             }
 
@@ -137,9 +137,11 @@ public class TimesheetService {
     }
 
     @Transactional
-    public TimesheetResponse createTimesheet(CreateTimesheetRequest request, String currentUsername, List<String> userRoles) {
+    public TimesheetResponse createTimesheet(CreateTimesheetRequest request, String currentUsername,
+            List<String> userRoles) {
         ProjectEntity project = projectRepository.findByProjectId(request.getProjectId())
-                .orElseThrow(() -> new ResourceNotFoundException("Project not found with ID: " + request.getProjectId()));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Project not found with ID: " + request.getProjectId()));
 
         ProjectTaskEntity task = projectTaskRepository.findByTaskId(request.getTaskId())
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found with ID: " + request.getTaskId()));
@@ -147,24 +149,26 @@ public class TimesheetService {
         if (!task.getProjectId().equals(project.getProjectId())) {
             throw new BusinessValidationException(String.format(
                     "Relational integrity error: Task '%s' belongs to project '%s', not '%s'.",
-                    task.getTaskId(), task.getProjectId(), project.getProjectId()
-            ));
+                    task.getTaskId(), task.getProjectId(), project.getProjectId()));
         }
 
         EmployeeMaster employee = employeeMasterRepository.findByEmployeeId(request.getEmployeeId())
-                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + request.getEmployeeId()));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Employee not found with ID: " + request.getEmployeeId()));
 
         LocalDate date = resolveDate(request.getTimesheetDate(), request.getDate());
         BigDecimal hours = resolveHours(request.getHours(), request.getHoursSpent());
 
         if (hours.compareTo(BigDecimal.ZERO) <= 0 || hours.compareTo(new BigDecimal("24.00")) > 0) {
-            throw new BusinessValidationException("Hours spent must be greater than 0 and at most 24 per timesheet entry.");
+            throw new BusinessValidationException(
+                    "Hours spent must be greater than 0 and at most 24 per timesheet entry.");
         }
 
         boolean billable = resolveBillable(request.getIsBillable(), request.getBillable());
 
         BigDecimal hourlyRate = request.getHourlyRate() != null ? request.getHourlyRate() : BigDecimal.ZERO;
-        BigDecimal billableAmount = billable ? hourlyRate.multiply(hours).setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO;
+        BigDecimal billableAmount = billable ? hourlyRate.multiply(hours).setScale(2, RoundingMode.HALF_UP)
+                : BigDecimal.ZERO;
 
         BigDecimal calculatedLaborCost = calculateLaborCost(employee, hours);
 
@@ -184,11 +188,14 @@ public class TimesheetService {
                 ? request.getEmployeeName()
                 : employee.getFullName();
 
-        boolean isElevated = isManagerOrAdmin(userRoles);
-        String initialStatus = request.getApprovalStatus() != null && !request.getApprovalStatus().isBlank() ? request.getApprovalStatus() : "Pending";
+        String initialStatus = request.getApprovalStatus() != null && !request.getApprovalStatus().isBlank()
+                ? request.getApprovalStatus()
+                : "Pending";
         String rawAssigned = request.getAssignedApprover() != null && !request.getAssignedApprover().isBlank()
                 ? request.getAssignedApprover().trim()
-                : (request.getApprovedBy() != null && !request.getApprovedBy().isBlank() ? request.getApprovedBy().trim() : "Akshit Ujjain");
+                : (request.getApprovedBy() != null && !request.getApprovedBy().isBlank()
+                        ? request.getApprovedBy().trim()
+                        : "Akshit Ujjain");
         String assignedApprover = normalizeAssignedApprover(rawAssigned);
 
         String approvedBy = null;
@@ -227,18 +234,21 @@ public class TimesheetService {
                 .build();
 
         ProjectTimesheetEntity saved = timesheetRepository.save(entity);
-        log.info("Created timesheet {} for employee {} on project {}", saved.getTimesheetId(), saved.getEmployeeId(), saved.getProjectId());
+        log.info("Created timesheet {} for employee {} on project {}", saved.getTimesheetId(), saved.getEmployeeId(),
+                saved.getProjectId());
         return mapToResponse(saved);
     }
 
     @Transactional
-    public TimesheetResponse updateTimesheet(String timesheetId, UpdateTimesheetRequest request, String currentUsername, List<String> userRoles) {
+    public TimesheetResponse updateTimesheet(String timesheetId, UpdateTimesheetRequest request, String currentUsername,
+            List<String> userRoles) {
         ProjectTimesheetEntity entity = findOrThrow(timesheetId);
 
         if ("Approved".equalsIgnoreCase(entity.getApprovalStatus())) {
             boolean isElevated = isManagerOrAdmin(userRoles);
             if (!isElevated) {
-                throw new BusinessValidationException("Cannot modify an already Approved timesheet without manager/admin authorization.");
+                throw new BusinessValidationException(
+                        "Cannot modify an already Approved timesheet without manager/admin authorization.");
             }
         }
 
@@ -255,8 +265,7 @@ public class TimesheetService {
             if (!task.getProjectId().equals(project.getProjectId())) {
                 throw new BusinessValidationException(String.format(
                         "Relational integrity error: Task '%s' belongs to project '%s', not '%s'.",
-                        task.getTaskId(), task.getProjectId(), project.getProjectId()
-                ));
+                        task.getTaskId(), task.getProjectId(), project.getProjectId()));
             }
             entity.setProjectId(project.getProjectId());
             entity.setTaskId(task.getTaskId());
@@ -264,7 +273,8 @@ public class TimesheetService {
 
         if (request.getEmployeeId() != null) {
             EmployeeMaster employee = employeeMasterRepository.findByEmployeeId(request.getEmployeeId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + request.getEmployeeId()));
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Employee not found with ID: " + request.getEmployeeId()));
             entity.setEmployeeId(employee.getEmployeeId());
         }
 
@@ -275,7 +285,8 @@ public class TimesheetService {
         if (request.getHours() != null || request.getHoursSpent() != null) {
             BigDecimal hours = resolveHours(request.getHours(), request.getHoursSpent());
             if (hours.compareTo(BigDecimal.ZERO) <= 0 || hours.compareTo(new BigDecimal("24.00")) > 0) {
-                throw new BusinessValidationException("Hours spent must be greater than 0 and at most 24 per timesheet entry.");
+                throw new BusinessValidationException(
+                        "Hours spent must be greater than 0 and at most 24 per timesheet entry.");
             }
             entity.setHours(hours);
             entity.setHoursSpent(hours);
@@ -289,16 +300,17 @@ public class TimesheetService {
 
         if (request.getAssignedApprover() != null && !request.getAssignedApprover().isBlank()) {
             entity.setAssignedApprover(normalizeAssignedApprover(request.getAssignedApprover()));
-        } else if (request.getApprovedBy() != null && !request.getApprovedBy().isBlank() && !" - ".equals(request.getApprovedBy().trim()) && !"-".equals(request.getApprovedBy().trim())) {
+        } else if (request.getApprovedBy() != null && !request.getApprovedBy().isBlank()
+                && !" - ".equals(request.getApprovedBy().trim()) && !"-".equals(request.getApprovedBy().trim())) {
             entity.setAssignedApprover(normalizeAssignedApprover(request.getApprovedBy()));
         }
 
         if (request.getApprovalStatus() != null && !request.getApprovalStatus().isBlank()) {
             String newStatus = request.getApprovalStatus().trim();
-            String oldStatus = entity.getApprovalStatus();
             if ("Approved".equalsIgnoreCase(newStatus)) {
                 if (!isManagerOrAdmin(userRoles)) {
-                    throw new BusinessValidationException("Only managers, CEOs, and administrators can approve timesheets.");
+                    throw new BusinessValidationException(
+                            "Only managers, CEOs, and administrators can approve timesheets.");
                 }
                 entity.setApprovalStatus("Approved");
                 entity.setApprovedBy(resolveApproverDisplayName(entity.getAssignedApprover(), currentUsername));
@@ -354,7 +366,8 @@ public class TimesheetService {
         if ("Approved".equalsIgnoreCase(entity.getApprovalStatus())) {
             boolean isElevated = isManagerOrAdmin(userRoles);
             if (!isElevated) {
-                throw new BusinessValidationException("Cannot delete an already Approved timesheet without manager/admin authorization.");
+                throw new BusinessValidationException(
+                        "Cannot delete an already Approved timesheet without manager/admin authorization.");
             }
         }
 
@@ -376,12 +389,14 @@ public class TimesheetService {
     }
 
     @Transactional
-    public TimesheetResponse approveTimesheet(String timesheetId, ApproveTimesheetRequest request, String currentUsername) {
+    public TimesheetResponse approveTimesheet(String timesheetId, ApproveTimesheetRequest request,
+            String currentUsername) {
         ProjectTimesheetEntity entity = findOrThrow(timesheetId);
 
         if (request != null && request.getAssignedApprover() != null && !request.getAssignedApprover().isBlank()) {
             entity.setAssignedApprover(normalizeAssignedApprover(request.getAssignedApprover()));
-        } else if (request != null && request.getApprovedBy() != null && !request.getApprovedBy().isBlank() && !"-".equals(request.getApprovedBy().trim())) {
+        } else if (request != null && request.getApprovedBy() != null && !request.getApprovedBy().isBlank()
+                && !"-".equals(request.getApprovedBy().trim())) {
             entity.setAssignedApprover(normalizeAssignedApprover(request.getApprovedBy()));
         }
 
@@ -398,12 +413,14 @@ public class TimesheetService {
     }
 
     @Transactional
-    public TimesheetResponse rejectTimesheet(String timesheetId, RejectTimesheetRequest request, String currentUsername) {
+    public TimesheetResponse rejectTimesheet(String timesheetId, RejectTimesheetRequest request,
+            String currentUsername) {
         ProjectTimesheetEntity entity = findOrThrow(timesheetId);
 
-        String reason = (request != null && request.getRejectionReason() != null && !request.getRejectionReason().isBlank())
-                ? request.getRejectionReason()
-                : "Rejected by reviewer";
+        String reason = (request != null && request.getRejectionReason() != null
+                && !request.getRejectionReason().isBlank())
+                        ? request.getRejectionReason()
+                        : "Rejected by reviewer";
 
         entity.setApprovalStatus("Rejected");
         entity.setApprovedBy(resolveApproverDisplayName(currentUsername, entity));
@@ -416,7 +433,8 @@ public class TimesheetService {
     }
 
     @Transactional
-    public TimesheetResponse overrideLaborCost(String timesheetId, OverrideLaborCostRequest request, String currentUsername) {
+    public TimesheetResponse overrideLaborCost(String timesheetId, OverrideLaborCostRequest request,
+            String currentUsername) {
         ProjectTimesheetEntity entity = findOrThrow(timesheetId);
 
         BigDecimal overrideCost = request.getLaborCostOverride().setScale(2, RoundingMode.HALF_UP);
@@ -436,13 +454,16 @@ public class TimesheetService {
     @Transactional(readOnly = true)
     public TimesheetKpisResponse getKpis() {
         BigDecimal totalHours = timesheetRepository.sumTotalHours();
-        if (totalHours == null) totalHours = BigDecimal.ZERO;
+        if (totalHours == null)
+            totalHours = BigDecimal.ZERO;
 
         BigDecimal billableHours = timesheetRepository.sumBillableHours();
-        if (billableHours == null) billableHours = BigDecimal.ZERO;
+        if (billableHours == null)
+            billableHours = BigDecimal.ZERO;
 
         BigDecimal billableAmount = timesheetRepository.sumBillableAmount();
-        if (billableAmount == null) billableAmount = BigDecimal.ZERO;
+        if (billableAmount == null)
+            billableAmount = BigDecimal.ZERO;
 
         long pendingApprovals = timesheetRepository.countPendingApprovals();
         long approved = timesheetRepository.countByApprovalStatusIgnoreCase("Approved");
@@ -522,7 +543,8 @@ public class TimesheetService {
                 .laborCostOverrideBy(entity.getLaborCostOverrideBy())
                 .laborCostOverrideAt(entity.getLaborCostOverrideAt())
                 .laborCostOverrideReason(entity.getLaborCostOverrideReason())
-                .assignedApprover(entity.getAssignedApprover() != null ? entity.getAssignedApprover() : "CEO – Akshit Ujjain")
+                .assignedApprover(
+                        entity.getAssignedApprover() != null ? entity.getAssignedApprover() : "Admin – Akshit Ujjain")
                 .approvalStatus(entity.getApprovalStatus())
                 .clientApprovalStatus(entity.getClientApprovalStatus())
                 .approvedBy(entity.getApprovedBy())
@@ -564,19 +586,18 @@ public class TimesheetService {
     }
 
     private boolean isManagerOrAdmin(List<String> userRoles) {
-        if (userRoles == null) return false;
-        return userRoles.stream().anyMatch(r ->
-                "ROLE_ADMIN".equalsIgnoreCase(r) || "ADMIN".equalsIgnoreCase(r) ||
+        if (userRoles == null)
+            return false;
+        return userRoles.stream().anyMatch(r -> "ROLE_ADMIN".equalsIgnoreCase(r) || "ADMIN".equalsIgnoreCase(r) ||
                 "ROLE_CEO".equalsIgnoreCase(r) || "CEO".equalsIgnoreCase(r) ||
                 "ROLE_MD".equalsIgnoreCase(r) || "MD".equalsIgnoreCase(r) ||
                 "ROLE_MANAGER".equalsIgnoreCase(r) || "MANAGER".equalsIgnoreCase(r) ||
-                "ROLE_PROJECT_MANAGER".equalsIgnoreCase(r) || "PROJECT_MANAGER".equalsIgnoreCase(r)
-        );
+                "ROLE_PROJECT_MANAGER".equalsIgnoreCase(r) || "PROJECT_MANAGER".equalsIgnoreCase(r));
     }
 
     public String normalizeAssignedApprover(String input) {
         if (input == null || input.isBlank()) {
-            return "CEO – Akshit Ujjain";
+            return "Admin – Akshit Ujjain";
         }
         String trimmed = input.trim();
         String lower = trimmed.toLowerCase();
@@ -584,7 +605,7 @@ public class TimesheetService {
             return trimmed.contains("–") || trimmed.contains("-") ? trimmed : "MD – Gaurav Tripathy";
         }
         if (lower.contains("akshit")) {
-            return trimmed.contains("–") || trimmed.contains("-") ? trimmed : "CEO – Akshit Ujjain";
+            return trimmed.contains("–") || trimmed.contains("-") ? trimmed : "Admin – Akshit Ujjain";
         }
         return trimmed;
     }
@@ -600,7 +621,8 @@ public class TimesheetService {
             }
             return assignedApprover.trim();
         }
-        if (username != null && !username.isBlank() && !"system".equalsIgnoreCase(username) && !"anonymousUser".equalsIgnoreCase(username)) {
+        if (username != null && !username.isBlank() && !"system".equalsIgnoreCase(username)
+                && !"anonymousUser".equalsIgnoreCase(username)) {
             String lower = username.toLowerCase();
             if (lower.contains("gaurav")) {
                 return "Gaurav Tripathy";
@@ -619,7 +641,8 @@ public class TimesheetService {
     }
 
     public String resolveApproverDisplayName(String username) {
-        if (username == null || username.isBlank() || "system".equalsIgnoreCase(username) || "anonymousUser".equalsIgnoreCase(username)) {
+        if (username == null || username.isBlank() || "system".equalsIgnoreCase(username)
+                || "anonymousUser".equalsIgnoreCase(username)) {
             return "Akshit Ujjain";
         }
         if ("akshit.ujjain".equalsIgnoreCase(username) || "akshit".equalsIgnoreCase(username)) {
@@ -645,7 +668,8 @@ public class TimesheetService {
             StringBuilder sb = new StringBuilder();
             for (String part : parts) {
                 if (!part.isEmpty()) {
-                    if (sb.length() > 0) sb.append(" ");
+                    if (sb.length() > 0)
+                        sb.append(" ");
                     sb.append(Character.toUpperCase(part.charAt(0))).append(part.substring(1));
                 }
             }

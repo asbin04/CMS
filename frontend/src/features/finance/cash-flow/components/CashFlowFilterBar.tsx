@@ -99,7 +99,7 @@ export const CashFlowFilterBar: React.FC<CashFlowFilterBarProps> = ({
               }`}
             >
               <Filter className="w-3.5 h-3.5 text-[#6366F1] stroke-[2]" />
-              <span>Filters ({activeFilterCount})</span>
+              <span>Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}</span>
             </button>
 
             {/* Filter Popover for Status */}

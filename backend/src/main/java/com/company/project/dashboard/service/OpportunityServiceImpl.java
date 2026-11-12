@@ -6,9 +6,8 @@ import com.company.project.dashboard.dto.OpportunityDto;
 import com.company.project.dashboard.dto.OpportunitySummaryDto;
 import com.company.project.dashboard.entity.Opportunity;
 import com.company.project.dashboard.repository.OpportunityRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import com.company.project.notification.service.NotificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,14 +21,18 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class OpportunityServiceImpl implements OpportunityService {
 
     private final OpportunityRepository repository;
+    private final NotificationService notificationService;
 
-    @Autowired(required = false)
-    private NotificationService notificationService;
+    public OpportunityServiceImpl(
+            OpportunityRepository repository,
+            @Nullable NotificationService notificationService) {
+        this.repository = repository;
+        this.notificationService = notificationService;
+    }
 
     @Override
     @Transactional(readOnly = true)

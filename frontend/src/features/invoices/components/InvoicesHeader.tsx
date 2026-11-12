@@ -46,11 +46,8 @@ export const InvoicesHeader: React.FC<InvoicesHeaderProps> = ({
 
       {/* Right side: Timestamp + Refresh + Export + Create Invoice */}
       <div className="flex items-center gap-3 self-end sm:self-auto shrink-0 flex-wrap">
-        {/* Timestamp & Refresh Icon */}
+        {/* Refresh Icon */}
         <div className="flex items-center gap-2 text-xs text-slate-500 mr-1">
-          <span>
-            Last Updated: <strong className="font-semibold text-slate-700">{lastUpdated}</strong>
-          </span>
           <button
             type="button"
             onClick={handleRefreshClick}

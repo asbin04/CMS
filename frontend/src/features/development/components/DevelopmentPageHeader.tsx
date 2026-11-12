@@ -39,10 +39,9 @@ export const DevelopmentPageHeader: React.FC<DevelopmentPageHeaderProps> = ({
         </div>
       </div>
 
-      {/* Right Controls: Timestamp, Refresh, Export, + Add Development */}
+      {/* Right Controls: Refresh, Export, + Add Development */}
       <div className="flex items-center gap-3 self-end sm:self-center">
         <div className="flex items-center gap-2 text-xs text-slate-400">
-          <span>Last Updated: {lastUpdated}</span>
           <button
             type="button"
             onClick={handleRefreshClick}

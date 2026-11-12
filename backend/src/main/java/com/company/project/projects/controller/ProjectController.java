@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,6 +33,46 @@ public class ProjectController {
     @Operation(summary = "Get project KPIs and metrics")
     public ResponseEntity<ApiResponse<ProjectKpiResponse>> getProjectKpis() {
         return ResponseEntity.ok(ApiResponse.success(projectService.getProjectKpis()));
+    }
+
+    @GetMapping("/performance/summary")
+    @Operation(summary = "Get project performance overview, financials, delivery stats, flow, distribution, and insights")
+    public ResponseEntity<ApiResponse<ProjectPerformanceDashboardResponse>> getPerformanceSummary() {
+        return ResponseEntity.ok(ApiResponse.success(projectService.getPerformanceSummary()));
+    }
+
+    @GetMapping("/performance/profitability")
+    @Operation(summary = "Get server-side paginated, sorted, and filtered project profitability table")
+    public ResponseEntity<ApiResponse<ProjectProfitabilityPageResponse>> getPerformanceProfitability(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "5") int size,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false, defaultValue = "All") String health,
+            @RequestParam(required = false, defaultValue = "projectCode") String sortBy,
+            @RequestParam(required = false, defaultValue = "ASC") String sortDir
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(projectService.getProfitabilityPage(page, size, search, health, sortBy, sortDir)));
+    }
+
+    @GetMapping(value = "/performance/export", produces = "text/csv")
+    @Operation(summary = "Export all matching project profitability rows as CSV with injection safeguards")
+    public ResponseEntity<byte[]> exportPerformanceProfitability(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false, defaultValue = "All") String health
+    ) {
+        byte[] csvBytes = projectService.exportProfitabilityCsv(search, health);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"project_performance_report.csv\"")
+                .header(HttpHeaders.CONTENT_TYPE, "text/csv; charset=UTF-8")
+                .body(csvBytes);
+    }
+
+    @GetMapping({"/performance/dashboard", "/performance-dashboard"})
+    @Operation(summary = "Get project performance and delivery dashboard metrics, flow, and profitability")
+    public ResponseEntity<ApiResponse<ProjectPerformanceDashboardResponse>> getPerformanceDashboard(
+            @RequestParam(required = false, defaultValue = "THIS_MONTH") String period
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(projectService.getPerformanceDashboard(period)));
     }
 
     @GetMapping("/filters")

@@ -72,9 +72,11 @@ class LeadServiceTest {
         Pageable pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
         Page<LeadEntity> page = new PageImpl<>(List.of(sampleEntity), pageable, 1);
 
-        when(leadRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(page);
+        when(leadRepository.findAll(org.mockito.ArgumentMatchers.<Specification<LeadEntity>>any(), eq(pageable)))
+                .thenReturn(page);
 
-        PageResponse<LeadResponse> response = leadService.getLeads(pageable, "Acme", "New", "Open", "EMP-001", "Website");
+        PageResponse<LeadResponse> response = leadService.getLeads(pageable, "Acme", "New", "Open", "EMP-001",
+                "Website");
 
         assertThat(response).isNotNull();
         assertThat(response.getContent()).hasSize(1);

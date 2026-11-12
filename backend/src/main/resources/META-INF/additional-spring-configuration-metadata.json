@@ -1,0 +1,75 @@
+{
+  "properties": [
+    {
+      "name": "app.mail.from-email",
+      "type": "java.lang.String",
+      "description": "Default sender email address for transactional emails."
+    },
+    {
+      "name": "app.mail.from-name",
+      "type": "java.lang.String",
+      "description": "Default sender display name for transactional emails."
+    },
+    {
+      "name": "app.jwt.secret",
+      "type": "java.lang.String",
+      "description": "HMAC secret key used to sign JWT tokens."
+    },
+    {
+      "name": "app.jwt.expiration-ms",
+      "type": "java.lang.Long",
+      "description": "JWT token expiration duration in milliseconds."
+    },
+    {
+      "name": "app.cors.allowed-origins",
+      "type": "java.lang.String",
+      "description": "Comma-separated list of allowed CORS origins."
+    },
+    {
+      "name": "app.auth.admin.username",
+      "type": "java.lang.String",
+      "description": "Primary admin login username."
+    },
+    {
+      "name": "app.auth.admin.email",
+      "type": "java.lang.String",
+      "description": "Primary admin email address."
+    },
+    {
+      "name": "app.auth.admin.password",
+      "type": "java.lang.String",
+      "description": "Primary admin password for bootstrap in dev."
+    },
+    {
+      "name": "app.auth.admin.password-hash",
+      "type": "java.lang.String",
+      "description": "Pre-hashed primary admin password."
+    },
+    {
+      "name": "app.auth.admin.display-name",
+      "type": "java.lang.String",
+      "description": "Primary admin display name."
+    },
+    {
+      "name": "app.auth.otp.hmac-secret",
+      "type": "java.lang.String",
+      "description": "HMAC secret used for OTP hashing."
+    },
+    {
+      "name": "app.auth.otp.expiration-minutes",
+      "type": "java.lang.Integer",
+      "description": "OTP validity window in minutes."
+    },
+    {
+      "name": "app.auth.otp.cooldown-seconds",
+      "type": "java.lang.Integer",
+      "description": "Minimum cooldown between OTP requests in seconds."
+    },
+    {
+      "name": "app.auth.otp.hourly-limit",
+      "type": "java.lang.Integer",
+      "description": "Maximum OTP requests per hour."
+    }
+  ]
+}
+

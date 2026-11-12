@@ -77,7 +77,7 @@ export const InvoicesFilterCard: React.FC<InvoicesFilterCardProps> = ({
               style={{ border: '1px solid #E2E8F0', borderRadius: '12px', background: '#FFFFFF' }}
             >
               <Filter className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-              <span>Filters ({activeFilterCount})</span>
+              <span>Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}</span>
             </button>
 
             {/* Clear Filters Button */}

@@ -63,7 +63,7 @@ export const EmployeeExitFilterCard: React.FC<EmployeeExitFilterCardProps> = ({
             className="inline-flex items-center gap-1.5 px-3.5 h-[38px] rounded-[8px] border border-[#E2E8F0] bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors cursor-pointer shadow-2xs"
           >
             <Filter className="w-3.5 h-3.5 text-slate-500" />
-            <span>Filters ({activeFilterCount})</span>
+            <span>Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}</span>
           </button>
 
           {/* Clear Filters Button */}

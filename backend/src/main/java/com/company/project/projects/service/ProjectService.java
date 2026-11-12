@@ -33,4 +33,12 @@ public interface ProjectService {
     ProjectFilterOptionsResponse getProjectFilterOptions();
 
     TaskFilterOptionsResponse getTaskFilterOptions();
+
+    ProjectPerformanceDashboardResponse getPerformanceSummary();
+
+    ProjectProfitabilityPageResponse getProfitabilityPage(int page, int size, String search, String health, String sortBy, String sortDir);
+
+    byte[] exportProfitabilityCsv(String search, String health);
+
+    ProjectPerformanceDashboardResponse getPerformanceDashboard(String period);
 }

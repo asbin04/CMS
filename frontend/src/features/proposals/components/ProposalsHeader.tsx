@@ -47,11 +47,8 @@ export const ProposalsHeader: React.FC<ProposalsHeaderProps> = ({
 
       {/* Right Controls Container: Middle/right timestamp + Far right Create button */}
       <div className="flex items-center gap-4 sm:gap-5 shrink-0 self-start md:self-center">
-        {/* 2. Middle/right Area: Timestamp and refresh control */}
+        {/* 2. Middle/right Area: Refresh control */}
         <div className="flex items-center gap-2 text-xs text-slate-500 whitespace-nowrap">
-          <span>
-            Last Updated: <strong className="font-semibold text-slate-700">{lastUpdated}</strong>
-          </span>
           <button
             type="button"
             onClick={handleRefreshClick}

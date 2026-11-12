@@ -3,7 +3,6 @@ package com.company.project.finance.service;
 import com.company.project.common.exception.BusinessValidationException;
 import com.company.project.common.exception.ConflictException;
 import com.company.project.finance.dto.*;
-import com.company.project.finance.entity.FinanceCashFlowCounterEntity;
 import com.company.project.finance.entity.FinanceCashFlowEntity;
 import com.company.project.finance.repository.FinanceCashFlowCounterRepository;
 import com.company.project.finance.repository.FinanceCashFlowRepository;

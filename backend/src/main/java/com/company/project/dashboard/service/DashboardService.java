@@ -9,8 +9,7 @@ import com.company.project.dashboard.dto.SidebarCountsDto;
 import com.company.project.dashboard.entity.*;
 import com.company.project.dashboard.repository.*;
 import com.company.project.notification.service.NotificationService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +21,6 @@ import java.util.List;
 import java.util.Locale;
 
 @Service
-@RequiredArgsConstructor
 public class DashboardService {
 
     private final DashboardKpiCardRepository kpiCardRepository;
@@ -42,9 +40,46 @@ public class DashboardService {
     private final EmployeeMasterRepository employeeMasterRepository;
     private final CollectionInvoiceRepository collectionInvoiceRepository;
     private final CollectionPaymentRepository collectionPaymentRepository;
+    private final NotificationService notificationService;
 
-    @Autowired(required = false)
-    private NotificationService notificationService;
+    public DashboardService(
+            DashboardKpiCardRepository kpiCardRepository,
+            FinanceMonthlyRepository financeMonthlyRepository,
+            ExpenseBreakdownRepository expenseBreakdownRepository,
+            SalesPipelineStageRepository salesPipelineStageRepository,
+            ProjectStatusDistributionRepository projectStatusDistributionRepository,
+            PeopleMonthlyRepository peopleMonthlyRepository,
+            PeopleSummaryRepository peopleSummaryRepository,
+            ManagementAlertRepository managementAlertRepository,
+            DashboardSettingsRepository dashboardSettingsRepository,
+            OpportunityRepository opportunityRepository,
+            FollowUpItemRepository followUpItemRepository,
+            EmployeeApprovalRepository employeeApprovalRepository,
+            ClientApprovalRepository clientApprovalRepository,
+            TicketAssetApprovalRepository ticketAssetApprovalRepository,
+            EmployeeMasterRepository employeeMasterRepository,
+            CollectionInvoiceRepository collectionInvoiceRepository,
+            CollectionPaymentRepository collectionPaymentRepository,
+            @Nullable NotificationService notificationService) {
+        this.kpiCardRepository = kpiCardRepository;
+        this.financeMonthlyRepository = financeMonthlyRepository;
+        this.expenseBreakdownRepository = expenseBreakdownRepository;
+        this.salesPipelineStageRepository = salesPipelineStageRepository;
+        this.projectStatusDistributionRepository = projectStatusDistributionRepository;
+        this.peopleMonthlyRepository = peopleMonthlyRepository;
+        this.peopleSummaryRepository = peopleSummaryRepository;
+        this.managementAlertRepository = managementAlertRepository;
+        this.dashboardSettingsRepository = dashboardSettingsRepository;
+        this.opportunityRepository = opportunityRepository;
+        this.followUpItemRepository = followUpItemRepository;
+        this.employeeApprovalRepository = employeeApprovalRepository;
+        this.clientApprovalRepository = clientApprovalRepository;
+        this.ticketAssetApprovalRepository = ticketAssetApprovalRepository;
+        this.employeeMasterRepository = employeeMasterRepository;
+        this.collectionInvoiceRepository = collectionInvoiceRepository;
+        this.collectionPaymentRepository = collectionPaymentRepository;
+        this.notificationService = notificationService;
+    }
 
     @Transactional(readOnly = true)
     public CeoDashboardResponse getCeoDashboard() {
@@ -205,7 +240,7 @@ public class DashboardService {
 
         if (notificationService != null) {
             notificationService.createNotification(
-                    "CEO Dashboard Updated",
+                    "Admin Dashboard Updated",
                     "Dashboard settings and KPI configuration updated.",
                     "DASHBOARD",
                     "/ceo-dashboard"

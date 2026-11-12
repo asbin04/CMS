@@ -288,7 +288,7 @@ export const useTimesheetsState = (initialList?: TimesheetRecord[]) => {
           billable: formData.billable,
           hourlyRate: formData.billableRate,
           taskDescription: formData.notes,
-          assignedApprover: formData.assignedApprover || 'CEO – Akshit Ujjain',
+          assignedApprover: formData.assignedApprover || 'Admin – Akshit Ujjain',
           approvalStatus: formData.approvalStatus || 'Pending',
           approvedBy: formData.approvedBy,
         });

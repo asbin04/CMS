@@ -109,7 +109,7 @@ describe('PayrollSalaryPage Component', () => {
     (payrollService.getFilterOptions as any).mockResolvedValue(mockFilterOptions);
   });
 
-  it('renders page header, title, and last updated timestamp', async () => {
+  it('renders page header and title without last updated timestamp', async () => {
     render(
       <BrowserRouter>
         <PayrollSalaryPage />
@@ -122,7 +122,7 @@ describe('PayrollSalaryPage Component', () => {
     ).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.getByText(/Last Updated: 15 Oct 2026, 11:30 AM/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Last Updated:/i)).not.toBeInTheDocument();
     });
   });
 
