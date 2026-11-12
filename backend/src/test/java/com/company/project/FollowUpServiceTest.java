@@ -18,7 +18,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -116,20 +115,6 @@ class FollowUpServiceTest {
     @Test
     @DisplayName("getSummary should calculate counts accurately")
     void testGetSummary() {
-        FollowUpItem medItem = FollowUpItem.builder()
-                .id(2L)
-                .priority("Medium")
-                .count(6)
-                .isDone(false)
-                .build();
-
-        FollowUpItem lowItem = FollowUpItem.builder()
-                .id(3L)
-                .priority("Low")
-                .count(3)
-                .isDone(false)
-                .build();
-
         when(repository.sumCountByPriorityAndIsDoneFalse("High")).thenReturn(12L);
         when(repository.sumCountByPriorityAndIsDoneFalse("Medium")).thenReturn(6L);
         when(repository.sumCountByPriorityAndIsDoneFalse("Low")).thenReturn(3L);

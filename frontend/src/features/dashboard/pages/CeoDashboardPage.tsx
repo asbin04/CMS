@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Crown, RotateCw } from 'lucide-react';
 import { FullDashboardData } from '../../../types/dashboard';
 import { dashboardService } from '../../../services/dashboardService';
+import { apiClient } from '../../../services/api/apiClient';
 import { KpiCardsGrid } from '../../../components/dashboard/KpiCardsGrid';
 import { FinanceOverviewSection } from '../../../components/dashboard/FinanceOverviewSection';
 import { SalesDeliverySection } from '../../../components/dashboard/SalesDeliverySection';
@@ -56,6 +57,7 @@ export const CeoDashboardPage: React.FC<CeoDashboardPageProps> = ({
   }, [loadData]);
 
   const handleManualRefresh = () => {
+    apiClient.clearCache();
     loadData(true);
   };
 
@@ -82,7 +84,7 @@ export const CeoDashboardPage: React.FC<CeoDashboardPageProps> = ({
 
   return (
     <div className="p-4 sm:p-6 lg:p-7 flex flex-col gap-5 max-w-[1400px] mx-auto w-full">
-      {/* Page Title Row: Crown icon, "CEO Dashboard", subtitle, and "Last Updated" */}
+      {/* Page Title Row: Crown icon, "CEO Dashboard", and subtitle */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-500 border border-amber-200 flex items-center justify-center shrink-0 shadow-xs">
@@ -90,7 +92,7 @@ export const CeoDashboardPage: React.FC<CeoDashboardPageProps> = ({
           </div>
           <div>
             <h1 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight leading-tight">
-              {data?.settings?.dashboard_title || 'CEO Dashboard'}
+              {data?.settings?.dashboard_title || 'Admin Dashboard'}
             </h1>
             <p className="text-xs text-slate-500">
               {data?.settings?.dashboard_subtitle ||
@@ -99,11 +101,8 @@ export const CeoDashboardPage: React.FC<CeoDashboardPageProps> = ({
           </div>
         </div>
 
-        {/* Last Updated Action */}
+        {/* Refresh Action */}
         <div className="flex items-center gap-2 text-xs text-slate-400">
-          <span>
-            Last Updated: <strong className="text-slate-700 font-semibold">{lastRefreshed}</strong>
-          </span>
           <button
             onClick={handleManualRefresh}
             disabled={isLoading || isRefreshing}
@@ -118,7 +117,7 @@ export const CeoDashboardPage: React.FC<CeoDashboardPageProps> = ({
       {/* Visible Error Banner on failure */}
       {errorMessage && (
         <ErrorBanner
-          title="Failed to load CEO Dashboard data"
+          title="Failed to load Admin Dashboard data"
           message={errorMessage}
           onRetry={() => loadData(false)}
           isRetrying={isLoading}

@@ -50,7 +50,7 @@ describe('DevelopmentPage UI Component Tests', () => {
           ownerId: 'EMP-001',
           status: 'In Progress',
           scopeFreeze: 'No',
-          assignedApprover: 'CEO – Akshit Ujjain',
+          assignedApprover: 'Admin – Akshit Ujjain',
           approvedBy: '-',
           approvalDate: '-',
           completionPercentage: 50,
@@ -227,8 +227,8 @@ describe('DevelopmentPage UI Component Tests', () => {
       )
     ).toBeInTheDocument();
 
-    // Check Last Updated
-    expect(screen.getByText(/Last Updated:/i)).toBeInTheDocument();
+    // Check Last Updated is removed
+    expect(screen.queryByText(/Last Updated:/i)).not.toBeInTheDocument();
 
     // Check Export & Add Development buttons
     expect(screen.getByRole('button', { name: /Export/i })).toBeInTheDocument();
@@ -269,8 +269,8 @@ describe('DevelopmentPage UI Component Tests', () => {
     expect(searchInput).toBeInTheDocument();
     expect(searchInput).toHaveStyle({ border: '1px solid #DCE3ED', borderRadius: '10px' });
 
-    // Filters (0) button
-    const filtersBtn = screen.getByRole('button', { name: /Filters \(0\)/i });
+    // Filters button (without (0))
+    const filtersBtn = screen.getByRole('button', { name: /^Filters/i });
     expect(filtersBtn).toBeInTheDocument();
     expect(filtersBtn).toHaveStyle({ border: '1px solid #DCE3ED', borderRadius: '10px' });
 

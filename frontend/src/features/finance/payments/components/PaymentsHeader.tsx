@@ -33,10 +33,6 @@ export const PaymentsHeader: React.FC<PaymentsHeaderProps> = ({
 
       {/* Right Actions - Strictly single line without wrapping */}
       <div className="flex items-center flex-nowrap shrink-0 gap-2.5 sm:gap-3 self-start lg:self-auto overflow-x-auto max-w-full">
-        <span className="text-xs text-slate-500 whitespace-nowrap">
-          Last Updated: <span className="font-medium text-slate-700">{lastUpdated}</span>
-        </span>
-
         {/* Refresh Button */}
         <button
           type="button"

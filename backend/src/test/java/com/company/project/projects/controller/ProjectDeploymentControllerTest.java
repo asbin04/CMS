@@ -3,19 +3,15 @@ package com.company.project.projects.controller;
 import com.company.project.common.exception.GlobalExceptionHandler;
 import com.company.project.projects.dto.*;
 import com.company.project.projects.service.ProjectDeploymentService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -24,7 +20,6 @@ class ProjectDeploymentControllerTest {
 
         private MockMvc mockMvc;
         private ProjectDeploymentService service;
-        private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
         private ProjectDeploymentDto sampleDeployment;
 

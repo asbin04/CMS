@@ -261,7 +261,7 @@ describe('CashFlowPage', () => {
       expect(screen.getByText('CF-2026-009')).toBeInTheDocument();
     });
     expect(screen.getByText('CF-2026-010')).toBeInTheDocument();
-    expect(screen.getByText(/Filters \(0\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/^Filters$/i)).toBeInTheDocument();
   });
 
   it('switches to Trends & Analysis tab and displays trend KPI cards, charts, and position table', async () => {

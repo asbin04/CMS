@@ -1,5 +1,9 @@
 server:
   port: ${SERVER_PORT:8080}
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain,text/css,application/javascript
+    min-response-size: 1024
 
 spring:
   main:
@@ -15,14 +19,13 @@ spring:
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 5
-      minimum-idle: 1
-      idle-timeout: 45000
-      max-lifetime: 60000
-      keepalive-time: 30000
-      connection-timeout: 30000
+      maximum-pool-size: 10
+      minimum-idle: 4
+      idle-timeout: 300000
+      max-lifetime: 600000
+      keepalive-time: 60000
+      connection-timeout: 15000
       initialization-fail-timeout: 0
-      connection-test-query: SELECT 1
       data-source-properties:
         prepareThreshold: 0
         preparedStatementCacheQueries: 0
@@ -42,7 +45,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
+        "[format_sql]": true
 
   mail:
     host: ${SMTP_HOST:localhost}

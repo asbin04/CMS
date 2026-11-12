@@ -263,12 +263,8 @@ export const FinanceDashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Frame 7: Last Updated, Refresh, Export */}
+        {/* Frame 7: Refresh, Export */}
         <div className="flex items-center gap-[11px] self-end sm:self-auto">
-          <span className="text-[12px] font-normal leading-[16px] text-[#94A3B8]">
-            Last Updated: {data?.lastUpdated ? formatLastUpdatedTimestamp(data.lastUpdated) : '15 Oct 2026, 11:30 AM'}
-          </span>
-
           {/* Refresh Button */}
           <button
             type="button"

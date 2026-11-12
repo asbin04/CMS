@@ -157,5 +157,10 @@ describe('TopNav Notification System', () => {
     const parentContainer = nameEl.closest('.sm\\:flex');
     expect(parentContainer).toBeInTheDocument();
     expect(parentContainer).not.toHaveStyle({ width: '73px' });
+
+    // Clicking the profile does not open a Settings / Log out dropdown menu
+    fireEvent.click(nameEl);
+    expect(screen.queryByRole('button', { name: 'Settings' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Log out' })).not.toBeInTheDocument();
   });
 });

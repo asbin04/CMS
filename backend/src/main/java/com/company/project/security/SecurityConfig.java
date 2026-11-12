@@ -17,7 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
@@ -80,8 +81,8 @@ public class SecurityConfig {
 
                 // Reset and DELETE operations strictly require ROLE_ADMIN in ALL profiles, including dev
                 auth.requestMatchers(
-                        AntPathRequestMatcher.antMatcher("/api/v1/**/reset"),
-                        AntPathRequestMatcher.antMatcher("/api/v1/*/reset")
+                        PathPatternRequestMatcher.withDefaults().matcher("/api/v1/*/reset"),
+                        RegexRequestMatcher.regexMatcher("^/api/v1/(?:.+/)?reset(?:\\?.*)?$")
                     ).hasRole("ADMIN")
                     .requestMatchers(HttpMethod.DELETE, "/api/v1/**").hasRole("ADMIN");
 

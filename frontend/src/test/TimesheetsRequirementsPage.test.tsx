@@ -577,7 +577,7 @@ describe('TimesheetsRequirementsPage UI Implementation Tests', () => {
     expect(within(section).getByText('77')).toBeInTheDocument();
   });
 
-  it('13. Requirements approval workflow supports both CEO – Akshit Ujjain and MD – Gaurav Tripathy as approvers', () => {
+  it('13. Requirements approval workflow supports both Admin – Akshit Ujjain and MD – Gaurav Tripathy as approvers', () => {
     render(
       <MemoryRouter>
         <TimesheetsRequirementsPage />
@@ -591,12 +591,12 @@ describe('TimesheetsRequirementsPage UI Implementation Tests', () => {
     fireEvent.click(within(section).getByRole('button', { name: /add requirement/i }));
     const modalDialog = screen.getByRole('dialog');
 
-    // Verify Approver dropdown exists and contains CEO – Akshit Ujjain and MD – Gaurav Tripathy
-    const approverSelect = within(modalDialog).getByDisplayValue('CEO – Akshit Ujjain');
+    // Verify Approver dropdown exists and contains Admin – Akshit Ujjain and MD – Gaurav Tripathy
+    const approverSelect = within(modalDialog).getByDisplayValue('Admin – Akshit Ujjain');
     expect(approverSelect).toBeInTheDocument();
 
     const options = within(modalDialog).getAllByRole('option').map((o) => o.textContent);
-    expect(options).toContain('CEO – Akshit Ujjain');
+    expect(options).toContain('Admin – Akshit Ujjain');
     expect(options).toContain('MD – Gaurav Tripathy');
 
     // Select MD – Gaurav Tripathy
@@ -633,7 +633,7 @@ describe('TimesheetsRequirementsPage UI Implementation Tests', () => {
     expect(within(viewModal).getByText('MD – Gaurav Tripathy')).toBeInTheDocument();
   });
 
-  it('14. Timesheets approval workflow supports both CEO – Akshit Ujjain and MD – Gaurav Tripathy as approvers', () => {
+  it('14. Timesheets approval workflow supports both Admin – Akshit Ujjain and MD – Gaurav Tripathy as approvers', () => {
     render(
       <MemoryRouter>
         <TimesheetsRequirementsPage />
@@ -647,12 +647,12 @@ describe('TimesheetsRequirementsPage UI Implementation Tests', () => {
     fireEvent.click(within(section).getByRole('button', { name: /log time/i }));
     const modalDialog = screen.getByRole('dialog');
 
-    // Verify Approver dropdown exists and contains CEO – Akshit Ujjain and MD – Gaurav Tripathy
-    const approverSelect = within(modalDialog).getByDisplayValue('CEO – Akshit Ujjain');
+    // Verify Approver dropdown exists and contains Admin – Akshit Ujjain and MD – Gaurav Tripathy
+    const approverSelect = within(modalDialog).getByDisplayValue('Admin – Akshit Ujjain');
     expect(approverSelect).toBeInTheDocument();
 
     const options = within(modalDialog).getAllByRole('option').map((o) => o.textContent);
-    expect(options).toContain('CEO – Akshit Ujjain');
+    expect(options).toContain('Admin – Akshit Ujjain');
     expect(options).toContain('MD – Gaurav Tripathy');
 
     // Select MD – Gaurav Tripathy

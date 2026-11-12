@@ -105,7 +105,7 @@ describe('LeadsPage Component', () => {
 
     expect(screen.getByText('Alpha Infotech')).toBeInTheDocument();
     expect(screen.getByText('Rohit Sharma')).toBeInTheDocument();
-    expect(screen.getByText('15 Mar 2025, 10:30 AM')).toBeInTheDocument();
+    expect(screen.queryByText(/Last Updated:/i)).not.toBeInTheDocument();
   });
 
   it('rolls back optimistic state when lead update fails', async () => {

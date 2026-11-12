@@ -4,7 +4,6 @@ import com.company.project.collections.dto.CreatePaymentReversalRequest;
 import com.company.project.collections.dto.PaymentReversalResponse;
 import com.company.project.collections.entity.CollectionPaymentReversalEntity;
 import com.company.project.collections.repository.CollectionPaymentReversalRepository;
-import com.company.project.common.exception.ConflictException;
 import com.company.project.common.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

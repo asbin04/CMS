@@ -42,7 +42,7 @@ export function mapBackendTimesheetToRecord(raw: any): TimesheetRecord {
         ? raw.billableAmount
         : formatRupee(rawAmt, true),
     approvalStatus: (raw.approvalStatus || 'Pending') as TimesheetApprovalStatus,
-    assignedApprover: raw.assignedApprover || raw.assigned_approver || 'CEO – Akshit Ujjain',
+    assignedApprover: raw.assignedApprover || raw.assigned_approver || 'Admin – Akshit Ujjain',
     approvedBy:
       raw.approvalStatus === 'Approved'
         ? (raw.approvedBy && raw.approvedBy !== '-'
@@ -152,7 +152,7 @@ export const timesheetsApiService = {
       notes: payload.taskDescription ?? payload.description ?? payload.notes ?? '',
       taskDescription: payload.taskDescription ?? payload.description ?? payload.notes ?? '',
       approvalStatus: payload.approvalStatus || 'Pending',
-      assignedApprover: payload.assignedApprover || 'CEO – Akshit Ujjain',
+      assignedApprover: payload.assignedApprover || 'Admin – Akshit Ujjain',
     };
     if (payload.approvedBy) {
       body.approvedBy = payload.approvedBy;

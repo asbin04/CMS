@@ -4,11 +4,9 @@ import com.company.project.projects.entity.ProjectUatEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface ProjectUatRepository extends JpaRepository<ProjectUatEntity, String> {
 
     List<ProjectUatEntity> findAllByOrderByIdDesc();

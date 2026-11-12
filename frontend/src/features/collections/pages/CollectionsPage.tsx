@@ -31,6 +31,7 @@ import { ViewInvoiceModal } from '../components/ViewInvoiceModal';
 import { CallEmailModal } from '../components/CallEmailModal';
 
 import { collectionsApiService } from '../services/collectionsApiService';
+import { apiClient } from '../../../services/api/apiClient';
 import { ToastNotification, useToast } from '../../../components/ui/ToastNotification';
 import { Skeleton } from '../../../components/ui/Skeleton';
 import { ErrorBanner } from '../../../components/ui/ErrorBanner';
@@ -176,6 +177,7 @@ export const CollectionsPage: React.FC = () => {
   }, [invoices]);
 
   const handleRefreshCollections = () => {
+    apiClient.clearCache();
     refreshBackendData(true);
   };
 

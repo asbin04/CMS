@@ -58,7 +58,7 @@ public class ProjectTimesheetEntity {
 
     @Column(name = "assigned_approver", length = 100)
     @Builder.Default
-    private String assignedApprover = "CEO – Akshit Ujjain";
+    private String assignedApprover = "Admin – Akshit Ujjain";
 
     @Column(name = "approved_by", length = 255)
     private String approvedBy;
@@ -157,51 +157,29 @@ public class ProjectTimesheetEntity {
     }
 
     public static class ProjectTimesheetEntityBuilder {
-        private BigDecimal hours;
-        private BigDecimal billableRate;
-        private String notes;
-        private BigDecimal estimatedLaborCost;
-        private Boolean laborCostOverride = false;
-        private BigDecimal laborCostCalculated;
-        private String clientApprovalStatus;
-
         public ProjectTimesheetEntityBuilder hoursSpent(BigDecimal h) {
-            this.hours = h;
-            return this;
+            return hours(h);
         }
 
         public ProjectTimesheetEntityBuilder hourlyRate(BigDecimal r) {
-            this.billableRate = r;
-            return this;
+            return billableRate(r);
         }
 
         public ProjectTimesheetEntityBuilder taskDescription(String td) {
-            this.notes = td;
-            return this;
+            return notes(td);
         }
 
         public ProjectTimesheetEntityBuilder laborCost(BigDecimal c) {
-            this.estimatedLaborCost = c;
-            return this;
-        }
-
-        public ProjectTimesheetEntityBuilder laborCostCalculated(BigDecimal c) {
-            this.laborCostCalculated = c;
-            return this;
+            return estimatedLaborCost(c);
         }
 
         public ProjectTimesheetEntityBuilder laborCostOverride(BigDecimal overrideVal) {
-            this.laborCostOverride = (overrideVal != null && overrideVal.compareTo(BigDecimal.ZERO) > 0);
-            return this;
+            return laborCostOverride(overrideVal != null && overrideVal.compareTo(BigDecimal.ZERO) > 0);
         }
 
         public ProjectTimesheetEntityBuilder laborCostOverride(Boolean overrideVal) {
-            this.laborCostOverride = Boolean.TRUE.equals(overrideVal);
-            return this;
-        }
-
-        public ProjectTimesheetEntityBuilder clientApprovalStatus(String s) {
-            this.clientApprovalStatus = s;
+            this.laborCostOverride$value = Boolean.TRUE.equals(overrideVal);
+            this.laborCostOverride$set = true;
             return this;
         }
     }

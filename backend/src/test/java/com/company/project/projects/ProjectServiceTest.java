@@ -32,6 +32,9 @@ class ProjectServiceTest {
     @Mock
     private ProjectTaskRepository projectTaskRepository;
 
+    @Mock
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
+
     @InjectMocks
     private ProjectServiceImpl projectService;
 
@@ -245,5 +248,95 @@ class ProjectServiceTest {
         TaskFilterOptionsResponse resp = projectService.getTaskFilterOptions();
         assertThat(resp.getProjects()).containsExactly("PRJ-001");
         assertThat(resp.getMilestones()).containsExactly("M1 - Setup");
+    }
+
+    @Test
+    @DisplayName("getPerformanceSummary handles zero projects gracefully without division by zero")
+    void testGetPerformanceSummary_ZeroProjects() {
+        when(jdbcTemplate.queryForList(anyString(), any(Object[].class))).thenReturn(List.of());
+
+        ProjectPerformanceDashboardResponse summary = projectService.getPerformanceSummary();
+
+        assertThat(summary.getOverview().getActiveProjects()).isEqualTo(0L);
+        assertThat(summary.getFinancials().getContractRevenueValue()).isEqualTo(BigDecimal.ZERO);
+        assertThat(summary.getFinancials().getOverallProjectMargin()).isEqualTo(BigDecimal.ZERO);
+        assertThat(summary.getKeyInsights().getBulletPoints()).hasSize(3);
+        assertThat(summary.getKeyInsights().getBulletPoints().get(0)).contains("No active projects");
+    }
+
+    @Test
+    @DisplayName("getPerformanceSummary calculates metrics, priority distribution, and percentages accurately")
+    void testGetPerformanceSummary_WithData() {
+        java.util.Map<String, Object> projectRow = java.util.Map.of(
+                "completed_count", 10L,
+                "delayed_count", 2L,
+                "at_risk_count", 4L,
+                "upcoming_count", 2L,
+                "on_track_count", 12L,
+                "active_total", 20L,
+                "total_projects", 30L,
+                "total_revenue", new BigDecimal("10000000.00")
+        );
+        java.util.Map<String, Object> tsRow = java.util.Map.of(
+                "logged_hours", new BigDecimal("200.00"),
+                "billable_amount", new BigDecimal("1000000.00"),
+                "timesheets_count", 25L
+        );
+        java.util.Map<String, Object> taskRow = java.util.Map.of(
+                "open_tasks", 15L,
+                "overdue_tasks", 3L,
+                "milestones_count", 8L,
+                "total_tasks", 25L
+        );
+
+        when(jdbcTemplate.queryForList(contains("public.projects"), any(Object[].class)))
+                .thenReturn(List.of(projectRow));
+        when(jdbcTemplate.queryForList(contains("public.project_timesheets")))
+                .thenReturn(List.of(tsRow));
+        when(jdbcTemplate.queryForList(contains("public.project_tasks"), any(Object[].class)))
+                .thenReturn(List.of(taskRow));
+
+        ProjectPerformanceDashboardResponse summary = projectService.getPerformanceSummary();
+
+        assertThat(summary.getOverview().getActiveProjects()).isEqualTo(20L);
+        assertThat(summary.getOverview().getDelayedProjects()).isEqualTo(2L);
+        assertThat(summary.getOverview().getAtRiskProjects()).isEqualTo(4L);
+        assertThat(summary.getOverview().getDueSoonProjects()).isEqualTo(2L);
+        // Distribution sums to active total (12 + 4 + 2 + 2 = 20)
+        assertThat(summary.getDistribution().getTotalProjects()).isEqualTo(20L);
+        assertThat(summary.getDistribution().getOnTrack().getCount()).isEqualTo(12L);
+        assertThat(summary.getDistribution().getAtRisk().getCount()).isEqualTo(4L);
+        assertThat(summary.getDistribution().getDelayed().getCount()).isEqualTo(2L);
+        assertThat(summary.getDistribution().getUpcoming().getCount()).isEqualTo(2L);
+        // Financials: Revenue 10,000,000, Cost 1,000,000, Profit 9,000,000, Margin 90%
+        assertThat(summary.getFinancials().getContractRevenueValue()).isEqualTo(new BigDecimal("10000000.00"));
+        assertThat(summary.getFinancials().getTotalProjectCost()).isEqualTo(new BigDecimal("1000000.00"));
+        assertThat(summary.getFinancials().getEstimatedProjectProfit()).isEqualTo(new BigDecimal("9000000.00"));
+        assertThat(summary.getFinancials().getOverallProjectMarginFormatted()).isEqualTo("90.00%");
+    }
+
+    @Test
+    @DisplayName("exportProfitabilityCsv sanitizes CSV formula injection characters (=, +, -, @)")
+    void testExportProfitabilityCsv_FormulaInjectionPrevention() {
+        java.util.Map<String, Object> row = java.util.Map.of(
+                "project_code", "=cmd|' /C calc'!A0",
+                "project_name", "+Malicious Formula",
+                "revenue", new BigDecimal("500000.00"),
+                "total_cost", new BigDecimal("100000.00"),
+                "profit", new BigDecimal("400000.00"),
+                "margin", new BigDecimal("80.0"),
+                "computed_health", "@RiskyHealth",
+                "status", "In Progress"
+        );
+
+        when(jdbcTemplate.queryForList(anyString(), any(Object[].class))).thenReturn(List.of(row));
+
+        byte[] csvBytes = projectService.exportProfitabilityCsv(null, "All");
+        String csv = new String(csvBytes, java.nio.charset.StandardCharsets.UTF_8);
+
+        // Verify malicious characters are prefixed with single quote '
+        assertThat(csv).contains("'=cmd|' /C calc'!A0");
+        assertThat(csv).contains("'+Malicious Formula");
+        assertThat(csv).contains("'@RiskyHealth");
     }
 }

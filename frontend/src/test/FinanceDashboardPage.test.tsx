@@ -108,8 +108,8 @@ describe('FinanceDashboardPage Component', () => {
       screen.getByText('Monitor invoicing, collections, receivables, expenses and operating cash performance.')
     ).toBeInTheDocument();
 
-    // Last Updated & Buttons
-    expect(screen.getByText(/Last Updated:/i)).toBeInTheDocument();
+    // Buttons & No Last Updated
+    expect(screen.queryByText(/Last Updated:/i)).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Refresh Dashboard/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Export/i })).toBeInTheDocument();
 

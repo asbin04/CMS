@@ -5,14 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
-@Repository
 public interface FinancePaymentRepository extends JpaRepository<FinancePaymentEntity, String>, JpaSpecificationExecutor<FinancePaymentEntity> {
 
     @Query("SELECT COALESCE(SUM(p.amount), 0) FROM FinancePaymentEntity p WHERE p.status IN ('Matched', 'Partially Matched') AND p.paymentDate BETWEEN :startDate AND :endDate")

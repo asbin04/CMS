@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
@@ -24,8 +24,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = ProjectController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -38,7 +37,7 @@ class ProjectControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private ProjectService projectService;
 
     @Test
@@ -255,5 +254,135 @@ class ProjectControllerTest {
         mockMvc.perform(delete("/api/v1/projects/tasks/TSK-00128"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true));
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/projects/performance/dashboard returns 200 with dashboard metrics and profitability")
+    void testGetPerformanceDashboard() throws Exception {
+        ProjectPerformanceDashboardResponse response = ProjectPerformanceDashboardResponse.builder()
+                .overview(ProjectPerformanceDashboardResponse.OverviewKpis.builder()
+                        .activeProjects(10)
+                        .atRiskProjects(2)
+                        .delayedProjects(1)
+                        .dueSoonProjects(3)
+                        .build())
+                .financials(ProjectPerformanceDashboardResponse.FinancialKpis.builder()
+                        .contractRevenueValue(new BigDecimal("1250000.00"))
+                        .contractRevenueFormatted("₹ 12,50,000.00")
+                        .totalProjectCost(new BigDecimal("250000.00"))
+                        .totalProjectCostFormatted("₹ 2,50,000.00")
+                        .estimatedProjectProfit(new BigDecimal("1000000.00"))
+                        .estimatedProjectProfitFormatted("₹ 10,00,000.00")
+                        .overallProjectMargin(new BigDecimal("80.00"))
+                        .overallProjectMarginFormatted("80.00%")
+                        .build())
+                .delivery(ProjectPerformanceDashboardResponse.DeliveryPerformance.builder()
+                        .loggedHours(new BigDecimal("120.50"))
+                        .loggedHoursFormatted("120.50")
+                        .billableAmount(new BigDecimal("150000.00"))
+                        .billableAmountFormatted("₹ 1,50,000.00")
+                        .openTasks(15)
+                        .overdueTasks(2)
+                        .build())
+                .deliveryFlow(ProjectPerformanceDashboardResponse.DeliveryFlow.builder()
+                        .projectsCount(10)
+                        .milestonesCount(8)
+                        .tasksCount(25)
+                        .timesheetsCount(40)
+                        .build())
+                .distribution(ProjectPerformanceDashboardResponse.ProjectDistribution.builder()
+                        .totalProjects(10)
+                        .onTrack(ProjectPerformanceDashboardResponse.DistributionItem.builder().count(7).percentage(70.0).formatted("7 (70.0%)").build())
+                        .atRisk(ProjectPerformanceDashboardResponse.DistributionItem.builder().count(2).percentage(20.0).formatted("2 (20.0%)").build())
+                        .delayed(ProjectPerformanceDashboardResponse.DistributionItem.builder().count(1).percentage(10.0).formatted("1 (10.0%)").build())
+                        .upcoming(ProjectPerformanceDashboardResponse.DistributionItem.builder().count(3).percentage(30.0).formatted("3 (30.0%)").build())
+                        .build())
+                .keyInsights(ProjectPerformanceDashboardResponse.KeyInsights.builder()
+                        .atRiskPercentage("20%")
+                        .delayedPercentage("10%")
+                        .dueSoonCount(3)
+                        .bulletPoints(List.of("20% of projects are currently at risk."))
+                        .build())
+                .profitability(List.of(ProjectPerformanceDashboardResponse.ProjectProfitabilityRow.builder()
+                        .sNo(1)
+                        .projectId("PRJ-001")
+                        .projectCode("PRJ-001")
+                        .projectName("School Management System")
+                        .revenue(new BigDecimal("1250000.00"))
+                        .revenueFormatted("₹ 12,50,000.00")
+                        .totalCost(BigDecimal.ZERO)
+                        .totalCostFormatted("₹ 0.00")
+                        .profit(new BigDecimal("1250000.00"))
+                        .profitFormatted("₹ 12,50,000.00")
+                        .margin(new BigDecimal("100.0"))
+                        .marginFormatted("100.0%")
+                        .health("On Track")
+                        .status("In Progress")
+                        .build()))
+                .build();
+
+        when(projectService.getPerformanceDashboard(any())).thenReturn(response);
+
+        mockMvc.perform(get("/api/v1/projects/performance/dashboard"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.overview.activeProjects").value(10))
+                .andExpect(jsonPath("$.data.financials.contractRevenueFormatted").value("₹ 12,50,000.00"))
+                .andExpect(jsonPath("$.data.delivery.openTasks").value(15))
+                .andExpect(jsonPath("$.data.profitability[0].projectCode").value("PRJ-001"));
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/projects/performance/summary returns 200 with summary metrics")
+    void getPerformanceSummary_Success() throws Exception {
+        ProjectPerformanceDashboardResponse response = ProjectPerformanceDashboardResponse.builder()
+                .overview(ProjectPerformanceDashboardResponse.OverviewKpis.builder().activeProjects(5).build())
+                .financials(ProjectPerformanceDashboardResponse.FinancialKpis.builder().contractRevenueFormatted("₹ 50,00,000.00").build())
+                .build();
+
+        when(projectService.getPerformanceSummary()).thenReturn(response);
+
+        mockMvc.perform(get("/api/v1/projects/performance/summary"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.overview.activeProjects").value(5))
+                .andExpect(jsonPath("$.data.financials.contractRevenueFormatted").value("₹ 50,00,000.00"));
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/projects/performance/profitability returns 200 with paginated rows")
+    void getPerformanceProfitability_Success() throws Exception {
+        ProjectProfitabilityPageResponse response = ProjectProfitabilityPageResponse.builder()
+                .page(0)
+                .size(5)
+                .totalElements(1)
+                .totalPages(1)
+                .content(List.of(ProjectPerformanceDashboardResponse.ProjectProfitabilityRow.builder()
+                        .sNo(1)
+                        .projectCode("PRJ-001")
+                        .projectName("School Management System")
+                        .health("On Track")
+                        .build()))
+                .build();
+
+        when(projectService.getProfitabilityPage(eq(0), eq(5), any(), any(), any(), any())).thenReturn(response);
+
+        mockMvc.perform(get("/api/v1/projects/performance/profitability?page=0&size=5"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.totalElements").value(1))
+                .andExpect(jsonPath("$.data.content[0].projectCode").value("PRJ-001"));
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/projects/performance/export returns CSV file")
+    void exportPerformanceProfitability_Success() throws Exception {
+        byte[] csv = "S.No,Project ID,Project Name\n1,PRJ-001,Test\n".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        when(projectService.exportProfitabilityCsv(any(), any())).thenReturn(csv);
+
+        mockMvc.perform(get("/api/v1/projects/performance/export"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("text/csv;charset=UTF-8"))
+                .andExpect(header().string("Content-Disposition", "attachment; filename=\"project_performance_report.csv\""));
     }
 }

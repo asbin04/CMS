@@ -5,12 +5,12 @@ export const INITIAL_PAYMENTS: PaymentRecord[] = [];
 export const initialDashboardData: FullDashboardData = {
   settings: {
     company_name: 'KALPANAAA SOFTWARE SOLUTIONS',
-    dashboard_title: 'CEO Dashboard',
+    dashboard_title: 'Admin Dashboard',
     dashboard_subtitle: 'Executive view of business performance across Finance, Sales, Delivery, People and Risk.',
     active_date_range: 'Apr 2024 - Mar 2025',
     last_updated: '15 Mar 2025, 10:30 AM',
     user_name: 'Akshit Ujjain',
-    user_role: 'CEO'
+    user_role: 'Admin'
   },
   kpis: [
     {

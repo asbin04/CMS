@@ -136,7 +136,7 @@ describe('PaymentsPage', () => {
 
     expect(screen.getByRole('heading', { name: 'Payments' })).toBeInTheDocument();
     expect(screen.getByText(/Track and manage client payments/i)).toBeInTheDocument();
-    expect(screen.getByText(/15 Oct 2026, 11:30 AM/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Last Updated:/i)).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Record Payment/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Export/i })).toBeInTheDocument();
   });

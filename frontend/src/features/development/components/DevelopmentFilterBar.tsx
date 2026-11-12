@@ -84,7 +84,7 @@ export const DevelopmentFilterBar: React.FC<DevelopmentFilterBarProps> = ({
             style={filterButtonStyle}
           >
             <Filter className="w-3.5 h-3.5 text-slate-500" />
-            <span>Filters ({activeFilterCount})</span>
+            <span>Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}</span>
           </button>
 
           {/* Clear Filters Button: preserved reference design and indigo icon styling */}

@@ -4,12 +4,10 @@ import com.company.project.projects.entity.ProjectTimesheetEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.Optional;
 
-@Repository
 public interface ProjectTimesheetRepository extends JpaRepository<ProjectTimesheetEntity, String>, JpaSpecificationExecutor<ProjectTimesheetEntity> {
 
     Optional<ProjectTimesheetEntity> findByTimesheetId(String timesheetId);

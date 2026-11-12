@@ -124,7 +124,7 @@ export const AttendanceFilterBar: React.FC<AttendanceFilterBarProps> = ({
               color: '#4F46E5',
             }}
           >
-            Filters ({activeFiltersCount})
+            Filters{activeFiltersCount > 0 ? ` (${activeFiltersCount})` : ''}
           </span>
           {showFiltersPanel ? (
             <ChevronUp size={14} color="#4F46E5" />

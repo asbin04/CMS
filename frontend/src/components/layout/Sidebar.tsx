@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
-import { ChevronDown, ChevronUp, Search, X, ChevronsDownUp, ChevronsUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { ChevronDown, ChevronUp, Search, X, ChevronsDownUp, ChevronsUpDown, ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
 import { navigationSections, footerNavigationItems } from '../../config/navigation';
 import { NavSection, NavItem } from '../../types/navigation';
 import { colors } from '../../constants/theme';
+import { logoutSession } from '../../services/api/apiClient';
 import { FlyoutPortal, SearchFlyoutPortal } from './FlyoutPortal';
 
 interface SidebarProps {
@@ -20,6 +21,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onCloseMobile,
 }) => {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logoutSession();
+    onCloseMobile?.();
+    navigate('/login', { replace: true });
+  };
 
   // Internal state if not controlled externally (starts collapsed by default)
   const [internalCollapsed, setInternalCollapsed] = useState(false);
@@ -976,6 +984,36 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </NavLink>
               );
             })}
+            <button
+              type="button"
+              onClick={handleLogout}
+              aria-label="Log out"
+              title="Log out"
+              tabIndex={isCollapsed ? 0 : -1}
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '8px',
+                border: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'transparent',
+                color: '#8A99B5',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+                e.currentTarget.style.color = '#FFFFFF';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = '#8A99B5';
+              }}
+            >
+              <LogOut size={17} strokeWidth={1.9} color="#7E8DA6" />
+            </button>
           </div>
 
           {/* Expanded Footer Items */}
@@ -1056,6 +1094,49 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </NavLink>
               );
             })}
+            <button
+              type="button"
+              onClick={handleLogout}
+              tabIndex={isCollapsed ? -1 : 0}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                width: '100%',
+                height: '36px',
+                padding: '0 14px',
+                border: 'none',
+                borderRadius: '6px',
+                backgroundColor: 'transparent',
+                color: '#8A99B5',
+                fontSize: '13.5px',
+                fontWeight: 400,
+                fontFamily: "'Inter', sans-serif",
+                textAlign: 'left',
+                cursor: 'pointer',
+                boxSizing: 'border-box',
+                transition: 'all 0.15s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.04)';
+                e.currentTarget.style.color = '#FFFFFF';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = '#8A99B5';
+              }}
+            >
+              <LogOut size={16} strokeWidth={1.8} color="#7E8DA6" />
+              <span
+                style={{
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                Log out
+              </span>
+            </button>
           </div>
         </div>
 

@@ -10,6 +10,9 @@ import {
   UpdateTaskPayload,
   ProjectFilterOptions,
   TaskFilterOptions,
+  ProjectPerformanceDashboardResponse,
+  ProjectProfitabilityPageResponse,
+  ProfitabilityQueryParams,
 } from '../types/project';
 
 export const projectService = {
@@ -89,5 +92,53 @@ export const projectService = {
 
   deleteTask: async (id: string): Promise<void> => {
     await apiClient.delete(API_ENDPOINTS.PROJECTS.TASK_BY_ID(id));
+  },
+
+  getPerformanceDashboard: async (period = 'THIS_MONTH'): Promise<ProjectPerformanceDashboardResponse> => {
+    const res = await apiClient.get<ProjectPerformanceDashboardResponse>(
+      `${API_ENDPOINTS.PROJECTS.PERFORMANCE_DASHBOARD}?period=${encodeURIComponent(period)}`
+    );
+    return res.data;
+  },
+
+  getPerformanceSummary: async (): Promise<ProjectPerformanceDashboardResponse> => {
+    const res = await apiClient.get<ProjectPerformanceDashboardResponse>(
+      API_ENDPOINTS.PROJECTS.PERFORMANCE_SUMMARY
+    );
+    return res.data;
+  },
+
+  getProfitabilityPage: async (params?: ProfitabilityQueryParams): Promise<ProjectProfitabilityPageResponse> => {
+    const searchParams = new URLSearchParams();
+    if (params?.page !== undefined) searchParams.append('page', String(params.page));
+    if (params?.size !== undefined) searchParams.append('size', String(params.size));
+    if (params?.search) searchParams.append('search', params.search);
+    if (params?.health) searchParams.append('health', params.health);
+    if (params?.sortBy) searchParams.append('sortBy', params.sortBy);
+    if (params?.sortDir) searchParams.append('sortDir', params.sortDir);
+
+    const query = searchParams.toString();
+    const url = query ? `${API_ENDPOINTS.PROJECTS.PERFORMANCE_PROFITABILITY}?${query}` : API_ENDPOINTS.PROJECTS.PERFORMANCE_PROFITABILITY;
+    const res = await apiClient.get<ProjectProfitabilityPageResponse>(url);
+    return res.data;
+  },
+
+  exportProfitabilityCsv: async (search?: string, health?: string): Promise<Blob> => {
+    const searchParams = new URLSearchParams();
+    if (search) searchParams.append('search', search);
+    if (health) searchParams.append('health', health);
+    const query = searchParams.toString();
+    const url = query ? `${API_ENDPOINTS.PROJECTS.PERFORMANCE_EXPORT}?${query}` : API_ENDPOINTS.PROJECTS.PERFORMANCE_EXPORT;
+
+    // Use fetch or apiClient with responseType blob
+    const response = await fetch(url.startsWith('http') ? url : `/api/v1${url}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`CSV Export failed: ${response.statusText}`);
+    }
+    return await response.blob();
   },
 };

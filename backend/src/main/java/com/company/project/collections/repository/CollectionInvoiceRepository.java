@@ -7,14 +7,12 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface CollectionInvoiceRepository extends JpaRepository<CollectionInvoiceEntity, String>, JpaSpecificationExecutor<CollectionInvoiceEntity> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
@@ -51,6 +49,9 @@ public interface CollectionInvoiceRepository extends JpaRepository<CollectionInv
 
     @Query("SELECT i FROM CollectionInvoiceEntity i WHERE i.invoiceDate <= :asOfDate ORDER BY i.invoiceDate DESC")
     List<CollectionInvoiceEntity> findInvoicesIssuedOnOrBefore(LocalDate asOfDate);
+
+    @Query("SELECT i.status, COUNT(i) FROM CollectionInvoiceEntity i GROUP BY i.status")
+    List<Object[]> countGroupedByStatus();
 
     long countByStatusIgnoreCase(String status);
 }

@@ -7,7 +7,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,7 +42,9 @@ class GlobalExceptionHandlerTest {
     @DisplayName("handleHttpMessageNotReadable returns 400 Bad Request")
     void testHandleHttpMessageNotReadable() {
         org.springframework.http.converter.HttpMessageNotReadableException ex =
-                new org.springframework.http.converter.HttpMessageNotReadableException("JSON parse error: Unrecognized field");
+                new org.springframework.http.converter.HttpMessageNotReadableException(
+                        "JSON parse error: Unrecognized field",
+                        new org.springframework.mock.http.MockHttpInputMessage(new byte[0]));
         ResponseEntity<ApiResponse<Void>> response = handler.handleHttpMessageNotReadable(ex);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());

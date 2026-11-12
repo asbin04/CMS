@@ -58,7 +58,7 @@ export const LeaveFilterBar: React.FC<LeaveFilterBarProps> = ({
             }`}
           >
             <Filter className="w-3.5 h-3.5 text-slate-500" />
-            <span>Filters ({activeCount})</span>
+            <span>Filters{activeCount > 0 ? ` (${activeCount})` : ''}</span>
             {showAdvancedFilters ? <ChevronUp className="w-3 h-3 ml-0.5" /> : <ChevronDown className="w-3 h-3 ml-0.5" />}
           </button>
 

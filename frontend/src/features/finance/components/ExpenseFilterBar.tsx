@@ -160,7 +160,7 @@ export const ExpenseFilterBar: React.FC<ExpenseFilterBarProps> = ({
               color: '#334155',
             }}
           >
-            Filters ({activeFilterCount})
+            Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
           </span>
         </button>
 

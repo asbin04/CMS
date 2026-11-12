@@ -8,18 +8,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.NumberFormat;
 import java.util.*;
 
 @RestController
-@RequestMapping("/api/v1/modules")
+@RequestMapping("/api/v1/modules/{moduleKey}")
 @RequiredArgsConstructor
 @Tag(name = "Dynamic Modules", description = "Dynamic module data engine for enterprise modules")
 public class ModuleDataController {
 
     private final JdbcTemplate jdbcTemplate;
 
-    @GetMapping("/{moduleKey}/summary")
+    @GetMapping("/summary")
     @Operation(summary = "Get dynamic KPI summary metrics for any module")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getModuleSummary(@PathVariable String moduleKey) {
         String key = moduleKey.toLowerCase();
@@ -88,7 +87,7 @@ public class ModuleDataController {
         return ResponseEntity.ok(ApiResponse.success(summary));
     }
 
-    @GetMapping("/{moduleKey}")
+    @GetMapping
     @Operation(summary = "Get dynamic records list for any module")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getModuleRecords(@PathVariable String moduleKey) {
         String key = moduleKey.toLowerCase();

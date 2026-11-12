@@ -512,19 +512,6 @@ export const OpportunitiesPage: React.FC = () => {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px' }}>
-          <span
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontWeight: 400,
-              fontSize: '12px',
-              lineHeight: '16px',
-              color: '#94A3B8',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            Last Updated: {lastUpdated || '—'}
-          </span>
-
           <button
             onClick={handleRefresh}
             title="Refresh"
