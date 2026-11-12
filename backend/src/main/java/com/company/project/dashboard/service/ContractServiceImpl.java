@@ -7,9 +7,8 @@ import com.company.project.dashboard.dto.CreateContractRequest;
 import com.company.project.dashboard.entity.Contract;
 import com.company.project.dashboard.repository.ContractRepository;
 import com.company.project.notification.service.NotificationService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,14 +21,18 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class ContractServiceImpl implements ContractService {
 
     private final ContractRepository contractRepository;
+    private final NotificationService notificationService;
 
-    @Autowired(required = false)
-    private NotificationService notificationService;
+    public ContractServiceImpl(
+            ContractRepository contractRepository,
+            @Nullable NotificationService notificationService) {
+        this.contractRepository = contractRepository;
+        this.notificationService = notificationService;
+    }
 
     @Override
     @Transactional(readOnly = true)

@@ -9,9 +9,8 @@ import com.company.project.dashboard.entity.TicketAssetApproval;
 import com.company.project.dashboard.repository.ClientApprovalRepository;
 import com.company.project.dashboard.repository.EmployeeApprovalRepository;
 import com.company.project.dashboard.repository.TicketAssetApprovalRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.company.project.notification.service.NotificationService;
@@ -19,20 +18,27 @@ import com.company.project.notification.service.NotificationService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class ApprovalServiceImpl implements ApprovalService {
 
     private final EmployeeApprovalRepository employeeRepo;
     private final ClientApprovalRepository clientRepo;
     private final TicketAssetApprovalRepository ticketAssetRepo;
+    private final NotificationService notificationService;
 
-    @Autowired(required = false)
-    private NotificationService notificationService;
+    public ApprovalServiceImpl(
+            EmployeeApprovalRepository employeeRepo,
+            ClientApprovalRepository clientRepo,
+            TicketAssetApprovalRepository ticketAssetRepo,
+            @Nullable NotificationService notificationService) {
+        this.employeeRepo = employeeRepo;
+        this.clientRepo = clientRepo;
+        this.ticketAssetRepo = ticketAssetRepo;
+        this.notificationService = notificationService;
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -74,7 +80,7 @@ public class ApprovalServiceImpl implements ApprovalService {
         EmployeeApproval item = employeeRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee approval not found with ID: " + id));
         item.setStatus(status);
-        item.setApprovedBy("Akshit Ujjain (CEO)");
+        item.setApprovedBy("Akshit Ujjain (Admin)");
         item.setDecidedAt(LocalDateTime.now());
         EmployeeApproval saved = employeeRepo.save(item);
         if (notificationService != null) {
@@ -127,7 +133,7 @@ public class ApprovalServiceImpl implements ApprovalService {
         ClientApproval item = clientRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Client approval not found with ID: " + id));
         item.setStatus(status);
-        item.setApprovedBy("Akshit Ujjain (CEO)");
+        item.setApprovedBy("Akshit Ujjain (Admin)");
         item.setDecidedAt(LocalDateTime.now());
         ClientApproval saved = clientRepo.save(item);
         if (notificationService != null) {
@@ -184,7 +190,7 @@ public class ApprovalServiceImpl implements ApprovalService {
         TicketAssetApproval item = ticketAssetRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket/Asset approval not found with ID: " + id));
         item.setStatus(status);
-        item.setApprovedBy("Akshit Ujjain (CEO)");
+        item.setApprovedBy("Akshit Ujjain (Admin)");
         item.setDecidedAt(LocalDateTime.now());
         TicketAssetApproval saved = ticketAssetRepo.save(item);
         if (notificationService != null) {

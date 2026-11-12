@@ -427,10 +427,6 @@ export const LeaveManagementPage: React.FC = () => {
 
         {/* Right side controls */}
         <div className="flex flex-wrap items-center gap-3 self-end md:self-auto">
-          <span className="text-xs text-slate-400">
-            Last Updated: <span className="text-slate-600 font-medium">{lastUpdated}</span>
-          </span>
-
           <button
             type="button"
             onClick={fetchData}

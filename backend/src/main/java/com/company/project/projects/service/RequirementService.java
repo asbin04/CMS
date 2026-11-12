@@ -564,7 +564,7 @@ public class RequirementService {
                 .scopeFreezeText(Boolean.TRUE.equals(entity.getScopeFreeze()) ? "Yes" : "No")
                 .scopeFrozenAt(entity.getScopeFrozenAt())
                 .scopeFrozenBy(entity.getScopeFrozenBy())
-                .assignedApprover(entity.getAssignedApprover() != null ? entity.getAssignedApprover() : "CEO – Akshit Ujjain")
+                .assignedApprover(entity.getAssignedApprover() != null ? entity.getAssignedApprover() : "Admin – Akshit Ujjain")
                 .approvedBy(entity.getApprovedBy())
                 .approvalDate(entity.getApprovalDate())
                 .completionPercentage(entity.getCompletionPercentage())
@@ -593,20 +593,6 @@ public class RequirementService {
         return LocalDate.now();
     }
 
-    private LocalDate resolveOptionalDate(LocalDate date, String dateStr) {
-        if (date != null) {
-            return date;
-        }
-        if (dateStr != null && !dateStr.isBlank()) {
-            try {
-                return LocalDate.parse(dateStr.trim());
-            } catch (Exception e) {
-                log.warn("Invalid optional date format: {}", dateStr);
-            }
-        }
-        return null;
-    }
-
     private boolean isManagerOrAdmin(List<String> userRoles) {
         if (userRoles == null) return false;
         return userRoles.stream().anyMatch(r ->
@@ -620,7 +606,7 @@ public class RequirementService {
 
     public String normalizeAssignedApprover(String input) {
         if (input == null || input.isBlank()) {
-            return "CEO – Akshit Ujjain";
+            return "Admin – Akshit Ujjain";
         }
         String trimmed = input.trim();
         String lower = trimmed.toLowerCase();
@@ -628,7 +614,7 @@ public class RequirementService {
             return trimmed.contains("–") || trimmed.contains("-") ? trimmed : "MD – Gaurav Tripathy";
         }
         if (lower.contains("akshit")) {
-            return trimmed.contains("–") || trimmed.contains("-") ? trimmed : "CEO – Akshit Ujjain";
+            return trimmed.contains("–") || trimmed.contains("-") ? trimmed : "Admin – Akshit Ujjain";
         }
         return trimmed;
     }

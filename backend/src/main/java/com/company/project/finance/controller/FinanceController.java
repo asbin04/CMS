@@ -1,24 +1,19 @@
 package com.company.project.finance.controller;
 
 import com.company.project.common.response.ApiResponse;
-import com.company.project.finance.dto.CreateExpenseRequest;
-import com.company.project.finance.dto.ExpenseResponse;
 import com.company.project.finance.dto.FinanceDashboardResponse;
 import com.company.project.finance.dto.FinancePeriod;
 import com.company.project.finance.service.FinanceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.time.LocalDate;
 
 @RestController

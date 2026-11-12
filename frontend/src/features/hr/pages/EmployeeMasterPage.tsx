@@ -422,9 +422,6 @@ export const EmployeeMasterPage: React.FC = () => {
           </div>
 
           <div className="flex items-center flex-wrap gap-2">
-            <span className="text-[11px] font-normal text-[#94A3B8] leading-[16px] mr-1.5">
-              Last Updated: {lastUpdated}
-            </span>
             <button
               onClick={handleRefresh}
               disabled={isRefreshing}
@@ -570,7 +567,7 @@ export const EmployeeMasterPage: React.FC = () => {
                 className="h-[34px] px-3 rounded-[8px] bg-[#EFF6FF]/60 border border-[#BFDBFE] text-[#4F46E5] text-[12px] font-semibold flex items-center gap-1.5 hover:bg-blue-50 transition-colors"
               >
                 <Filter className="w-3.5 h-3.5" />
-                <span>Filters ({activeFiltersCount})</span>
+                <span>Filters{activeFiltersCount > 0 ? ` (${activeFiltersCount})` : ''}</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isFiltersOpen ? 'rotate-180' : ''}`} />
               </button>
               <button

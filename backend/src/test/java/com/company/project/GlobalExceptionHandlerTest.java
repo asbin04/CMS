@@ -7,7 +7,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,7 +42,9 @@ class GlobalExceptionHandlerTest {
     @DisplayName("handleHttpMessageNotReadable returns 400 Bad Request")
     void testHandleHttpMessageNotReadable() {
         org.springframework.http.converter.HttpMessageNotReadableException ex =
-                new org.springframework.http.converter.HttpMessageNotReadableException("JSON parse error: Unrecognized field");
+                new org.springframework.http.converter.HttpMessageNotReadableException(
+                        "JSON parse error: Unrecognized field",
+                        new org.springframework.mock.http.MockHttpInputMessage(new byte[0]));
         ResponseEntity<ApiResponse<Void>> response = handler.handleHttpMessageNotReadable(ex);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -79,16 +80,16 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    @DisplayName("handleAccessDeniedException returns 403 Forbidden")
+    @DisplayName("handleAccessDenied returns 403 Forbidden")
     void testHandleAccessDeniedException() {
         org.springframework.security.access.AccessDeniedException ex =
                 new org.springframework.security.access.AccessDeniedException("Access is denied");
-        ResponseEntity<ApiResponse<Void>> response = handler.handleAccessDeniedException(ex);
+        ResponseEntity<ApiResponse<Void>> response = handler.handleAccessDenied(ex);
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         assertNotNull(response.getBody());
         assertFalse(response.getBody().isSuccess());
-        assertEquals("FORBIDDEN", response.getBody().getError());
+        assertEquals("Forbidden", response.getBody().getError());
     }
 
     @Test

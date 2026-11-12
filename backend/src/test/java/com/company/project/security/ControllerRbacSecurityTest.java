@@ -21,20 +21,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ControllerRbacSecurityTest {
 
     static {
-        File[] envFiles = new File[]{ new File(".env"), new File("backend/.env"), new File("../.env") };
+        File[] envFiles = new File[] { new File(".env"), new File("backend/.env"), new File("../.env") };
         for (File envFile : envFiles) {
             if (envFile.exists()) {
                 try (BufferedReader reader = new BufferedReader(new FileReader(envFile))) {
                     String line;
                     while ((line = reader.readLine()) != null) {
                         line = line.trim();
-                        if (line.isEmpty() || line.startsWith("#")) continue;
+                        if (line.isEmpty() || line.startsWith("#"))
+                            continue;
                         int eqIdx = line.indexOf('=');
                         if (eqIdx > 0) {
                             String key = line.substring(0, eqIdx).trim();
                             String value = line.substring(eqIdx + 1).trim();
                             if ((value.startsWith("\"") && value.endsWith("\"")) ||
-                                (value.startsWith("'") && value.endsWith("'"))) {
+                                    (value.startsWith("'") && value.endsWith("'"))) {
                                 value = value.substring(1, value.length() - 1);
                             }
                             if (System.getProperty(key) == null && System.getenv(key) == null) {
@@ -42,7 +43,8 @@ class ControllerRbacSecurityTest {
                             }
                         }
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
                 break;
             }
         }
@@ -55,14 +57,10 @@ class ControllerRbacSecurityTest {
     private JwtTokenProvider jwtTokenProvider;
 
     private String readOnlyToken;
-    private String adminToken;
-    private String ceoToken;
 
     @BeforeEach
     void setUp() {
         readOnlyToken = "Bearer " + jwtTokenProvider.generateToken("viewer.user", "USER");
-        adminToken = "Bearer " + jwtTokenProvider.generateToken("admin.user", "ADMIN");
-        ceoToken = "Bearer " + jwtTokenProvider.generateToken("ceo.user", "CEO");
     }
 
     @Test
@@ -77,9 +75,9 @@ class ControllerRbacSecurityTest {
                 }
                 """;
         mockMvc.perform(post("/api/v1/attendance")
-                        .header("Authorization", readOnlyToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
+                .header("Authorization", readOnlyToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
                 .andExpect(status().isForbidden());
     }
 
@@ -102,9 +100,9 @@ class ControllerRbacSecurityTest {
                 }
                 """;
         mockMvc.perform(post("/api/v1/clients")
-                        .header("Authorization", readOnlyToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
+                .header("Authorization", readOnlyToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
                 .andExpect(status().isForbidden());
     }
 
@@ -120,9 +118,9 @@ class ControllerRbacSecurityTest {
                 }
                 """;
         mockMvc.perform(post("/api/v1/collections/invoices")
-                        .header("Authorization", readOnlyToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
+                .header("Authorization", readOnlyToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
                 .andExpect(status().isForbidden());
     }
 
@@ -141,9 +139,9 @@ class ControllerRbacSecurityTest {
                 }
                 """;
         mockMvc.perform(post("/api/v1/approvals/employee")
-                        .header("Authorization", readOnlyToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
+                .header("Authorization", readOnlyToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
                 .andExpect(status().isForbidden());
     }
 
@@ -160,9 +158,9 @@ class ControllerRbacSecurityTest {
                 }
                 """;
         mockMvc.perform(post("/api/v1/contracts")
-                        .header("Authorization", readOnlyToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
+                .header("Authorization", readOnlyToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
                 .andExpect(status().isForbidden());
     }
 
@@ -170,9 +168,9 @@ class ControllerRbacSecurityTest {
     @DisplayName("DashboardController: PUT /api/v1/dashboard/ceo returns 403 Forbidden for read-only user")
     void testDashboardWriteForbiddenForReadOnly() throws Exception {
         mockMvc.perform(put("/api/v1/dashboard/ceo")
-                        .header("Authorization", readOnlyToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
+                .header("Authorization", readOnlyToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
                 .andExpect(status().isForbidden());
     }
 
@@ -191,9 +189,9 @@ class ControllerRbacSecurityTest {
                 }
                 """;
         mockMvc.perform(post("/api/v1/employees")
-                        .header("Authorization", readOnlyToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
+                .header("Authorization", readOnlyToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
                 .andExpect(status().isForbidden());
     }
 
@@ -201,7 +199,7 @@ class ControllerRbacSecurityTest {
     @DisplayName("FollowUpController: PUT /api/v1/follow-up-queue/1/toggle-done returns 403 Forbidden for read-only user")
     void testFollowUpWriteForbiddenForReadOnly() throws Exception {
         mockMvc.perform(put("/api/v1/follow-up-queue/1/toggle-done")
-                        .header("Authorization", readOnlyToken))
+                .header("Authorization", readOnlyToken))
                 .andExpect(status().isForbidden());
     }
 
@@ -221,9 +219,9 @@ class ControllerRbacSecurityTest {
                 }
                 """;
         mockMvc.perform(post("/api/v1/opportunities")
-                        .header("Authorization", readOnlyToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
+                .header("Authorization", readOnlyToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
                 .andExpect(status().isForbidden());
     }
 
@@ -241,9 +239,9 @@ class ControllerRbacSecurityTest {
                 }
                 """;
         mockMvc.perform(post("/api/v1/leaves")
-                        .header("Authorization", readOnlyToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
+                .header("Authorization", readOnlyToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
                 .andExpect(status().isForbidden());
     }
 
@@ -251,7 +249,7 @@ class ControllerRbacSecurityTest {
     @DisplayName("NotificationController: POST /api/v1/notifications/read-all returns 403 Forbidden for read-only user")
     void testNotificationWriteForbiddenForReadOnly() throws Exception {
         mockMvc.perform(post("/api/v1/notifications/read-all")
-                        .header("Authorization", readOnlyToken))
+                .header("Authorization", readOnlyToken))
                 .andExpect(status().isForbidden());
     }
 
@@ -264,9 +262,9 @@ class ControllerRbacSecurityTest {
                 }
                 """;
         mockMvc.perform(patch("/api/v1/proposals/P-2025-001/status")
-                        .header("Authorization", readOnlyToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
+                .header("Authorization", readOnlyToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
                 .andExpect(status().isForbidden());
     }
 
@@ -289,9 +287,9 @@ class ControllerRbacSecurityTest {
                 }
                 """;
         mockMvc.perform(post("/api/v1/leads")
-                        .header("Authorization", readOnlyToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
+                .header("Authorization", readOnlyToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
                 .andExpect(status().isForbidden());
     }
 
@@ -299,7 +297,19 @@ class ControllerRbacSecurityTest {
     @DisplayName("Read-only user is permitted to perform GET requests")
     void testReadOnlyUserCanPerformGet() throws Exception {
         mockMvc.perform(get("/api/v1/dashboard/ceo")
-                        .header("Authorization", readOnlyToken))
+                .header("Authorization", readOnlyToken))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Reset endpoints strictly require ADMIN role for single and nested paths")
+    void testResetEndpointsForbiddenForReadOnlyUser() throws Exception {
+        mockMvc.perform(post("/api/v1/approvals/reset")
+                        .header("Authorization", readOnlyToken))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(post("/api/v1/nested/scope/reset")
+                        .header("Authorization", readOnlyToken))
+                .andExpect(status().isForbidden());
     }
 }

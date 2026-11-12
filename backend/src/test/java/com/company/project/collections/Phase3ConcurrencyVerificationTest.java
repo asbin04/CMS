@@ -1,8 +1,6 @@
 package com.company.project.collections;
 
 import com.company.project.collections.dto.*;
-import com.company.project.collections.entity.CollectionInvoiceEntity;
-import com.company.project.collections.entity.CollectionPaymentEntity;
 import com.company.project.collections.entity.CollectionPaymentReversalEntity;
 import com.company.project.collections.repository.CollectionInvoiceRepository;
 import com.company.project.collections.repository.CollectionPaymentRepository;

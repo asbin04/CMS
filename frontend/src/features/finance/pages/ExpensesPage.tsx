@@ -202,20 +202,10 @@ export const ExpensesPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Right: Last Updated + Refresh + Export + Add Expense */}
+        {/* Right: Refresh + Export + Add Expense */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {/* Last Updated + Refresh button */}
+          {/* Refresh button */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span
-              style={{
-                fontFamily: "'Inter', sans-serif",
-                fontSize: '12px',
-                color: '#94A3B8',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              Last Updated: {lastUpdated}
-            </span>
             <button
               type="button"
               onClick={() => {

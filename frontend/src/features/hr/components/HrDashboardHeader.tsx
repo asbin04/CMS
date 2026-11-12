@@ -30,7 +30,7 @@ export const HrDashboardHeader: React.FC<HrDashboardHeaderProps> = ({
       className="flex flex-col gap-4 mb-1 w-full"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
-      {/* Title, Subtitle, Last Updated & Refresh */}
+      {/* Title, Subtitle & Refresh */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 w-full flex-wrap">
         {/* Left side: Teal People Icon + Title + Subtitle */}
         <div className="flex items-start sm:items-center gap-3.5 min-w-0 max-w-3xl">
@@ -47,11 +47,8 @@ export const HrDashboardHeader: React.FC<HrDashboardHeaderProps> = ({
           </div>
         </div>
 
-        {/* Right side: Last Updated & Refresh */}
+        {/* Right side: Refresh */}
         <div className="flex items-center gap-2.5 shrink-0">
-          <span className="text-xs text-slate-500 whitespace-nowrap">
-            Last Updated: <strong className="font-semibold text-slate-700">{lastUpdated}</strong>
-          </span>
           <button
             type="button"
             onClick={handleRefreshClick}

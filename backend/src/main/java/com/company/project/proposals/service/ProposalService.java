@@ -7,14 +7,13 @@ import com.company.project.proposals.dto.*;
 import com.company.project.proposals.entity.ProposalEntity;
 import com.company.project.proposals.repository.ProposalRepository;
 import jakarta.persistence.criteria.Predicate;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.company.project.notification.service.NotificationService;
@@ -26,7 +25,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class ProposalService {
 
@@ -37,9 +35,18 @@ public class ProposalService {
     private final ProposalRepository proposalRepository;
     private final ProposalCalculationService calculationService;
     private final ProposalIdGeneratorService idGeneratorService;
+    private final NotificationService notificationService;
 
-    @Autowired(required = false)
-    private NotificationService notificationService;
+    public ProposalService(
+            ProposalRepository proposalRepository,
+            ProposalCalculationService calculationService,
+            ProposalIdGeneratorService idGeneratorService,
+            @Nullable NotificationService notificationService) {
+        this.proposalRepository = proposalRepository;
+        this.calculationService = calculationService;
+        this.idGeneratorService = idGeneratorService;
+        this.notificationService = notificationService;
+    }
 
     @Transactional(readOnly = true)
     public PageResponse<ProposalResponse> getProposals(

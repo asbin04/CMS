@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { BrowserRouter, MemoryRouter, Routes, Route, Outlet } from 'react-router-dom';
+import { AppRouter } from '../app/router';
 import { FinanceDashboardPage } from '../features/finance/pages/FinanceDashboardPage';
 import { financeService } from '../features/finance/services/financeService';
 import { FinanceDashboardData } from '../features/finance/types/finance';
@@ -107,8 +108,8 @@ describe('FinanceDashboardPage Component', () => {
       screen.getByText('Monitor invoicing, collections, receivables, expenses and operating cash performance.')
     ).toBeInTheDocument();
 
-    // Last Updated & Buttons
-    expect(screen.getByText(/Last Updated:/i)).toBeInTheDocument();
+    // Buttons & No Last Updated
+    expect(screen.queryByText(/Last Updated:/i)).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Refresh Dashboard/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Export/i })).toBeInTheDocument();
 
@@ -238,7 +239,7 @@ describe('FinanceDashboardPage Component', () => {
     expect(errorSpy).toHaveBeenCalledTimes(2);
   });
 
-  it('adapts responsive grid classes and container max-width based on isSidebarCollapsed', async () => {
+  it('adapts responsive grid classes based on isSidebarCollapsed and fills full width', async () => {
     vi.spyOn(financeService, 'getDashboardData').mockResolvedValue(mockLiveData);
 
     const LayoutWithOutlet: React.FC<{ isSidebarCollapsed: boolean }> = ({ isSidebarCollapsed }) => (
@@ -262,7 +263,7 @@ describe('FinanceDashboardPage Component', () => {
 
     const kpiGridCollapsed = container.querySelector('.grid.gap-4');
     expect(kpiGridCollapsed?.className).toContain('lg:grid-cols-4');
-    expect(container.querySelector('.max-w-\\[1400px\\]')).toBeInTheDocument();
+    expect(container.firstElementChild?.className).toContain('w-full');
 
     // 2. Sidebar Expanded (false) -> uses xl:grid-cols-4 and xl:grid-cols-12
     rerender(
@@ -277,5 +278,22 @@ describe('FinanceDashboardPage Component', () => {
 
     const kpiGridExpanded = container.querySelector('.grid.gap-4');
     expect(kpiGridExpanded?.className).toContain('xl:grid-cols-4');
+  });
+
+  it('routes correctly to Finance Dashboard via AppRouter from /finance/dashboard and /finance', async () => {
+    localStorage.setItem('auth_token', 'mock-valid-token');
+    vi.spyOn(financeService, 'getDashboardData').mockResolvedValue(mockLiveData);
+
+    render(
+      <MemoryRouter initialEntries={['/finance/dashboard']}>
+        <AppRouter />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1, name: /Finance Dashboard/i })).toBeInTheDocument();
+    });
+
+    expect(screen.getByText('Monitor invoicing, collections, receivables, expenses and operating cash performance.')).toBeInTheDocument();
   });
 });

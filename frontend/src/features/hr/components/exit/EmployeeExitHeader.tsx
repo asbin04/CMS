@@ -33,12 +33,8 @@ export const EmployeeExitHeader: React.FC<EmployeeExitHeaderProps> = ({
         </div>
       </div>
 
-      {/* Right Controls: Timestamp & Actions */}
+      {/* Right Controls: Actions */}
       <div className="flex items-center flex-wrap gap-2.5 self-start md:self-auto">
-        <span className="text-xs text-slate-400 font-normal whitespace-nowrap">
-          Last Updated: {lastUpdated}
-        </span>
-
         {/* Refresh Icon Button */}
         <button
           type="button"

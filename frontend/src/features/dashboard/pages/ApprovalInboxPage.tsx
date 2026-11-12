@@ -194,11 +194,8 @@ export const ApprovalInboxPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Last Updated Timestamp + Refresh */}
+        {/* Refresh button */}
         <div className="flex flex-row items-center gap-2 text-xs text-[#64748B]">
-          <span>
-            Last Updated: <strong className="font-semibold text-slate-700">{lastRefreshed}</strong>
-          </span>
           <button
             onClick={handleManualRefresh}
             disabled={isLoading || isRefreshing}

@@ -135,4 +135,90 @@ export interface TaskFilterOptions {
   priorities: string[];
 }
 
+export interface ProjectPerformanceDashboardResponse {
+  overview: {
+    activeProjects: number;
+    atRiskProjects: number;
+    delayedProjects: number;
+    dueSoonProjects: number;
+  };
+  financials: {
+    contractRevenueValue: number;
+    contractRevenueFormatted: string;
+    totalProjectCost: number;
+    totalProjectCostFormatted: string;
+    estimatedProjectProfit: number;
+    estimatedProjectProfitFormatted: string;
+    overallProjectMargin: number;
+    overallProjectMarginFormatted: string;
+  };
+  delivery: {
+    loggedHours: number;
+    loggedHoursFormatted: string;
+    billableAmount: number;
+    billableAmountFormatted: string;
+    openTasks: number;
+    overdueTasks: number;
+  };
+  deliveryFlow: {
+    projectsCount: number;
+    milestonesCount: number;
+    tasksCount: number;
+    timesheetsCount: number;
+  };
+  distribution: {
+    totalProjects: number;
+    onTrack: { count: number; percentage: number; formatted: string };
+    atRisk: { count: number; percentage: number; formatted: string };
+    delayed: { count: number; percentage: number; formatted: string };
+    upcoming: { count: number; percentage: number; formatted: string };
+  };
+  keyInsights: {
+    atRiskPercentage: string;
+    delayedPercentage: string;
+    dueSoonCount: number;
+    bulletPoints: string[];
+  };
+  profitability: ProjectProfitabilityRow[];
+}
+
+export interface ProjectProfitabilityRow {
+  sNo: number;
+  projectId: string;
+  projectCode: string;
+  projectName: string;
+  revenue: number;
+  revenueFormatted: string;
+  totalCost: number;
+  totalCostFormatted: string;
+  profit: number;
+  profitFormatted: string;
+  margin: number;
+  marginFormatted: string;
+  health: string;
+  status: string;
+}
+
+export interface ProjectProfitabilityPageResponse {
+  content: ProjectProfitabilityRow[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  last: boolean;
+  first: boolean;
+  healthFilter: string;
+  searchQuery?: string;
+}
+
+export interface ProfitabilityQueryParams {
+  page?: number;
+  size?: number;
+  search?: string;
+  health?: string;
+  sortBy?: string;
+  sortDir?: 'ASC' | 'DESC';
+}
+
+
 

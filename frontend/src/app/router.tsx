@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy } from 'react';
 import { Routes, Route, Navigate, useOutletContext } from 'react-router-dom';
 import { AppLayout, AppLayoutContextType } from '../components/layout/AppLayout';
 import { ModulePlaceholder } from '../components/common/ModulePlaceholder';
@@ -34,6 +34,109 @@ import { SalesDashboardPage } from '../features/reports/sales-dashboard';
 import { HrDashboardPage as HrReportsDashboardPage } from '../features/reports/hr-dashboard';
 import { LoginPage } from '../features/auth/pages/LoginPage';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
+import { LoginPage } from '../features/auth/pages/LoginPage';
+
+const CeoDashboardPage = lazy(() =>
+  import('../features/dashboard/pages/CeoDashboardPage').then((m) => ({ default: m.CeoDashboardPage }))
+);
+const ApprovalInboxPage = lazy(() =>
+  import('../features/dashboard/pages/ApprovalInboxPage').then((m) => ({ default: m.ApprovalInboxPage }))
+);
+const FollowUpQueuePage = lazy(() =>
+  import('../features/dashboard/pages/FollowUpQueuePage').then((m) => ({ default: m.FollowUpQueuePage }))
+);
+const OpportunitiesPage = lazy(() =>
+  import('../features/sales/pages/OpportunitiesPage').then((m) => ({ default: m.OpportunitiesPage }))
+);
+const ContractsPage = lazy(() =>
+  import('../features/sales/pages/ContractsPage').then((m) => ({ default: m.ContractsPage }))
+);
+const ProposalsPage = lazy(() =>
+  import('../features/proposals/pages/ProposalsPage').then((m) => ({ default: m.ProposalsPage }))
+);
+const CollectionsPage = lazy(() =>
+  import('../features/collections/pages/CollectionsPage').then((m) => ({ default: m.CollectionsPage }))
+);
+const EmployeeMasterPage = lazy(() =>
+  import('../features/hr/pages/EmployeeMasterPage').then((m) => ({ default: m.EmployeeMasterPage }))
+);
+const HrDashboardPage = lazy(() =>
+  import('../features/hr/pages/HrDashboardPage').then((m) => ({ default: m.HrDashboardPage }))
+);
+const LeadsPage = lazy(() =>
+  import('../features/sales/pages/LeadsPage').then((m) => ({ default: m.LeadsPage }))
+);
+const ClientsPage = lazy(() =>
+  import('../features/clients/pages/ClientsPage').then((m) => ({ default: m.ClientsPage }))
+);
+const AttendancePage = lazy(() =>
+  import('../features/attendance/pages/AttendancePage').then((m) => ({ default: m.AttendancePage }))
+);
+const LeaveManagementPage = lazy(() =>
+  import('../features/leave/pages/LeaveManagementPage').then((m) => ({ default: m.LeaveManagementPage }))
+);
+const ProjectsTasksPage = lazy(() =>
+  import('../features/projects/pages/ProjectsTasksPage').then((m) => ({ default: m.ProjectsTasksPage }))
+);
+const UiuxPage = lazy(() =>
+  import('../features/projects/pages/UiuxPage').then((m) => ({ default: m.UiuxPage }))
+);
+const UatPage = lazy(() =>
+  import('../features/projects/pages/UatPage').then((m) => ({ default: m.UatPage }))
+);
+const EmployeeExitPage = lazy(() =>
+  import('../features/hr/pages/EmployeeExitPage').then((m) => ({ default: m.EmployeeExitPage }))
+);
+const PayrollSalaryPage = lazy(() =>
+  import('../features/hr/pages/PayrollSalaryPage').then((m) => ({ default: m.PayrollSalaryPage }))
+);
+const PaymentsPage = lazy(() =>
+  import('../features/finance/payments/pages/PaymentsPage').then((m) => ({ default: m.PaymentsPage }))
+);
+const ExpensesPage = lazy(() =>
+  import('../features/finance/pages/ExpensesPage').then((m) => ({ default: m.ExpensesPage }))
+);
+const SupportTicketsPage = lazy(() =>
+  import('../features/support/pages/SupportTicketsPage').then((m) => ({ default: m.SupportTicketsPage }))
+);
+const AmcSlaPage = lazy(() =>
+  import('../features/support/pages/AmcSlaPage').then((m) => ({ default: m.AmcSlaPage }))
+);
+const InvoicesPage = lazy(() =>
+  import('../features/invoices/pages/InvoicesPage').then((m) => ({ default: m.InvoicesPage }))
+);
+const TimesheetsRequirementsPage = lazy(() =>
+  import('../features/projects/pages/TimesheetsRequirementsPage').then((m) => ({
+    default: m.TimesheetsRequirementsPage,
+  }))
+);
+const DevelopmentPage = lazy(() =>
+  import('../features/development/pages/DevelopmentPage').then((m) => ({ default: m.DevelopmentPage }))
+);
+const DeploymentPage = lazy(() =>
+  import('../features/projects/pages/DeploymentPage').then((m) => ({ default: m.DeploymentPage }))
+);
+const ProjectDashboardPage = lazy(() =>
+  import('../features/projects/pages/ProjectDashboardPage').then((m) => ({ default: m.ProjectDashboardPage }))
+);
+const FinanceDashboardPage = lazy(() =>
+  import('../features/finance/pages/FinanceDashboardPage').then((m) => ({ default: m.FinanceDashboardPage }))
+);
+const ReportsFinanceDashboardPage = lazy(() =>
+  import('../features/reports/pages/ReportsFinanceDashboardPage').then((m) => ({
+    default: m.ReportsFinanceDashboardPage,
+  }))
+);
+const TransactionControlPage = lazy(() =>
+  import('../features/reports/pages/TransactionControlPage').then((m) => ({
+    default: m.TransactionControlPage,
+  }))
+);
+const SettingsPage = lazy(() =>
+  import('../features/settings/pages/SettingsPage').then((m) => ({
+    default: m.SettingsPage,
+  }))
+);
 
 const CeoDashboardRoute: React.FC = () => {
   const context = useOutletContext<AppLayoutContextType>();
@@ -70,7 +173,12 @@ export const AppRouter: React.FC = () => {
         <Route path="/management/approval-inbox" element={<ApprovalInboxPage />} />
         <Route path="/management/follow-up-queue" element={<FollowUpQueuePage />} />
         <Route path="/management/collections" element={<CollectionsPage />} />
-        <Route path="/finance/collections" element={<FinanceCollectionsPage />} />
+        <Route path="/finance/dashboard" element={<FinanceDashboardPage />} />
+        <Route path="/finance" element={<Navigate to="/finance/dashboard" replace />} />
+        <Route path="/reports/finance-dashboard" element={<ReportsFinanceDashboardPage />} />
+        <Route path="/reports/transaction-control" element={<TransactionControlPage />} />
+        <Route path="/transaction-control" element={<Navigate to="/reports/transaction-control" replace />} />
+        <Route path="/collections" element={<Navigate to="/management/collections" replace />} />
         <Route path="/finance/invoices" element={<InvoicesPage />} />
         <Route path="/invoices" element={<Navigate to="/finance/invoices" replace />} />
         <Route path="/sales/leads" element={<LeadsPage />} />
@@ -118,11 +226,13 @@ export const AppRouter: React.FC = () => {
           section.items
             .filter(
               (item) =>
+                item.path !== '/reports/project-dashboard' &&
+                item.path !== '/project-dashboard' &&
                 item.path !== '/management/ceo-dashboard' &&
                 item.path !== '/management/approval-inbox' &&
                 item.path !== '/management/follow-up-queue' &&
                 item.path !== '/management/collections' &&
-                item.path !== '/finance/collections' &&
+                item.path !== '/collections' &&
                 item.path !== '/sales/leads' &&
                 item.path !== '/sales/opportunities' &&
                 item.path !== '/sales/proposals' &&
@@ -139,6 +249,8 @@ export const AppRouter: React.FC = () => {
                 item.path !== '/finance/dashboard' &&
                 item.path !== '/finance' &&
                 item.path !== '/reports/finance-dashboard' &&
+                item.path !== '/reports/transaction-control' &&
+                item.path !== '/transaction-control' &&
                 item.path !== '/finance/invoices' &&
                 item.path !== '/invoices' &&
                 item.path !== '/projects/timesheets' &&
@@ -155,15 +267,6 @@ export const AppRouter: React.FC = () => {
               />
             ))
         )}
-
-        {/* Footer navigation routes */}
-        {footerNavigationItems.map((item) => (
-          <Route
-            key={item.path}
-            path={item.path}
-            element={<ModulePlaceholder title={item.label} category="General" />}
-          />
-        ))}
 
         {/* Catch-all route */}
         <Route path="*" element={<Navigate to="/management/ceo-dashboard" replace />} />

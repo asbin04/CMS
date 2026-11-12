@@ -66,7 +66,7 @@ class EmployeeExitServiceTest {
     @DisplayName("getExitRecords returns mapped PageResponse of EmployeeExitResponse")
     void testGetExitRecords() {
         Page<EmployeeExitEntity> page = new PageImpl<>(List.of(sampleEntity));
-        when(employeeExitRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
+        when(employeeExitRepository.findAll(org.mockito.ArgumentMatchers.<Specification<EmployeeExitEntity>>any(), any(Pageable.class))).thenReturn(page);
 
         PageResponse<EmployeeExitResponse> result = employeeExitService.getExitRecords(
                 null, null, null, null, null, null, "id-desc", 1, 10);

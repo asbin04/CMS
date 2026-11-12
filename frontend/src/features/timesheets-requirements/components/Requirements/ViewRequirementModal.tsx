@@ -117,7 +117,7 @@ export const ViewRequirementModal: React.FC<ViewRequirementModalProps> = ({ isOp
             <div className="sm:col-span-2">
               <span className="block text-[11px] font-medium text-slate-400">Assigned Approver</span>
               <span className="block text-xs font-semibold text-slate-800 mt-0.5">
-                {requirement.assignedApprover || 'CEO – Akshit Ujjain'}
+                {requirement.assignedApprover || 'Admin – Akshit Ujjain'}
               </span>
             </div>
           </div>

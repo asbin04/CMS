@@ -15,8 +15,6 @@ import {
   CalendarOff,
   CreditCard,
   LogOut,
-  Star,
-  GraduationCap,
   Briefcase,
   Clock,
   PenTool,
@@ -24,7 +22,6 @@ import {
   Rocket,
   IndianRupee,
   Receipt,
-  CircleDollarSign,
   Hash,
   Copy,
   Settings,
@@ -47,7 +44,7 @@ export const navigationSections: NavSection[] = [
     variant: 'management',
     defaultExpanded: true,
     items: [
-      { id: 'ceo-dashboard', label: 'CEO Dashboard', path: '/management/ceo-dashboard', icon: LayoutGrid },
+      { id: 'ceo-dashboard', label: 'Admin Dashboard', path: '/management/ceo-dashboard', icon: LayoutGrid },
       { id: 'approval-inbox', label: 'Approval Inbox', path: '/management/approval-inbox', icon: Inbox },
       { id: 'follow-up-queue', label: 'Follow-Up Queue', path: '/management/follow-up-queue', icon: RotateCcw },
       { id: 'collections-mgmt', label: 'Collections', path: '/management/collections', icon: BarChart3 },
@@ -87,9 +84,6 @@ export const navigationSections: NavSection[] = [
       { id: 'leave', label: 'Leave', path: '/hr/leave', icon: CalendarOff },
       { id: 'payroll-salary', label: 'Payroll / Salary', path: '/hr/payroll-salary', icon: CreditCard },
       { id: 'employee-exit', label: 'Employee Exit', path: '/hr/employee-exit', icon: LogOut },
-      { id: 'performance', label: 'Performance', path: '/hr/performance', icon: Star },
-      { id: 'training-learning', label: 'Training / Learning', path: '/hr/training-learning', icon: GraduationCap },
-      { id: 'assets', label: 'Assets', path: '/hr/assets', icon: Briefcase },
     ],
   },
   {
@@ -116,7 +110,6 @@ export const navigationSections: NavSection[] = [
       { id: 'invoices', label: 'Invoices', path: '/finance/invoices', icon: Receipt },
       { id: 'payments', label: 'Payments', path: '/finance/payments', icon: CreditCard },
       { id: 'expenses', label: 'Expenses', path: '/finance/expenses', icon: HelpCircle },
-      { id: 'collections-fin', label: 'Collections', path: '/finance/collections', icon: CircleDollarSign },
       { id: 'cash-flow', label: 'Cash Flow', path: '/finance/cash-flow', icon: TrendingUp },
     ],
   },
@@ -160,12 +153,6 @@ export const navigationSections: NavSection[] = [
 ];
 
 export const footerNavigationItems: NavItem[] = [
-  {
-    id: 'help-support',
-    label: 'Help & Support',
-    path: '/help-support',
-    icon: HelpCircle,
-  },
   {
     id: 'settings',
     label: 'Settings',

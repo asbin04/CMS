@@ -14,17 +14,15 @@ import com.company.project.finance.dto.ReceivablesAgeingBucketDto;
 import com.company.project.finance.service.ReceivablesCalculationService;
 import com.company.project.common.exception.ResourceNotFoundException;
 import com.company.project.common.response.PageResponse;
-import com.company.project.finance.service.ReceivablesCalculationService;
 import com.company.project.notification.service.NotificationService;
 import jakarta.persistence.criteria.Predicate;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +33,6 @@ import java.time.ZoneId;
 import java.util.*;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class CollectionsService {
 
@@ -48,9 +45,26 @@ public class CollectionsService {
     private final InvoiceIdGeneratorService invoiceIdGeneratorService;
     private final CollectionCommunicationRepository communicationRepository;
     private final ReceivablesCalculationService receivablesCalculationService;
+    private final NotificationService notificationService;
 
-    @Autowired(required = false)
-    private NotificationService notificationService;
+    public CollectionsService(
+            CollectionInvoiceRepository invoiceRepository,
+            CollectionPaymentRepository paymentRepository,
+            CollectionPaymentReversalRepository paymentReversalRepository,
+            CollectionsCalculationService calculationService,
+            InvoiceIdGeneratorService invoiceIdGeneratorService,
+            CollectionCommunicationRepository communicationRepository,
+            ReceivablesCalculationService receivablesCalculationService,
+            @Nullable NotificationService notificationService) {
+        this.invoiceRepository = invoiceRepository;
+        this.paymentRepository = paymentRepository;
+        this.paymentReversalRepository = paymentReversalRepository;
+        this.calculationService = calculationService;
+        this.invoiceIdGeneratorService = invoiceIdGeneratorService;
+        this.communicationRepository = communicationRepository;
+        this.receivablesCalculationService = receivablesCalculationService;
+        this.notificationService = notificationService;
+    }
 
     @Transactional(readOnly = true)
     public PageResponse<InvoiceResponse> getInvoices(
@@ -640,19 +654,19 @@ public class CollectionsService {
         // Invoices with status 'Due Soon'
         BigDecimal dueSoonAmount = BigDecimal.ZERO;
         long dueSoonCount = 0;
-        List<CollectionInvoiceEntity> allInvoices = invoiceRepository.findInvoicesIssuedOnOrBefore(today);
-        for (CollectionInvoiceEntity inv : allInvoices) {
+        List<CollectionInvoiceEntity> invoicesDueSoon = invoiceRepository.findInvoicesIssuedOnOrBefore(today);
+        for (CollectionInvoiceEntity inv : invoicesDueSoon) {
             if ("Due Soon".equalsIgnoreCase(inv.getStatus()) && inv.getOutstanding() != null && inv.getOutstanding().compareTo(BigDecimal.ZERO) > 0) {
                 dueSoonAmount = dueSoonAmount.add(inv.getOutstanding());
                 dueSoonCount++;
             }
         }
 
-        List<CollectionPaymentEntity> allPayments = paymentRepository.findAll();
-        BigDecimal collectedTotal = allPayments.stream()
-                .map(CollectionPaymentEntity::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        long paymentCount = allPayments.size();
+        BigDecimal collectedTotal = paymentRepository.sumTotalPayments();
+        if (collectedTotal == null) {
+            collectedTotal = BigDecimal.ZERO;
+        }
+        long paymentCount = paymentRepository.count();
 
         if (collectedTotal.compareTo(BigDecimal.ZERO) == 0) {
             collectedTotal = BigDecimal.valueOf(960000);
@@ -718,8 +732,7 @@ public class CollectionsService {
 
     @Transactional(readOnly = true)
     public List<StatusDistributionItemResponse> getStatusDistribution() {
-        List<CollectionInvoiceEntity> invoices = invoiceRepository.findAll();
-        long total = Math.max(1, invoices.size());
+        List<Object[]> groupedCounts = invoiceRepository.countGroupedByStatus();
 
         Map<String, Long> statusCounts = new HashMap<>();
         statusCounts.put("Paid", 0L);
@@ -728,9 +741,16 @@ public class CollectionsService {
         statusCounts.put("Overdue", 0L);
         statusCounts.put("Open", 0L);
 
-        for (CollectionInvoiceEntity inv : invoices) {
-            statusCounts.put(inv.getStatus(), statusCounts.getOrDefault(inv.getStatus(), 0L) + 1);
+        long totalCount = 0;
+        for (Object[] row : groupedCounts) {
+            String status = row[0] != null ? row[0].toString() : "";
+            long count = row[1] != null ? ((Number) row[1]).longValue() : 0L;
+            totalCount += count;
+            if (!status.isEmpty()) {
+                statusCounts.put(status, statusCounts.getOrDefault(status, 0L) + count);
+            }
         }
+        long total = Math.max(1, totalCount);
 
         List<StatusDistributionItemResponse> list = new ArrayList<>();
         list.add(new StatusDistributionItemResponse("Paid", statusCounts.get("Paid"), (int) Math.round((statusCounts.get("Paid") * 100.0) / total), "#10B981"));

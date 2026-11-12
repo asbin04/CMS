@@ -62,7 +62,7 @@ export const PaymentsFilterCard: React.FC<PaymentsFilterCardProps> = ({
             className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
           >
             <Filter className="w-3.5 h-3.5 text-slate-500" />
-            <span>Filters ({activeFilterCount})</span>
+            <span>Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}</span>
           </button>
 
           <button

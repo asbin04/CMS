@@ -9,7 +9,6 @@ import com.company.project.finance.dto.ReceivablesAgeingBucketDto;
 import com.company.project.finance.entity.FinanceTargetEntity;
 import com.company.project.finance.repository.ExpenseRepository;
 import com.company.project.finance.repository.FinanceTargetRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -77,9 +76,6 @@ class FinanceServiceImplTest {
     @Test
     @DisplayName("Should assemble dashboard data and calculate operating cash and collection rate correctly")
     void testGetDashboardCalculation() {
-        LocalDate start = LocalDate.of(2024, 4, 1);
-        LocalDate end = LocalDate.of(2025, 3, 31);
-
         when(invoiceRepository.sumInvoiceAmountInPeriod(any(), any())).thenReturn(BigDecimal.valueOf(1000000));
         when(paymentRepository.sumPaymentsInPeriod(any(), any())).thenReturn(BigDecimal.valueOf(500000));
         when(expenseRepository.sumTotalExpensesInPeriod(any(), any())).thenReturn(BigDecimal.valueOf(300000));

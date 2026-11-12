@@ -7,7 +7,7 @@ export function normalizeDashboardData(raw: any): FullDashboardData {
     return {
       settings: {
         company_name: '—',
-        dashboard_title: 'CEO Dashboard',
+        dashboard_title: 'Admin Dashboard',
         dashboard_subtitle: '—',
         active_date_range: '—',
         last_updated: '—',
@@ -34,9 +34,13 @@ export function normalizeDashboardData(raw: any): FullDashboardData {
   const payload = (raw.data && typeof raw.data === 'object' && !Array.isArray(raw.data)) ? raw.data : raw;
 
   const rawSettings = payload.settings || {};
+  const rawDashboardTitle = rawSettings.dashboard_title || rawSettings.dashboardTitle;
   const settings = {
     company_name: rawSettings.company_name || rawSettings.companyName || '—',
-    dashboard_title: rawSettings.dashboard_title || rawSettings.dashboardTitle || 'CEO Dashboard',
+    dashboard_title:
+      !rawDashboardTitle || rawDashboardTitle === 'CEO Dashboard'
+        ? 'Admin Dashboard'
+        : rawDashboardTitle,
     dashboard_subtitle: rawSettings.dashboard_subtitle || rawSettings.dashboardSubtitle || '—',
     active_date_range: rawSettings.active_date_range || rawSettings.activeDateRange || '—',
     last_updated: rawSettings.last_updated || rawSettings.lastUpdated || payload.lastUpdated || payload.serverTime || '—',

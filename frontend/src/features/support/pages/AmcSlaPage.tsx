@@ -198,9 +198,9 @@ export const AmcSlaPage: React.FC = () => {
   }, [contracts, kpis]);
 
   return (
-    <div className="flex flex-col items-start p-6 gap-6 w-full max-w-[1020px] min-h-screen bg-[#F8FAFC] font-['Inter']">
+    <div className="flex flex-col p-6 gap-6 w-full min-h-screen bg-[#F8FAFC] font-['Inter']">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between w-full max-w-[972px] gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between w-full gap-4">
         {/* Title & Icon */}
         <div className="flex flex-row items-center gap-3">
           <div className="flex items-center justify-center w-[40px] h-[40px] bg-[#DBEAFE] rounded-[12px] shrink-0">
@@ -238,7 +238,7 @@ export const AmcSlaPage: React.FC = () => {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex flex-row items-start gap-8 w-full max-w-[972px] h-[29px] border-b border-[#E2E8F0]">
+      <div className="flex flex-row items-start gap-8 w-full h-[29px] border-b border-[#E2E8F0]">
         <button
           type="button"
           onClick={() => {
@@ -277,7 +277,7 @@ export const AmcSlaPage: React.FC = () => {
           <AmcSlaKpiCards kpis={kpis} isLoading={isLoading} />
 
           {/* Unified Filter & Table Container Box */}
-          <div className="w-full max-w-[972px] bg-white border border-[#E2E8F0] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[12px] overflow-hidden flex flex-col">
+          <div className="w-full bg-white border border-[#E2E8F0] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[12px] overflow-hidden flex flex-col">
             <AmcSlaFilterBar
               search={search}
               onSearchChange={setSearch}
@@ -305,7 +305,7 @@ export const AmcSlaPage: React.FC = () => {
 
       {/* Tab 2 Content: Renewals & Alerts */}
       {activeTab === 'renewals' && (
-        <div className="flex flex-col items-start gap-5 w-full max-w-[972px]">
+        <div className="flex flex-col items-start gap-5 w-full">
           {/* 4 Metric Cards */}
           <AmcRenewalsKpiCards
             total={renewalMetrics.total}
@@ -316,7 +316,7 @@ export const AmcSlaPage: React.FC = () => {
           />
 
           {/* Charts and Alerts Row */}
-          <div className="flex flex-row flex-wrap sm:flex-nowrap justify-between items-start gap-5 w-full max-w-[972px]">
+          <div className="flex flex-row flex-wrap sm:flex-nowrap justify-between items-start gap-5 w-full">
             <AmcRenewalTimelineChart
               overdue={renewalMetrics.overdue}
               dueSoon30={renewalMetrics.dueSoon30}

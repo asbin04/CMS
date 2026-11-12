@@ -62,7 +62,7 @@ public class ProjectRequirementEntity {
 
     @Column(name = "assigned_approver", length = 100)
     @Builder.Default
-    private String assignedApprover = "CEO – Akshit Ujjain";
+    private String assignedApprover = "Admin – Akshit Ujjain";
 
     @Column(name = "approved_by", length = 100)
     private String approvedBy;

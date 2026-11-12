@@ -46,7 +46,7 @@ describe('CeoDashboardPage Component', () => {
     });
 
     // Error banner is displayed
-    expect(screen.getByText(/Failed to load CEO Dashboard data/i)).toBeInTheDocument();
+    expect(screen.getByText(/Failed to load Admin Dashboard data/i)).toBeInTheDocument();
     expect(screen.getByText(/Network error: DB connection timed out/i)).toBeInTheDocument();
 
     const retryBtn = screen.getByRole('button', { name: /retry/i });
@@ -133,6 +133,6 @@ describe('CeoDashboardPage Component', () => {
     });
 
     // Dashboard title should remain initial
-    expect(screen.getByText('CEO Dashboard')).toBeInTheDocument();
+    expect(screen.getByText('Admin Dashboard')).toBeInTheDocument();
   });
 });

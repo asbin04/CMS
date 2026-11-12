@@ -1,8 +1,6 @@
 package com.company.project.notification;
 
 import com.company.project.notification.dto.CreateNotificationRequest;
-import com.company.project.notification.entity.PortalNotificationEntity;
-import com.company.project.notification.repository.PortalNotificationRepository;
 import com.company.project.security.JwtTokenProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +16,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
-import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -62,9 +59,6 @@ class NotificationControllerTest {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
-
-    @Autowired
-    private PortalNotificationRepository repository;
 
     private String validToken;
 

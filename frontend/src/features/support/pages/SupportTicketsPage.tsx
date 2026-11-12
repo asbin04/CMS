@@ -216,10 +216,9 @@ export const SupportTicketsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Actions: Last Updated + Export + Create Ticket */}
+        {/* Right Actions: Refresh + Export + Create Ticket */}
         <div className="flex items-center gap-3 flex-wrap">
           <div className="flex items-center gap-2 text-xs text-[#6B7280]">
-            <span>Last Updated: {lastUpdated}</span>
             <button
               type="button"
               onClick={handleRefresh}

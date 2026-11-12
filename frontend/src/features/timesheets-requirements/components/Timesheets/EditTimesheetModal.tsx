@@ -22,7 +22,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   const [hours, setHours] = useState<number | string>(8);
   const [billable, setBillable] = useState<BillableOption>('Yes');
   const [billableRate, setBillableRate] = useState<number | string>(1500);
-  const [assignedApprover, setAssignedApprover] = useState('CEO – Akshit Ujjain');
+  const [assignedApprover, setAssignedApprover] = useState('Admin – Akshit Ujjain');
   const [notes, setNotes] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -32,7 +32,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
       setHours(timesheet.hours);
       setBillable(timesheet.billable);
       setBillableRate(parseRupee(timesheet.billableRate) || 1500);
-      setAssignedApprover(timesheet.assignedApprover || 'CEO – Akshit Ujjain');
+      setAssignedApprover(timesheet.assignedApprover || 'Admin – Akshit Ujjain');
       setNotes(timesheet.notes || '');
       setError(null);
     }
@@ -209,7 +209,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
               onChange={(e) => setAssignedApprover(e.target.value)}
               className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 font-medium focus:outline-hidden focus:ring-1 focus:ring-indigo-400 transition-colors h-[38px] cursor-pointer"
             >
-              <option value="CEO – Akshit Ujjain">CEO – Akshit Ujjain</option>
+              <option value="Admin – Akshit Ujjain">Admin – Akshit Ujjain</option>
               <option value="MD – Gaurav Tripathy">MD – Gaurav Tripathy</option>
             </select>
           </div>

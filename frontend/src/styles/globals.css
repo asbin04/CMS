@@ -481,3 +481,74 @@ html, body {
     transform: none !important;
   }
 }
+
+/* Global Dark Theme Support (activated by html.dark via Settings -> Appearance) */
+html.dark {
+  --color-app-bg: #0B1120;
+  --color-card-bg: #111827;
+  --color-primary-text: #F1F5F9;
+  --color-secondary-text: #94A3B8;
+  --color-borders: #1E293B;
+  --bg-app: #0B1120;
+  --bg-surface: #111827;
+  --border-subtle: #1E293B;
+  --border-card: #1E293B;
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-tertiary: #64748B;
+}
+
+html.dark body,
+html.dark #root {
+  background-color: #0B1120;
+  color: #F1F5F9;
+}
+
+html.dark main,
+html.dark header {
+  background-color: #0F172A !important;
+  border-color: #1E293B !important;
+}
+
+html.dark .bg-white {
+  background-color: #111827 !important;
+}
+
+html.dark .bg-slate-50,
+html.dark .bg-\[\#F8FAFC\],
+html.dark .bg-\[\#F8FAFF\] {
+  background-color: #0F172A !important;
+}
+
+html.dark .border-slate-200,
+html.dark .border-slate-100,
+html.dark .border-\[\#E2E8F0\],
+html.dark .border-\[\#F1F5F9\] {
+  border-color: #1E293B !important;
+}
+
+html.dark .text-slate-900,
+html.dark .text-slate-800,
+html.dark .text-\[\#0B132B\],
+html.dark .text-\[\#0F172A\],
+html.dark .text-\[\#1E293B\] {
+  color: #F1F5F9 !important;
+}
+
+html.dark .text-slate-700,
+html.dark .text-slate-600,
+html.dark .text-\[\#334155\] {
+  color: #CBD5E1 !important;
+}
+
+html.dark .text-slate-500,
+html.dark .text-\[\#64748B\],
+html.dark .text-\[\#475569\] {
+  color: #94A3B8 !important;
+}
+
+html.dark input:not([style*="color: rgb(255, 255, 255)"]),
+html.dark select,
+html.dark textarea {
+  color: #F1F5F9;
+}

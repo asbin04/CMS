@@ -8,8 +8,7 @@ import com.company.project.dashboard.dto.FollowUpSummaryDto;
 import com.company.project.dashboard.entity.FollowUpItem;
 import com.company.project.dashboard.mapper.FollowUpItemMapper;
 import com.company.project.dashboard.repository.FollowUpItemRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.company.project.notification.service.NotificationService;
@@ -20,14 +19,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class FollowUpServiceImpl implements FollowUpService {
 
     private final FollowUpItemRepository repository;
     private final FollowUpItemMapper mapper;
+    private final NotificationService notificationService;
 
-    @Autowired(required = false)
-    private NotificationService notificationService;
+    public FollowUpServiceImpl(
+            FollowUpItemRepository repository,
+            FollowUpItemMapper mapper,
+            @Nullable NotificationService notificationService) {
+        this.repository = repository;
+        this.mapper = mapper;
+        this.notificationService = notificationService;
+    }
 
     @Override
     @Transactional(readOnly = true)

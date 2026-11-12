@@ -297,9 +297,6 @@ export const ModulePlaceholder: React.FC<ModulePlaceholderProps> = ({ title, cat
           </div>
 
           <div className="flex items-center flex-wrap gap-2.5">
-            <span className="text-[12px] text-[#64748B] mr-1">
-              Last Updated: {lastUpdated}
-            </span>
             <button
               onClick={handleRefresh}
               disabled={isRefreshing}
@@ -426,7 +423,7 @@ export const ModulePlaceholder: React.FC<ModulePlaceholderProps> = ({ title, cat
                 className="h-[34px] px-3.5 rounded-[8px] border border-[#BFDBFE] bg-[#EFF6FF] text-[#4F46E5] text-[12px] font-medium flex items-center gap-1.5 hover:bg-blue-50 transition-colors"
               >
                 <Filter className="w-3.5 h-3.5" />
-                <span>Filters ({activeFiltersCount})</span>
+                <span>Filters{activeFiltersCount > 0 ? ` (${activeFiltersCount})` : ''}</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isFiltersOpen ? 'rotate-180' : ''}`} />
               </button>
               <button
@@ -500,7 +497,7 @@ export const ModulePlaceholder: React.FC<ModulePlaceholderProps> = ({ title, cat
           <div className="px-4 py-3.5 border-b border-[#E2E8F0] flex items-center justify-between flex-wrap gap-3 bg-white">
             <div className="flex items-center gap-1.5">
               <span className="text-[14px] font-bold text-[#0F172A]">
-                {displayTitle} ({filteredRecords.length})
+                {displayTitle}{filteredRecords.length > 0 ? ` (${filteredRecords.length})` : ''}
               </span>
               <Info className="w-3.5 h-3.5 text-[#4F46E5] cursor-pointer" />
             </div>

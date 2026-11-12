@@ -422,19 +422,6 @@ export const ClientsPage: React.FC = () => {
         {/* Right Header Actions */}
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px' }}>
           {/* Timestamp text */}
-          <span
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontSize: '11.5px',
-              fontWeight: 400,
-              lineHeight: '17px',
-              color: '#94A3B8',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            Last Updated: {lastRefreshed}
-          </span>
-
           {/* Refresh Button */}
           <button
             type="button"

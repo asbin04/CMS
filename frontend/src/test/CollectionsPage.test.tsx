@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, act, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import { CollectionsPage } from '@/features/collections/pages/CollectionsPage';
 import { collectionsApiService } from '@/features/collections/services/collectionsApiService';
+import { navigationSections } from '@/config/navigation';
 import { INITIAL_INVOICES, INITIAL_PAYMENTS } from './testFixtures';
 
 const mockInvoicesPage = {
@@ -135,6 +136,28 @@ describe('CollectionsPage Component', () => {
 
     // Invoice INV-2024-001 is loaded and selected
     expect(screen.getAllByText('INV-2024-001')[0]).toBeInTheDocument();
+  });
+
+  it('renders correctly when routed from /management/collections', async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter initialEntries={['/management/collections']}>
+          <CollectionsPage />
+        </MemoryRouter>
+      );
+    });
+
+    expect(screen.getByText('Collections')).toBeInTheDocument();
+    expect(screen.getAllByText('INV-2024-001')[0]).toBeInTheDocument();
+  });
+
+  it('removes Collections from the Finance sidebar while keeping it under Management', () => {
+    const financeSection = navigationSections.find((s) => s.id === 'finance');
+    const managementSection = navigationSections.find((s) => s.id === 'management');
+
+    expect(financeSection).toBeDefined();
+    expect(financeSection?.items.some((i) => i.path === '/finance/collections' || i.id === 'collections-fin')).toBe(false);
+    expect(managementSection?.items.some((i) => i.path === '/management/collections')).toBe(true);
   });
 });
 

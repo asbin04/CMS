@@ -6,6 +6,7 @@ import com.company.project.security.dto.*;
 import com.company.project.security.entity.AppUser;
 import com.company.project.security.repository.AppUserRepository;
 import com.company.project.security.service.PasswordResetService;
+import com.company.project.settings.service.SettingsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.PostConstruct;
@@ -15,10 +16,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,30 +39,39 @@ public class AuthController {
     private final LoginRateLimiter rateLimiter;
     private final AppUserRepository userRepository;
     private final PasswordResetService passwordResetService;
+    private final SettingsService settingsService;
 
-    @org.springframework.beans.factory.annotation.Autowired
+    @Autowired
+    public AuthController(
+            JwtTokenProvider tokenProvider,
+            PasswordEncoder passwordEncoder,
+            LoginRateLimiter rateLimiter,
+            AppUserRepository userRepository,
+            PasswordResetService passwordResetService,
+            @Nullable SettingsService settingsService) {
+        this.tokenProvider = tokenProvider;
+        this.passwordEncoder = passwordEncoder;
+        this.rateLimiter = rateLimiter;
+        this.userRepository = userRepository;
+        this.passwordResetService = passwordResetService;
+        this.settingsService = settingsService;
+    }
+
     public AuthController(
             JwtTokenProvider tokenProvider,
             PasswordEncoder passwordEncoder,
             LoginRateLimiter rateLimiter,
             AppUserRepository userRepository,
             PasswordResetService passwordResetService) {
-        this.tokenProvider = tokenProvider;
-        this.passwordEncoder = passwordEncoder;
-        this.rateLimiter = rateLimiter;
-        this.userRepository = userRepository;
-        this.passwordResetService = passwordResetService;
+        this(tokenProvider, passwordEncoder, rateLimiter, userRepository, passwordResetService, null);
     }
 
     public AuthController(
             JwtTokenProvider tokenProvider,
             PasswordEncoder passwordEncoder,
             LoginRateLimiter rateLimiter) {
-        this(tokenProvider, passwordEncoder, rateLimiter, null, null);
+        this(tokenProvider, passwordEncoder, rateLimiter, null, null, null);
     }
-
-    // Dummy hash for constant-time comparisons when a user does not exist
-    private static final String DUMMY_BCRYPT_HASH = "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy";
 
     @Value("${app.auth.admin.username:${ADMIN_USERNAME:}}")
     private String configuredAdminUsername;
@@ -68,13 +79,8 @@ public class AuthController {
     @Value("${app.auth.admin.password:${ADMIN_PASSWORD:}}")
     private String configuredAdminPassword;
 
-    @Value("${app.auth.admin.password-hash:${ADMIN_PASSWORD_HASH:}}")
-    private String configuredAdminPasswordHash;
-
     @Value("${app.auth.admin.display-name:${ADMIN_DISPLAY_NAME:}}")
     private String configuredAdminDisplayName;
-
-    private String adminPasswordHash;
 
     @PostConstruct
     public void initAdminCredentials() {
@@ -87,13 +93,6 @@ public class AuthController {
                         "Admin password must be at least 12 characters long. Provided password has "
                                 + configuredAdminPassword.length() + " characters.");
             }
-            this.adminPasswordHash = isBcrypt
-                    ? configuredAdminPassword
-                    : passwordEncoder.encode(configuredAdminPassword);
-        } else if (configuredAdminPasswordHash != null && !configuredAdminPasswordHash.isBlank()) {
-            this.adminPasswordHash = configuredAdminPasswordHash;
-        } else {
-            this.adminPasswordHash = passwordEncoder.encode("Admin123");
         }
     }
 
@@ -205,6 +204,9 @@ public class AuthController {
         if (dbUserOpt.isPresent()) {
             AppUser user = dbUserOpt.get();
             if (!"ACTIVE".equalsIgnoreCase(user.getStatus())) {
+                if (settingsService != null) {
+                    settingsService.recordLoginFailure(user.getUsername(), servletRequest, "Account disabled or locked");
+                }
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(ApiResponse.error(401, "UNAUTHORIZED", "Account is disabled or locked"));
             }
@@ -214,6 +216,10 @@ public class AuthController {
 
                 String role = (user.getRole() != null && !user.getRole().isBlank()) ? user.getRole() : "ADMIN";
                 String token = tokenProvider.generateToken(user.getUsername(), role);
+
+                if (settingsService != null) {
+                    settingsService.recordLoginSuccess(user.getUsername(), token, servletRequest);
+                }
 
                 LoginResponse response = LoginResponse.builder()
                         .token(token)
@@ -227,6 +233,9 @@ public class AuthController {
                 return ResponseEntity.ok(ApiResponse.success("Authentication successful", response));
             } else {
                 rateLimiter.recordFailedAttempt(username, clientIp);
+                if (settingsService != null) {
+                    settingsService.recordLoginFailure(user.getUsername(), servletRequest, "Invalid password attempt");
+                }
                 if (rateLimiter.isBlocked(username, clientIp)) {
                     return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
                             .body(ApiResponse.error(429, "TOO_MANY_REQUESTS",
@@ -243,7 +252,7 @@ public class AuthController {
             role = "ADMIN";
             displayName = "Administrator";
         } else if ("akshit.ujjain".equalsIgnoreCase(username) || "akshit".equalsIgnoreCase(username)) {
-            role = "CEO";
+            role = "ADMIN";
             displayName = "Akshit Ujjain";
         } else if ("gaurav.tripathy".equalsIgnoreCase(username) || "gaurav".equalsIgnoreCase(username)) {
             role = "MD";
@@ -252,8 +261,13 @@ public class AuthController {
             role = "USER";
             displayName = username;
         }
-        String userEmail = username != null && username.contains("@") ? username.trim().toLowerCase() : (username + "@kalpanaaa.in");
+        String userEmail = username != null && username.contains("@") ? username.trim().toLowerCase()
+                : (username + "@kalpanaaa.in");
         String token = tokenProvider.generateToken(username, role);
+
+        if (settingsService != null) {
+            settingsService.recordLoginSuccess(username, token, servletRequest);
+        }
 
         LoginResponse response = LoginResponse.builder()
                 .token(token)
@@ -309,10 +323,10 @@ public class AuthController {
         String role = auth.getAuthorities().stream()
                 .map(a -> a.getAuthority().replace("ROLE_", ""))
                 .findFirst()
-                .orElse("CEO");
+                .orElse("ADMIN");
 
-        String displayName = "akshit.ujjain".equalsIgnoreCase(username) ? "Akshit Ujjain" :
-                ("gaurav.tripathy".equalsIgnoreCase(username) ? "Gaurav Tripathy" : username);
+        String displayName = "akshit.ujjain".equalsIgnoreCase(username) ? "Akshit Ujjain"
+                : ("gaurav.tripathy".equalsIgnoreCase(username) ? "Gaurav Tripathy" : username);
         String userEmail = (username != null && username.contains("@")) ? username : (username + "@kalpanaaa.in");
 
         return ResponseEntity.ok(ApiResponse.success("Current user profile", Map.of(

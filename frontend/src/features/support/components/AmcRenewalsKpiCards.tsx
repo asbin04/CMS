@@ -19,13 +19,12 @@ export const AmcRenewalsKpiCards: React.FC<AmcRenewalsKpiCardsProps> = ({
   return (
     <div
       data-testid="amc-renewals-kpi-cards"
-      className="flex flex-row flex-wrap sm:flex-nowrap justify-between items-start p-0 gap-4 w-full max-w-[972px] font-['Inter']"
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full font-['Inter']"
     >
       {/* Card 1: Total Contracts */}
       <div
         style={{
           boxSizing: 'border-box',
-          width: '231px',
           height: '112px',
           background: '#FFFFFF',
           border: '1px solid rgba(226, 232, 240, 0.8)',
@@ -33,7 +32,7 @@ export const AmcRenewalsKpiCards: React.FC<AmcRenewalsKpiCardsProps> = ({
           borderRadius: '12px',
           padding: '28px 16px',
         }}
-        className="flex flex-row items-center gap-4 flex-1 min-w-[200px]"
+        className="flex flex-row items-center gap-4 w-full"
       >
         <div
           style={{ width: '48px', height: '48px', background: '#EEF2FF', borderRadius: '12px' }}
@@ -55,7 +54,6 @@ export const AmcRenewalsKpiCards: React.FC<AmcRenewalsKpiCardsProps> = ({
       <div
         style={{
           boxSizing: 'border-box',
-          width: '231px',
           height: '112px',
           background: '#FFFFFF',
           border: '1px solid rgba(226, 232, 240, 0.8)',
@@ -63,7 +61,7 @@ export const AmcRenewalsKpiCards: React.FC<AmcRenewalsKpiCardsProps> = ({
           borderRadius: '12px',
           padding: '16px',
         }}
-        className="flex flex-row items-center gap-4 flex-1 min-w-[200px]"
+        className="flex flex-row items-center gap-4 w-full"
       >
         <div
           style={{ width: '48px', height: '48px', background: '#ECFDF5', borderRadius: '12px' }}
@@ -85,7 +83,6 @@ export const AmcRenewalsKpiCards: React.FC<AmcRenewalsKpiCardsProps> = ({
       <div
         style={{
           boxSizing: 'border-box',
-          width: '231px',
           height: '112px',
           background: '#FFFFFF',
           border: '1px solid rgba(226, 232, 240, 0.8)',
@@ -93,7 +90,7 @@ export const AmcRenewalsKpiCards: React.FC<AmcRenewalsKpiCardsProps> = ({
           borderRadius: '12px',
           padding: '16px',
         }}
-        className="flex flex-row items-center gap-4 flex-1 min-w-[200px]"
+        className="flex flex-row items-center gap-4 w-full"
       >
         <div
           style={{ width: '48px', height: '48px', background: '#FFFBEB', borderRadius: '12px' }}
@@ -115,7 +112,6 @@ export const AmcRenewalsKpiCards: React.FC<AmcRenewalsKpiCardsProps> = ({
       <div
         style={{
           boxSizing: 'border-box',
-          width: '231px',
           height: '112px',
           background: '#FFFFFF',
           border: '1px solid rgba(226, 232, 240, 0.8)',
@@ -123,7 +119,7 @@ export const AmcRenewalsKpiCards: React.FC<AmcRenewalsKpiCardsProps> = ({
           borderRadius: '12px',
           padding: '28px 16px',
         }}
-        className="flex flex-row items-center gap-4 flex-1 min-w-[200px]"
+        className="flex flex-row items-center gap-4 w-full"
       >
         <div
           style={{ width: '48px', height: '48px', background: '#FFF1F2', borderRadius: '12px' }}

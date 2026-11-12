@@ -20,7 +20,7 @@ export const EditRequirementModal: React.FC<EditRequirementModalProps> = ({
   const [type, setType] = useState('Feature');
   const [priority, setPriority] = useState<RequirementPriority>('Medium');
   const [status, setStatus] = useState<RequirementStatus>('In Progress');
-  const [assignedApprover, setAssignedApprover] = useState('CEO – Akshit Ujjain');
+  const [assignedApprover, setAssignedApprover] = useState('Admin – Akshit Ujjain');
   const [scopeFreeze, setScopeFreeze] = useState<BillableOption>('No');
   const [completionPercentage, setCompletionPercentage] = useState<number | string>(0);
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +32,7 @@ export const EditRequirementModal: React.FC<EditRequirementModalProps> = ({
       setType(requirement.type);
       setPriority(requirement.priority);
       setStatus(requirement.status);
-      setAssignedApprover(requirement.assignedApprover || 'CEO – Akshit Ujjain');
+      setAssignedApprover(requirement.assignedApprover || 'Admin – Akshit Ujjain');
       setScopeFreeze(requirement.scopeFreeze);
       setCompletionPercentage(requirement.completionPercentage);
       setError(null);
@@ -224,7 +224,7 @@ export const EditRequirementModal: React.FC<EditRequirementModalProps> = ({
               onChange={(e) => setAssignedApprover(e.target.value)}
               className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 font-medium focus:outline-hidden focus:ring-1 focus:ring-indigo-400 transition-colors h-[38px] cursor-pointer"
             >
-              <option value="CEO – Akshit Ujjain">CEO – Akshit Ujjain</option>
+              <option value="Admin – Akshit Ujjain">Admin – Akshit Ujjain</option>
               <option value="MD – Gaurav Tripathy">MD – Gaurav Tripathy</option>
             </select>
           </div>

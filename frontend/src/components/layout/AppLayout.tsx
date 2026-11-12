@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { apiClient } from '../../services/api/apiClient';
 import { dashboardService } from '../../services/dashboardService';
+import { settingsService } from '../../features/settings/services/settingsService';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { TopNav } from './TopNav';
@@ -18,7 +18,9 @@ export interface AppLayoutContextType {
 
 export const AppLayout: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [dateRange, setDateRange] = useState('—');
+  const [dateRange, setDateRange] = useState<string>(() => {
+    return (typeof window !== 'undefined' ? localStorage.getItem('cms_active_date_range') : null) || '—';
+  });
   const [userName, setUserName] = useState<string>(() => {
     return (typeof window !== 'undefined' ? localStorage.getItem('auth_user_name') : null) || '—';
   });
@@ -28,6 +30,9 @@ export const AppLayout: React.FC = () => {
   const [userEmail, setUserEmail] = useState<string>(() => {
     return (typeof window !== 'undefined' ? localStorage.getItem('auth_user_email') : null) || '—';
   });
+  const [userAvatar, setUserAvatar] = useState<string>(() => {
+    return (typeof window !== 'undefined' ? localStorage.getItem('auth_user_avatar') : null) || '';
+  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -35,18 +40,43 @@ export const AppLayout: React.FC = () => {
       const storedName = localStorage.getItem('auth_user_name');
       const storedRole = localStorage.getItem('auth_user_role');
       const storedEmail = localStorage.getItem('auth_user_email');
+      const storedAvatar = localStorage.getItem('auth_user_avatar');
       if (storedName) setUserName(storedName);
       if (storedRole) setUserRole(storedRole);
       if (storedEmail) setUserEmail(storedEmail);
+      setUserAvatar(storedAvatar || '');
     };
 
     syncAuthUser();
     window.addEventListener('auth_user_changed', syncAuthUser);
     window.addEventListener('storage', syncAuthUser);
 
+    settingsService.getSettings()
+      .then((settingsData) => {
+        const avatar = settingsData?.profile?.avatarUrl || '';
+        setUserAvatar(avatar);
+        try {
+          if (avatar) {
+            localStorage.setItem('auth_user_avatar', avatar);
+          } else {
+            localStorage.removeItem('auth_user_avatar');
+          }
+        } catch {
+          // ignore storage errors
+        }
+      })
+      .catch(() => { });
+
     dashboardService.getDashboardData()
       .then((data) => {
-        if (data.settings?.active_date_range) setDateRange(data.settings.active_date_range);
+        if (data.settings?.active_date_range) {
+          setDateRange(data.settings.active_date_range);
+          try {
+            localStorage.setItem('cms_active_date_range', data.settings.active_date_range);
+          } catch {
+            // ignore storage errors
+          }
+        }
         const storedName = localStorage.getItem('auth_user_name');
         const storedRole = localStorage.getItem('auth_user_role');
         if (!storedName && data.settings?.user_name) setUserName(data.settings.user_name);
@@ -113,6 +143,7 @@ export const AppLayout: React.FC = () => {
           userName={userName}
           userRole={userRole}
           userEmail={userEmail}
+          userAvatar={userAvatar}
           onToggleMobileMenu={() => setIsMobileMenuOpen((prev) => !prev)}
           onToggleSidebar={toggleSidebar}
         />
@@ -125,18 +156,20 @@ export const AppLayout: React.FC = () => {
             overflowX: 'hidden',
           }}
         >
-          <Outlet
-            context={{
-              searchQuery,
-              setSearchQuery,
-              onSearchClear: () => setSearchQuery(''),
-              dateRange,
-              setDateRange,
-              isEditModalOpen,
-              setIsEditModalOpen,
-              isSidebarCollapsed,
-            }}
-          />
+          <React.Suspense fallback={<div className="p-6 text-sm text-slate-400">Loading...</div>}>
+            <Outlet
+              context={{
+                searchQuery,
+                setSearchQuery,
+                onSearchClear: () => setSearchQuery(''),
+                dateRange,
+                setDateRange,
+                isEditModalOpen,
+                setIsEditModalOpen,
+                isSidebarCollapsed,
+              }}
+            />
+          </React.Suspense>
         </main>
       </div>
     </div>
