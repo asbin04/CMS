@@ -3,6 +3,7 @@ import { ReloadButton } from '../../../components/ui/ReloadButton';
 import {
   Users,
   RotateCcw,
+  RotateCw,
   Plus,
   Search,
   Filter,
@@ -427,7 +428,10 @@ export const EmployeeMasterPage: React.FC = () => {
               onClick={handleRefresh}
               isRefreshing={isRefreshing}
               title="Refresh employee data"
-            />
+              className="w-[34px] h-[34px] p-2 bg-white border border-[#E2E8F0] rounded-[8px] flex items-center justify-center text-[#64748B] hover:bg-slate-50 transition-colors shadow-sm"
+            >
+              <RotateCw className={`w-4 h-4 text-[#64748B] ${isRefreshing ? 'animate-spin' : ''}`} />
+            </button>
             <button
               onClick={() => alert('Import CSV/Excel functionality')}
               className="h-[34px] px-3 py-2 gap-1.5 bg-white border border-[#E2E8F0] rounded-[8px] flex items-center text-[12px] font-semibold text-[#334155] hover:bg-slate-50 transition-colors shadow-sm"

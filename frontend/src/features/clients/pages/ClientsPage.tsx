@@ -388,7 +388,7 @@ export const ClientsPage: React.FC = () => {
               flexShrink: 0,
             }}
           >
-            <Users size={20} color="#059669" strokeWidth={2} />
+            <Handshake size={20} color="#059669" strokeWidth={2} />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>

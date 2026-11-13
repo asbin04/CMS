@@ -35,11 +35,11 @@ export const SalesDashboardHeader: React.FC<SalesDashboardHeaderProps> = ({
           type="button"
           onClick={onRefresh}
           disabled={isRefreshing}
-          className="w-9 h-9 rounded-xl border border-[#DCE3ED] bg-white flex items-center justify-center text-slate-600 hover:text-slate-900 hover:bg-slate-50/80 transition-all shadow-2xs cursor-pointer disabled:opacity-50"
+          className="w-9 h-9 rounded-xl border border-[#DCE3ED] bg-white flex items-center justify-center text-[#64748B] hover:text-slate-900 hover:bg-slate-50/80 transition-all shadow-2xs cursor-pointer disabled:opacity-50"
           title="Refresh sales data"
           aria-label="Refresh sales data"
         >
-          <RotateCw className={`w-4 h-4 stroke-[2] ${isRefreshing ? 'animate-spin text-[#4F46E5]' : ''}`} />
+          <RotateCw className={`w-4 h-4 stroke-[2] text-[#64748B] ${isRefreshing ? 'animate-spin' : ''}`} />
         </button>
 
         <button

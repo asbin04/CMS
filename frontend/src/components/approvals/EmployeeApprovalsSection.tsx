@@ -164,57 +164,59 @@ export const EmployeeApprovalsSection: React.FC<EmployeeApprovalsSectionProps> =
     <div className="box-border flex flex-col items-start p-0 bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden shadow-xs w-full">
       {/* Section Header & Filter Toolbar */}
       <div className="box-border flex flex-col items-start p-6 pb-5 gap-4 w-full border-b border-[#F1F5F9]">
-        {/* Top row: Title + Actions */}
-        <div className="flex flex-row items-center justify-between w-full flex-wrap gap-4">
+        {/* Top row: Title */}
+        <div className="flex flex-row items-center justify-between w-full">
           <div className="flex flex-row items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center shrink-0">
               <Users size={18} />
             </div>
             <div className="flex flex-col">
-              <h2 className="text-[15px] font-bold text-[#0F172A] leading-5">Employee Approvals</h2>
+              <h2 className="text-[16px] font-bold text-[#0F172A] leading-5">Employee Approvals</h2>
               <p className="text-xs text-[#64748B] leading-4 mt-0.5">
                 Review and approve employee leave and work-from-home requests.
               </p>
             </div>
           </div>
-
-          <div className="flex items-center gap-2.5">
-            <button
-              onClick={onOpenAddModal}
-              className="box-border flex flex-row items-center justify-center px-4 py-2 gap-1.5 bg-[#4F46E5] hover:bg-[#4338CA] text-white rounded-xl text-xs font-semibold shadow-xs transition-colors cursor-pointer"
-            >
-              <Plus size={15} />
-              <span>Add Data</span>
-            </button>
-
-            <button
-              onClick={handleExport}
-              className="box-border flex flex-row items-center justify-center px-4 py-2 gap-1.5 bg-white border border-[#E2E8F0] hover:bg-slate-50 text-[#334155] rounded-xl text-xs font-semibold transition-colors cursor-pointer shadow-2xs"
-            >
-              <Upload size={14} className="text-[#64748B]" />
-              <span>Export</span>
-            </button>
-          </div>
         </div>
 
         {/* Controls block */}
         <div className="flex flex-col gap-3.5 w-full">
-          {/* Search Input Row */}
-          <div className="relative w-full max-w-[360px]">
-            <Search
-              size={15}
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8]"
-            />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setCurrentPage(1);
-              }}
-              placeholder="Search by employee name or request ID..."
-              className="w-full h-[36px] pl-9 pr-3.5 bg-white border border-[#E2E8F0] rounded-xl text-xs text-[#1E293B] placeholder-[#94A3B8] outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all shadow-2xs"
-            />
+          {/* Search Input & Action Buttons Row */}
+          <div className="flex flex-row items-center justify-between w-full gap-3 flex-wrap sm:flex-nowrap">
+            <div className="relative flex-1 min-w-[240px]">
+              <Search
+                size={16}
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8]"
+              />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1);
+                }}
+                placeholder="Search by employee name or request ID..."
+                className="w-full h-[40px] pl-10 pr-4 bg-white border border-[#E2E8F0] rounded-xl text-xs sm:text-[13px] text-[#1E293B] placeholder-[#94A3B8] outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all shadow-2xs"
+              />
+            </div>
+
+            <div className="flex items-center gap-2.5 shrink-0">
+              <button
+                onClick={onOpenAddModal}
+                className="box-border flex flex-row items-center justify-center px-4 h-[40px] gap-1.5 bg-[#4F46E5] hover:bg-[#4338CA] text-white rounded-xl text-xs sm:text-[13px] font-semibold shadow-xs transition-colors cursor-pointer"
+              >
+                <Plus size={16} />
+                <span>Add Data</span>
+              </button>
+
+              <button
+                onClick={handleExport}
+                className="box-border flex flex-row items-center justify-center px-4 h-[40px] gap-1.5 bg-white border border-[#E2E8F0] hover:bg-slate-50 text-[#334155] rounded-xl text-xs sm:text-[13px] font-semibold transition-colors cursor-pointer shadow-2xs"
+              >
+                <Upload size={15} className="text-[#64748B]" />
+                <span>Export</span>
+              </button>
+            </div>
           </div>
 
           {/* Filter options row: Exactly matching user screenshot */}

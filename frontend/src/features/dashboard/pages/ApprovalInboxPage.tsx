@@ -201,6 +201,7 @@ export const ApprovalInboxPage: React.FC = () => {
             onClick={handleManualRefresh}
             isRefreshing={isRefreshing}
             disabled={isLoading || isRefreshing}
+            className="p-1 rounded hover:bg-slate-200/60 text-[#64748B] hover:text-[#0F172A] transition-colors cursor-pointer disabled:opacity-50"
             title="Refresh inbox data"
           />
         </div>

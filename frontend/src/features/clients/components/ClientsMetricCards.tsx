@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, CheckCircle2, UserPlus, CreditCard } from 'lucide-react';
+import { Handshake, CheckCircle2, UserPlus, CreditCard } from 'lucide-react';
 import { ClientsMetrics } from '../types/clients';
 
 interface ClientsMetricCardsProps {
@@ -20,7 +20,7 @@ export const ClientsMetricCards: React.FC<ClientsMetricCardsProps> = ({
       value: (metrics?.totalClients ?? 0).toLocaleString(),
       trend: metrics?.totalClientsTrend || '↑ 12% vs last month',
       isPositive: true,
-      icon: Users,
+      icon: Handshake,
       iconBg: '#EFF6FF',
       iconColor: '#2563EB',
     },
