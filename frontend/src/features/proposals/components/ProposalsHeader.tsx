@@ -53,11 +53,11 @@ export const ProposalsHeader: React.FC<ProposalsHeaderProps> = ({
             type="button"
             onClick={handleRefreshClick}
             title="Refresh proposal data"
-            className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer flex items-center justify-center"
+            className="p-1 rounded-md text-[#64748B] hover:text-[#0F172A] hover:bg-slate-100 transition-colors cursor-pointer flex items-center justify-center"
           >
             <RotateCw
-              className={`w-3.5 h-3.5 stroke-[2] ${
-                isRefreshing ? 'animate-spin text-indigo-600' : 'text-slate-400'
+              className={`w-3.5 h-3.5 stroke-[2] text-[#64748B] ${
+                isRefreshing ? 'animate-spin' : ''
               }`}
             />
           </button>

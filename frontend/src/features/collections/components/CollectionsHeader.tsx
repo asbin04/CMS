@@ -56,9 +56,9 @@ export const CollectionsHeader: React.FC<CollectionsHeaderProps> = ({
             type="button"
             onClick={handleRefreshClick}
             title="Refresh collections data"
-            className="p-1 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+            className="p-1 rounded-md text-[#64748B] hover:text-[#0F172A] hover:bg-slate-100 transition-colors cursor-pointer"
           >
-            <RotateCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-indigo-600' : ''}`} />
+            <RotateCw className={`w-3.5 h-3.5 text-[#64748B] ${isRefreshing ? 'animate-spin' : ''}`} />
           </button>
         </div>
 

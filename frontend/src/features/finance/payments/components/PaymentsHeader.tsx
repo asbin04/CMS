@@ -38,10 +38,10 @@ export const PaymentsHeader: React.FC<PaymentsHeaderProps> = ({
           type="button"
           onClick={onRefresh}
           disabled={isRefreshing}
-          className="p-2 sm:p-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors shadow-sm disabled:opacity-50 shrink-0 cursor-pointer"
+          className="p-2 sm:p-2.5 rounded-xl border border-slate-200 bg-white text-[#64748B] hover:bg-slate-50 hover:text-slate-900 transition-colors shadow-sm disabled:opacity-50 shrink-0 cursor-pointer"
           title="Refresh payment records and metrics"
         >
-          <RotateCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-indigo-600' : ''}`} />
+          <RotateCw className={`w-4 h-4 text-[#64748B] ${isRefreshing ? 'animate-spin' : ''}`} />
         </button>
 
         {/* Export Button */}

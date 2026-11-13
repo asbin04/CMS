@@ -225,7 +225,7 @@ export const SupportTicketsPage: React.FC = () => {
               title="Refresh tickets data"
               className="p-1 rounded hover:bg-[#E2E8F0] transition-colors"
             >
-              <RotateCw className={`w-3.5 h-3.5 text-[#6B7280] ${isRefreshing ? 'animate-spin' : ''}`} />
+              <RotateCw className={`w-3.5 h-3.5 text-[#64748B] ${isRefreshing ? 'animate-spin' : ''}`} />
             </button>
           </div>
 

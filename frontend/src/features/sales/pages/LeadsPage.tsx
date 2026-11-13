@@ -299,7 +299,7 @@ export const LeadsPage: React.FC = () => {
             <button
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="p-1 rounded hover:bg-slate-200/60 text-[#2563EB] transition-colors cursor-pointer disabled:opacity-50"
+              className="p-1 rounded hover:bg-slate-200/60 text-[#64748B] hover:text-[#0F172A] transition-colors cursor-pointer disabled:opacity-50"
               title="Sync with database"
             >
               <RotateCw size={14} className={isRefreshing ? 'animate-spin' : ''} />

@@ -6,6 +6,7 @@ import {
   BarChart3,
   TrendingUp,
   Users,
+  Handshake,
   Target,
   FileText,
   FileCheck,
@@ -65,7 +66,7 @@ export const navigationSections: NavSection[] = [
   {
     id: 'clients',
     title: 'Clients',
-    icon: Users,
+    icon: Handshake,
     defaultExpanded: false,
     items: [
       { id: 'clients-list', label: 'Clients', path: '/clients/list', icon: Folder },

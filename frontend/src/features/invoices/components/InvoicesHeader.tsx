@@ -52,10 +52,10 @@ export const InvoicesHeader: React.FC<InvoicesHeaderProps> = ({
             type="button"
             onClick={handleRefreshClick}
             title="Refresh invoices"
-            className="p-1.5 rounded-[12px] text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer border border-[#E2E8F0] bg-[#FFFFFF]"
+            className="p-1.5 rounded-[12px] text-[#64748B] hover:text-[#0F172A] hover:bg-slate-50 transition-colors cursor-pointer border border-[#E2E8F0] bg-[#FFFFFF]"
             style={{ border: '1px solid #E2E8F0', borderRadius: '12px', background: '#FFFFFF' }}
           >
-            <RotateCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-indigo-600' : ''}`} />
+            <RotateCw className={`w-3.5 h-3.5 text-[#64748B] ${isRefreshing ? 'animate-spin' : ''}`} />
           </button>
         </div>
 

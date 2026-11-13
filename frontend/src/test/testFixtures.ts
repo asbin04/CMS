@@ -16,7 +16,7 @@ export const initialDashboardData: FullDashboardData = {
     {
       id: 1,
       card_key: 'revenue_invoice_value',
-      title: 'Revenue | Invoice Value',
+      title: 'Revenue / Invoice Value',
       raw_value: 12450000,
       formatted_value: '₹ 1,24,50,000',
       change_percentage: 12,

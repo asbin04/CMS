@@ -199,7 +199,7 @@ export const ApprovalInboxPage: React.FC = () => {
           <button
             onClick={handleManualRefresh}
             disabled={isLoading || isRefreshing}
-            className="p-1 rounded hover:bg-slate-200/60 text-[#2563EB] transition-colors cursor-pointer disabled:opacity-50"
+            className="p-1 rounded hover:bg-slate-200/60 text-[#64748B] hover:text-[#0F172A] transition-colors cursor-pointer disabled:opacity-50"
             title="Refresh inbox data"
           >
             <RotateCw size={14} className={isRefreshing ? 'animate-spin' : ''} />

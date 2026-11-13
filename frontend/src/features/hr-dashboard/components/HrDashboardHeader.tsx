@@ -39,9 +39,9 @@ export const HrDashboardHeader: React.FC<HrDashboardHeaderProps> = ({
           onClick={onRefresh}
           title="Refresh HR Data"
           disabled={isRefreshing}
-          className="w-9 h-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 flex items-center justify-center transition-all shadow-2xs cursor-pointer disabled:opacity-50"
+          className="w-9 h-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-[#64748B] flex items-center justify-center transition-all shadow-2xs cursor-pointer disabled:opacity-50"
         >
-          <RotateCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-[#4F46E5]' : ''}`} />
+          <RotateCw className={`w-4 h-4 text-[#64748B] ${isRefreshing ? 'animate-spin' : ''}`} />
         </button>
 
         {/* Export button */}

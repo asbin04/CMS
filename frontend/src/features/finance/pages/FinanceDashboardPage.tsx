@@ -10,6 +10,7 @@ import {
   TrendingUp,
   Percent,
   RotateCcw,
+  RotateCw,
   Download,
   BarChart2,
   AlertTriangle,
@@ -271,9 +272,9 @@ export const FinanceDashboardPage: React.FC = () => {
             aria-label="Refresh Dashboard"
             onClick={() => loadData(true)}
             disabled={isRefreshing}
-            className="w-[26px] h-[26px] p-[6px] rounded-[8px] bg-white border border-[#E2E8F0] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] hover:bg-[#F8FAFC] active:scale-95 flex items-center justify-center text-[#94A3B8] hover:text-[#475569] transition-all cursor-pointer disabled:opacity-60"
+            className="w-[26px] h-[26px] p-[6px] rounded-[8px] bg-white border border-[#E2E8F0] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] hover:bg-[#F8FAFC] active:scale-95 flex items-center justify-center text-[#64748B] hover:text-[#0F172A] transition-all cursor-pointer disabled:opacity-60"
           >
-            <RotateCcw className={`w-[14px] h-[14px] ${isRefreshing ? 'animate-spin text-[#4F46E5]' : ''}`} />
+            <RotateCw className={`w-[14px] h-[14px] text-[#64748B] ${isRefreshing ? 'animate-spin' : ''}`} />
           </button>
 
           {/* Export Button */}

@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   Users,
   RotateCcw,
+  RotateCw,
   Plus,
   Search,
   Filter,
@@ -426,9 +427,9 @@ export const EmployeeMasterPage: React.FC = () => {
               onClick={handleRefresh}
               disabled={isRefreshing}
               title="Refresh employee data"
-              className="w-[34px] h-[34px] p-2 bg-white border border-[#E2E8F0] rounded-[8px] flex items-center justify-center text-[#475569] hover:bg-slate-50 transition-colors shadow-sm"
+              className="w-[34px] h-[34px] p-2 bg-white border border-[#E2E8F0] rounded-[8px] flex items-center justify-center text-[#64748B] hover:bg-slate-50 transition-colors shadow-sm"
             >
-              <RotateCcw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-indigo-600' : ''}`} />
+              <RotateCw className={`w-4 h-4 text-[#64748B] ${isRefreshing ? 'animate-spin' : ''}`} />
             </button>
             <button
               onClick={() => alert('Import CSV/Excel functionality')}

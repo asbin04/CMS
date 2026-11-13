@@ -53,11 +53,11 @@ export const HrDashboardHeader: React.FC<HrDashboardHeaderProps> = ({
             type="button"
             onClick={handleRefreshClick}
             title="Refresh HR data"
-            className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition-colors shadow-2xs cursor-pointer flex items-center justify-center"
+            className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-[#64748B] hover:text-[#0F172A] transition-colors shadow-2xs cursor-pointer flex items-center justify-center"
           >
             <RotateCw
-              className={`w-3.5 h-3.5 stroke-[2] ${
-                isRefreshing ? 'animate-spin text-indigo-600' : 'text-slate-400'
+              className={`w-3.5 h-3.5 stroke-[2] text-[#64748B] ${
+                isRefreshing ? 'animate-spin' : ''
               }`}
             />
           </button>

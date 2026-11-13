@@ -442,9 +442,9 @@ export const ProjectDashboardPage: React.FC = () => {
             onClick={handleManualRefresh}
             disabled={isRefreshing || summaryLoading || tableLoading}
             title="Refresh Data"
-            className="p-1.5 text-slate-500 hover:text-slate-900 transition-colors disabled:opacity-50 cursor-pointer flex items-center justify-center"
+            className="p-1.5 text-[#64748B] hover:text-[#0F172A] transition-colors disabled:opacity-50 cursor-pointer flex items-center justify-center"
           >
-            <RotateCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-indigo-600' : ''}`} />
+            <RotateCw className={`w-4 h-4 text-[#64748B] ${isRefreshing ? 'animate-spin' : ''}`} />
           </button>
 
           {/* Export Report Button */}

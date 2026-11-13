@@ -431,9 +431,9 @@ export const LeaveManagementPage: React.FC = () => {
             type="button"
             onClick={fetchData}
             title="Refresh from database"
-            className="p-2 text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
+            className="p-2 text-[#64748B] hover:text-[#0F172A] bg-white border border-[#E2E8F0] rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 text-[#64748B] ${loading ? 'animate-spin' : ''}`} />
           </button>
 
           <button

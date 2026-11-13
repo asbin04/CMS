@@ -541,7 +541,7 @@ export const FollowUpQueuePage: React.FC<FollowUpQueuePageProps> = (props) => {
               className="hover:text-slate-700 transition-colors"
             >
               <RefreshCw
-                className={`w-3.5 h-3.5 text-[#94A3B8] stroke-[1.17] ${
+                className={`w-3.5 h-3.5 text-[#64748B] stroke-[1.17] ${
                   isRefreshing ? 'animate-spin' : ''
                 }`}
               />
@@ -554,7 +554,7 @@ export const FollowUpQueuePage: React.FC<FollowUpQueuePageProps> = (props) => {
             className="box-border flex flex-row items-center px-3 py-1.5 gap-1.5 h-[30px] w-[90.98px] bg-white border border-[#E2E8F0] rounded-lg hover:bg-slate-50 transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.02)] justify-center"
           >
             <RefreshCw
-              className={`w-3.5 h-3.5 text-[#475569] stroke-[1.17] ${
+              className={`w-3.5 h-3.5 text-[#64748B] stroke-[1.17] ${
                 isRefreshing ? 'animate-spin' : ''
               }`}
             />

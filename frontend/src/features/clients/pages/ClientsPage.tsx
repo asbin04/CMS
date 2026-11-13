@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Users, RotateCw, Plus, Loader2 } from 'lucide-react';
+import { Handshake, RotateCw, Plus, Loader2 } from 'lucide-react';
 import { Client, ClientsFilterState, ClientSortOption } from '../types/clients';
 import { clientsService } from '../services/clientsService';
 import { ClientsMetricCards } from '../components/ClientsMetricCards';
@@ -387,7 +387,7 @@ export const ClientsPage: React.FC = () => {
               flexShrink: 0,
             }}
           >
-            <Users size={20} color="#059669" strokeWidth={2} />
+            <Handshake size={20} color="#059669" strokeWidth={2} />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -437,7 +437,7 @@ export const ClientsPage: React.FC = () => {
               alignItems: 'center',
               justifyContent: 'center',
               cursor: isRefreshing ? 'not-allowed' : 'pointer',
-              color: '#94A3B8',
+              color: '#64748B',
             }}
             title="Refresh database records"
           >

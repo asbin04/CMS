@@ -303,7 +303,7 @@ export const ModulePlaceholder: React.FC<ModulePlaceholderProps> = ({ title, cat
               title="Refresh live data"
               className="w-8 h-8 rounded-[6px] border border-[#E2E8F0] bg-white text-[#64748B] flex items-center justify-center hover:bg-slate-50 transition-colors shadow-sm"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-indigo-600' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 text-[#64748B] ${isRefreshing ? 'animate-spin' : ''}`} />
             </button>
             <button
               onClick={handleExport}
