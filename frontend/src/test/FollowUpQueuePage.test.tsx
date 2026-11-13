@@ -114,6 +114,7 @@ describe('FollowUpQueuePage Component', () => {
 
     expect(screen.getAllByText('Follow-Up Queue')[0]).toBeInTheDocument();
     expect(screen.getByText('Acme Corp - Invoice #1024')).toBeInTheDocument();
+    expect(screen.queryByText(/Last Refreshed:/i)).not.toBeInTheDocument();
   });
 
   it('rolls back optimistic completion update when toggleDone mutation fails', async () => {

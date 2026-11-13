@@ -5,11 +5,11 @@ import com.company.project.common.response.ApiResponse;
 import com.company.project.security.dto.*;
 import com.company.project.security.entity.AppUser;
 import com.company.project.security.repository.AppUserRepository;
+import com.company.project.security.service.AdminAllowlistService;
 import com.company.project.security.service.PasswordResetService;
 import com.company.project.settings.service.SettingsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -17,7 +17,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -31,14 +30,18 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping({ "/api/v1/auth", "/api/auth" })
-@Tag(name = "Authentication API", description = "Endpoints for user authentication, password reset, and session verification")
+@Tag(name = "Authentication API", description = "Endpoints for administrator authentication, password reset, and session verification")
 public class AuthController {
+
+    private static final String INVALID_CREDENTIALS_MSG = "Invalid credentials";
+    private static final String ADMIN_RESTRICTED_MSG = "Access restricted to administrators";
 
     private final JwtTokenProvider tokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final LoginRateLimiter rateLimiter;
     private final AppUserRepository userRepository;
     private final PasswordResetService passwordResetService;
+    private final AdminAllowlistService allowlistService;
     private final SettingsService settingsService;
 
     @Autowired
@@ -48,92 +51,15 @@ public class AuthController {
             LoginRateLimiter rateLimiter,
             AppUserRepository userRepository,
             PasswordResetService passwordResetService,
+            AdminAllowlistService allowlistService,
             @Nullable SettingsService settingsService) {
         this.tokenProvider = tokenProvider;
         this.passwordEncoder = passwordEncoder;
         this.rateLimiter = rateLimiter;
         this.userRepository = userRepository;
         this.passwordResetService = passwordResetService;
+        this.allowlistService = allowlistService;
         this.settingsService = settingsService;
-    }
-
-    public AuthController(
-            JwtTokenProvider tokenProvider,
-            PasswordEncoder passwordEncoder,
-            LoginRateLimiter rateLimiter,
-            AppUserRepository userRepository,
-            PasswordResetService passwordResetService) {
-        this(tokenProvider, passwordEncoder, rateLimiter, userRepository, passwordResetService, null);
-    }
-
-    public AuthController(
-            JwtTokenProvider tokenProvider,
-            PasswordEncoder passwordEncoder,
-            LoginRateLimiter rateLimiter) {
-        this(tokenProvider, passwordEncoder, rateLimiter, null, null, null);
-    }
-
-    @Value("${app.auth.admin.username:${ADMIN_USERNAME:}}")
-    private String configuredAdminUsername;
-
-    @Value("${app.auth.admin.password:${ADMIN_PASSWORD:}}")
-    private String configuredAdminPassword;
-
-    @Value("${app.auth.admin.display-name:${ADMIN_DISPLAY_NAME:}}")
-    private String configuredAdminDisplayName;
-
-    @PostConstruct
-    public void initAdminCredentials() {
-        if (configuredAdminPassword != null && !configuredAdminPassword.isBlank()) {
-            boolean isBcrypt = configuredAdminPassword.startsWith("$2a$") || configuredAdminPassword.startsWith("$2b$");
-            boolean isAllowedCredential = "asbin@123".equals(configuredAdminPassword)
-                    || "Admin123".equals(configuredAdminPassword);
-            if (!isBcrypt && !isAllowedCredential && configuredAdminPassword.length() < 12) {
-                throw new IllegalStateException(
-                        "Admin password must be at least 12 characters long. Provided password has "
-                                + configuredAdminPassword.length() + " characters.");
-            }
-        }
-    }
-
-    private String resolveDisplayName(String username) {
-        if (username == null || username.isBlank()) {
-            return "User";
-        }
-        String lower = username.trim().toLowerCase();
-        if (lower.contains("asbin")) {
-            return "Asbin T S";
-        }
-        if (lower.contains("founder")) {
-            return "Gaurav Kumar Tripathi";
-        }
-        if (lower.contains("akshit")) {
-            return "Akshit Ujjain";
-        }
-        if (configuredAdminDisplayName != null && !configuredAdminDisplayName.isBlank()) {
-            if (configuredAdminUsername != null) {
-                String configuredPrefix = configuredAdminUsername.contains("@")
-                        ? configuredAdminUsername.split("@")[0].trim()
-                        : configuredAdminUsername;
-                String userPrefix = (username != null && username.contains("@")) ? username.split("@")[0].trim()
-                        : username;
-                if (configuredAdminUsername.equalsIgnoreCase(username)
-                        || configuredPrefix.equalsIgnoreCase(userPrefix)) {
-                    return configuredAdminDisplayName;
-                }
-            }
-        }
-        String cleanName = username.contains("@") ? username.split("@")[0].trim() : username;
-        String[] parts = cleanName.split("[._-]");
-        StringBuilder sb = new StringBuilder();
-        for (String part : parts) {
-            if (!part.isEmpty()) {
-                if (sb.length() > 0)
-                    sb.append(" ");
-                sb.append(Character.toUpperCase(part.charAt(0))).append(part.substring(1).toLowerCase());
-            }
-        }
-        return sb.length() > 0 ? sb.toString() : cleanName;
     }
 
     private String extractClientIp(HttpServletRequest request) {
@@ -174,7 +100,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    @Operation(summary = "Authenticate user and return JWT token")
+    @Operation(summary = "Authenticate administrator and return JWT token")
     public ResponseEntity<ApiResponse<LoginResponse>> login(
             @Valid @RequestBody(required = false) LoginRequest request,
             HttpServletRequest servletRequest) {
@@ -182,99 +108,67 @@ public class AuthController {
         String password = request != null ? request.getPassword() : null;
         String clientIp = extractClientIp(servletRequest);
 
-        // Blank username must always return 400
         if (username == null || username.isBlank()) {
             throw new BusinessValidationException("Username is required.");
         }
-        // Blank password must always return 400
         if (password == null || password.isBlank()) {
             throw new BusinessValidationException("Password is required.");
         }
 
+        String trimmedUsername = username.trim();
+
         // Rate limiting: max 5 failed attempts per username+IP per 15 minutes
-        if (rateLimiter.isBlocked(username, clientIp)) {
+        if (rateLimiter.isBlocked(trimmedUsername, clientIp)) {
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
                     .body(ApiResponse.error(429, "TOO_MANY_REQUESTS",
                             "Too many failed login attempts. Please try again after 15 minutes."));
         }
 
-        // 1. First check the app_users table in the database
-        Optional<AppUser> dbUserOpt = userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase(username.trim(),
-                username.trim());
-        if (dbUserOpt.isPresent()) {
-            AppUser user = dbUserOpt.get();
-            if (!"ACTIVE".equalsIgnoreCase(user.getStatus())) {
-                if (settingsService != null) {
-                    settingsService.recordLoginFailure(user.getUsername(), servletRequest, "Account disabled or locked");
-                }
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(ApiResponse.error(401, "UNAUTHORIZED", "Account is disabled or locked"));
+        Optional<AppUser> dbUserOpt = userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase(
+                trimmedUsername,
+                trimmedUsername
+        );
+
+        // Verify password BEFORE any status or role check to prevent enumeration
+        if (dbUserOpt.isEmpty() || !passwordEncoder.matches(password, dbUserOpt.get().getPasswordHash())) {
+            rateLimiter.recordFailedAttempt(trimmedUsername, clientIp);
+            if (dbUserOpt.isPresent() && settingsService != null) {
+                settingsService.recordLoginFailure(dbUserOpt.get().getUsername(), servletRequest, "Invalid password attempt");
             }
-
-            if (passwordEncoder.matches(password, user.getPasswordHash())) {
-                rateLimiter.resetAttempts(username, clientIp);
-
-                String role = (user.getRole() != null && !user.getRole().isBlank()) ? user.getRole() : "ADMIN";
-                String token = tokenProvider.generateToken(user.getUsername(), role);
-
-                if (settingsService != null) {
-                    settingsService.recordLoginSuccess(user.getUsername(), token, servletRequest);
-                }
-
-                LoginResponse response = LoginResponse.builder()
-                        .token(token)
-                        .username(user.getUsername())
-                        .name(user.getDisplayName() != null ? user.getDisplayName()
-                                : resolveDisplayName(user.getUsername()))
-                        .role(role)
-                        .email(user.getEmail())
-                        .build();
-
-                return ResponseEntity.ok(ApiResponse.success("Authentication successful", response));
-            } else {
-                rateLimiter.recordFailedAttempt(username, clientIp);
-                if (settingsService != null) {
-                    settingsService.recordLoginFailure(user.getUsername(), servletRequest, "Invalid password attempt");
-                }
-                if (rateLimiter.isBlocked(username, clientIp)) {
-                    return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                            .body(ApiResponse.error(429, "TOO_MANY_REQUESTS",
-                                    "Too many failed login attempts. Please try again after 15 minutes."));
-                }
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(ApiResponse.error(401, "UNAUTHORIZED", "Invalid credentials"));
+            if (rateLimiter.isBlocked(trimmedUsername, clientIp)) {
+                return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                        .body(ApiResponse.error(429, "TOO_MANY_REQUESTS",
+                                "Too many failed login attempts. Please try again after 15 minutes."));
             }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error(401, "UNAUTHORIZED", INVALID_CREDENTIALS_MSG));
         }
 
-        String role = "USER";
-        String displayName = username;
-        if ("admin".equalsIgnoreCase(username)) {
-            role = "ADMIN";
-            displayName = "Administrator";
-        } else if ("akshit.ujjain".equalsIgnoreCase(username) || "akshit".equalsIgnoreCase(username)) {
-            role = "ADMIN";
-            displayName = "Akshit Ujjain";
-        } else if ("gaurav.tripathy".equalsIgnoreCase(username) || "gaurav".equalsIgnoreCase(username)) {
-            role = "MD";
-            displayName = "Gaurav Tripathy";
-        } else if (username != null && !username.isBlank()) {
-            role = "USER";
-            displayName = username;
+        AppUser user = dbUserOpt.get();
+
+        // Reject any account that is not an active, allowlisted ADMIN
+        if (!allowlistService.isAuthorizedAdmin(user)) {
+            if (settingsService != null) {
+                settingsService.recordLoginFailure(user.getUsername(), servletRequest, "Non-admin or disabled account login blocked");
+            }
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error(403, "FORBIDDEN", ADMIN_RESTRICTED_MSG));
         }
-        String userEmail = username != null && username.contains("@") ? username.trim().toLowerCase()
-                : (username + "@kalpanaaa.in");
-        String token = tokenProvider.generateToken(username, role);
+
+        rateLimiter.resetAttempts(trimmedUsername, clientIp);
+
+        String token = tokenProvider.generateToken(user.getUsername(), "ADMIN");
 
         if (settingsService != null) {
-            settingsService.recordLoginSuccess(username, token, servletRequest);
+            settingsService.recordLoginSuccess(user.getUsername(), token, servletRequest);
         }
 
         LoginResponse response = LoginResponse.builder()
                 .token(token)
-                .username(username)
-                .name(displayName)
-                .role(role)
-                .email(userEmail)
+                .username(user.getUsername())
+                .name(user.getDisplayName())
+                .role("ADMIN")
+                .email(user.getEmail())
                 .build();
 
         return ResponseEntity.ok(ApiResponse.success("Authentication successful", response));
@@ -311,7 +205,7 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    @Operation(summary = "Get current authenticated user info from token")
+    @Operation(summary = "Get current authenticated administrator info from database")
     public ResponseEntity<ApiResponse<Map<String, String>>> getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
@@ -319,20 +213,24 @@ public class AuthController {
                     .body(ApiResponse.error(401, "UNAUTHORIZED", "Unauthenticated"));
         }
 
-        String username = auth.getName();
-        String role = auth.getAuthorities().stream()
-                .map(a -> a.getAuthority().replace("ROLE_", ""))
-                .findFirst()
-                .orElse("ADMIN");
+        String principal = auth.getName();
+        Optional<AppUser> userOpt = userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase(principal, principal);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error(401, "UNAUTHORIZED", "Unauthenticated"));
+        }
 
-        String displayName = "akshit.ujjain".equalsIgnoreCase(username) ? "Akshit Ujjain"
-                : ("gaurav.tripathy".equalsIgnoreCase(username) ? "Gaurav Tripathy" : username);
-        String userEmail = (username != null && username.contains("@")) ? username : (username + "@kalpanaaa.in");
+        AppUser user = userOpt.get();
+        if (!allowlistService.isAuthorizedAdmin(user)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error(403, "FORBIDDEN", ADMIN_RESTRICTED_MSG));
+        }
 
         return ResponseEntity.ok(ApiResponse.success("Current user profile", Map.of(
-                "username", username,
-                "name", displayName,
-                "role", role,
-                "email", userEmail)));
+                "username", user.getUsername(),
+                "name", user.getDisplayName(),
+                "role", "ADMIN",
+                "email", user.getEmail()
+        )));
     }
 }

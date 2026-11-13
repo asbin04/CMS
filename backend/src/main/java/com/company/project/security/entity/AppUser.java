@@ -33,12 +33,10 @@ public class AppUser {
     private String displayName;
 
     @Column(nullable = false, length = 50)
-    @Builder.Default
-    private String role = "ADMIN";
+    private String role;
 
     @Column(nullable = false, length = 20)
-    @Builder.Default
-    private String status = "ACTIVE";
+    private String status;
 
     @Column(name = "password_changed_at", nullable = false)
     @Builder.Default

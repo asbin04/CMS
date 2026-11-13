@@ -69,7 +69,6 @@ export const navigationSections: NavSection[] = [
     defaultExpanded: false,
     items: [
       { id: 'clients-list', label: 'Clients', path: '/clients/list', icon: Folder },
-      { id: 'client-dashboard', label: 'Client Dashboard', path: '/clients/dashboard', icon: LayoutDashboard },
     ],
   },
   {

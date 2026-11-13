@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, Check, Loader2 } from 'lucide-react';
-import { apiClient } from '../../../services/api/apiClient';
+import { apiClient, ApiError, clearAuthStorage } from '../../../services/api/apiClient';
 import { ForgotPasswordModal } from '../components/ForgotPasswordModal';
 
 interface LoginResponseData {
@@ -50,14 +50,18 @@ export const LoginPage: React.FC = () => {
       });
 
       if (response?.data?.token) {
+        if ((response.data.role || '').toUpperCase() !== 'ADMIN') {
+          clearAuthStorage();
+          setErrorMessage('Access restricted to administrators');
+          return;
+        }
+
         // Store JWT token and user profile
         localStorage.setItem('auth_token', response.data.token);
         if (response.data.name || response.data.username) {
           localStorage.setItem('auth_user_name', response.data.name || response.data.username);
         }
-        if (response.data.role) {
-          localStorage.setItem('auth_user_role', response.data.role);
-        }
+        localStorage.setItem('auth_user_role', 'ADMIN');
         const userEmail = response.data.email || (response.data.username && response.data.username.includes('@') ? response.data.username : email.trim());
         if (userEmail) {
           localStorage.setItem('auth_user_email', userEmail);
@@ -78,8 +82,13 @@ export const LoginPage: React.FC = () => {
         setErrorMessage('Authentication succeeded but no token was received.');
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Invalid credentials. Please try again.';
-      setErrorMessage(message.includes('401') ? 'Invalid email or password.' : message);
+      if (err instanceof ApiError && err.status === 403) {
+        clearAuthStorage();
+        setErrorMessage('Access restricted to administrators');
+      } else {
+        const message = err instanceof Error ? err.message : 'Invalid credentials. Please try again.';
+        setErrorMessage(message.includes('401') ? 'Invalid email or password.' : message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -94,18 +103,6 @@ export const LoginPage: React.FC = () => {
         backgroundColor: '#60A5FA',
       }}
     >
-
-      {/* Frame 13: Top-left Brand Logo */}
-      <div
-        className="absolute left-6 top-6 sm:left-12 sm:top-[51px] flex items-center gap-[9px] z-10"
-        style={{ width: '297px', height: '55px' }}
-      >
-        <img
-          src="/kalpanaaa-logo.png"
-          alt="KALPANAAA SOFTWARE SOLUTIONS"
-          className="h-[46px] sm:h-[50px] w-auto object-contain filter drop-shadow-sm"
-        />
-      </div>
 
       {/* Modal Card Window */}
       <div
@@ -163,7 +160,9 @@ export const LoginPage: React.FC = () => {
               lineHeight: '22px',
             }}
           >
-            Make a new doc to bring your words, data, and teams together. For free
+            Log in to manage your workspace and
+            <br />
+            company operations.
           </p>
         </div>
 

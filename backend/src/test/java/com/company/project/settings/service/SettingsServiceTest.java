@@ -145,6 +145,7 @@ class SettingsServiceTest {
                 .displayName("Akshit Ujjain")
                 .roleLabel("ADMIN")
                 .department("Admin")
+                .jobTitle("ADMIN")
                 .email("akshit.ujjain@kalpanaaasoftwaresolutions.in")
                 .build();
 
@@ -168,7 +169,7 @@ class SettingsServiceTest {
         assertThat(result.getProfile().getEmail()).isEqualTo("akshit.ujjain@kalpanaaasoftwaresolutions.in");
         assertThat(result.getProfile().getDepartment()).isEqualTo("Admin");
         assertThat(result.getProfile().getPhone()).isEqualTo("+91 99999 88888");
-        assertThat(result.getProfile().getJobTitle()).isEqualTo("Chief Executive Officer");
+        assertThat(result.getProfile().getJobTitle()).isEqualTo("ADMIN");
         verify(appUserRepository).save(appUser);
         verify(userLoginHistoryRepository).save(any(UserLoginHistoryEntity.class));
     }

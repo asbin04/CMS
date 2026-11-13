@@ -1,5 +1,7 @@
 package com.company.project.security;
 
+import com.company.project.security.entity.AppUser;
+import com.company.project.security.repository.AppUserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,11 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.time.Instant;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -56,11 +60,31 @@ class ControllerRbacSecurityTest {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
+    @Autowired
+    private AppUserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     private String readOnlyToken;
 
     @BeforeEach
     void setUp() {
-        readOnlyToken = "Bearer " + jwtTokenProvider.generateToken("viewer.user", "USER");
+        AppUser viewer = userRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase("viewer.user", "viewer.user@kalpanaaa.in")
+                .orElseGet(() -> AppUser.builder()
+                        .username("viewer.user")
+                        .email("viewer.user@kalpanaaa.in")
+                        .passwordHash(passwordEncoder.encode("ViewerPass@123"))
+                        .displayName("Viewer User")
+                        .role("CEO")
+                        .status("ACTIVE")
+                        .passwordChangedAt(Instant.now())
+                        .build());
+        viewer.setRole("CEO");
+        viewer.setStatus("ACTIVE");
+        userRepository.save(viewer);
+
+        readOnlyToken = "Bearer " + jwtTokenProvider.generateToken("viewer.user", "CEO");
     }
 
     @Test
@@ -294,11 +318,18 @@ class ControllerRbacSecurityTest {
     }
 
     @Test
-    @DisplayName("Read-only user is permitted to perform GET requests")
-    void testReadOnlyUserCanPerformGet() throws Exception {
+    @DisplayName("Non-admin user receives 403 Forbidden even on GET requests (ADMIN-only panel)")
+    void testReadOnlyUserCannotPerformGet() throws Exception {
         mockMvc.perform(get("/api/v1/dashboard/ceo")
                 .header("Authorization", readOnlyToken))
-                .andExpect(status().isOk());
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Unauthenticated request to protected endpoint returns 401 Unauthorized")
+    void testUnauthenticatedRequestReturns401() throws Exception {
+        mockMvc.perform(get("/api/v1/dashboard/ceo"))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

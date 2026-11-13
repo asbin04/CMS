@@ -1,5 +1,6 @@
 import React from 'react';
-import { LogOut, RotateCcw, Upload, Plus } from 'lucide-react';
+import { LogOut, Upload, Plus } from 'lucide-react';
+import { ReloadButton } from '../../../../components/ui/ReloadButton';
 
 interface EmployeeExitHeaderProps {
   lastUpdated: string;
@@ -36,15 +37,11 @@ export const EmployeeExitHeader: React.FC<EmployeeExitHeaderProps> = ({
       {/* Right Controls: Actions */}
       <div className="flex items-center flex-wrap gap-2.5 self-start md:self-auto">
         {/* Refresh Icon Button */}
-        <button
-          type="button"
+        <ReloadButton
           onClick={onRefresh}
-          disabled={isRefreshing}
+          isRefreshing={isRefreshing}
           title="Refresh exit data"
-          className="w-9 h-9 rounded-lg border border-[#E2E8F0] bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-600 flex items-center justify-center transition-all cursor-pointer shadow-2xs disabled:opacity-60"
-        >
-          <RotateCcw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-blue-600' : ''}`} />
-        </button>
+        />
 
         {/* Export Button */}
         <button

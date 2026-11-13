@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Headphones, Download, Plus, RotateCw } from 'lucide-react';
+import { Headphones, Download, Plus } from 'lucide-react';
+import { ReloadButton } from '../../../components/ui/ReloadButton';
 import { ticketService } from '../services/ticketService';
 import {
   SupportTicketItem,
@@ -219,14 +220,11 @@ export const SupportTicketsPage: React.FC = () => {
         {/* Right Actions: Refresh + Export + Create Ticket */}
         <div className="flex items-center gap-3 flex-wrap">
           <div className="flex items-center gap-2 text-xs text-[#6B7280]">
-            <button
-              type="button"
+            <ReloadButton
               onClick={handleRefresh}
+              isRefreshing={isRefreshing}
               title="Refresh tickets data"
-              className="p-1 rounded hover:bg-[#E2E8F0] transition-colors"
-            >
-              <RotateCw className={`w-3.5 h-3.5 text-[#6B7280] ${isRefreshing ? 'animate-spin' : ''}`} />
-            </button>
+            />
           </div>
 
           <button

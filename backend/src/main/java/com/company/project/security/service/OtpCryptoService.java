@@ -17,7 +17,10 @@ public class OtpCryptoService {
     private final SecureRandom secureRandom = new SecureRandom();
     private final byte[] secretKeyBytes;
 
-    public OtpCryptoService(@Value("${app.auth.otp.hmac-secret:c3VwZXItc2VjcmV0LW90cC1obWFjLWtleS1mb3ItY21zLXBvcnRhbC0yMDI2}") String secret) {
+    public OtpCryptoService(@Value("${app.auth.otp.hmac-secret:}") String secret) {
+        if (secret == null || secret.isBlank() || secret.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalStateException("OTP_HMAC_SECRET is required and must be at least 32 bytes long.");
+        }
         this.secretKeyBytes = secret.getBytes(StandardCharsets.UTF_8);
     }
 

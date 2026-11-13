@@ -1,5 +1,6 @@
 import React from 'react';
-import { CreditCard, RotateCcw, Download, Plus } from 'lucide-react';
+import { CreditCard, Download, Plus } from 'lucide-react';
+import { ReloadButton } from '../../../../components/ui/ReloadButton';
 
 interface PayrollHeaderProps {
   lastUpdated: string;
@@ -36,15 +37,11 @@ export const PayrollHeader: React.FC<PayrollHeaderProps> = ({
       {/* Right Controls: Actions - strictly single line without wrapping */}
       <div className="flex items-center flex-nowrap shrink-0 gap-2.5 self-start md:self-auto overflow-x-auto max-w-full">
         {/* Refresh Icon Button */}
-        <button
-          type="button"
+        <ReloadButton
           onClick={onRefresh}
-          disabled={isRefreshing}
+          isRefreshing={isRefreshing}
           title="Refresh payroll data"
-          className="w-9 h-9 rounded-lg border border-[#E2E8F0] bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-600 flex items-center justify-center transition-all cursor-pointer shadow-2xs disabled:opacity-60"
-        >
-          <RotateCcw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-blue-600' : ''}`} />
-        </button>
+        />
 
         {/* Export Button */}
         <button

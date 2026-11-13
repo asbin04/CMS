@@ -1,19 +1,32 @@
 :root {
   /* 01 Core Color Tokens (Figma Design System Foundation) */
-  --color-primary-brand: #0D172E;        /* Midnight Navy: Sidebar & brand identity */
+  --color-primary-brand: #0D172E;
+  /* Midnight Navy: Sidebar & brand identity */
   --color-primary-brand-navy: #172554;
-  --color-secondary-brand: #4F46E5;      /* Indigo: Primary actions and active states */
-  --color-accent: #0D9488;               /* Teal: Highlights and secondary actions */
-  --color-app-bg: #F8FAFC;               /* Cool Gray: Main workspace */
-  --color-card-bg: #FFFFFF;              /* White: Cards, tables and forms */
-  --color-primary-text: #0F172A;         /* Slate 900: Headings and important content */
-  --color-secondary-text: #64748B;       /* Slate 500: Supporting text and labels */
-  --color-borders: #E2E8F0;              /* Slate 200: Dividers and component boundaries */
-  --color-success: #16A34A;              /* Green: Completed and successful states */
-  --color-warning: #D97706;              /* Amber: Pending actions and warnings */
-  --color-error: #DC2626;                /* Red: Failed actions and critical issues */
-  --color-info: #2563EB;                 /* Blue: Informational notifications */
-  --color-chart-violet: #7C3AED;         /* Violet: Chart extension */
+  --color-secondary-brand: #4F46E5;
+  /* Indigo: Primary actions and active states */
+  --color-accent: #0D9488;
+  /* Teal: Highlights and secondary actions */
+  --color-app-bg: #F8FAFC;
+  /* Cool Gray: Main workspace */
+  --color-card-bg: #FFFFFF;
+  /* White: Cards, tables and forms */
+  --color-primary-text: #0F172A;
+  /* Slate 900: Headings and important content */
+  --color-secondary-text: #64748B;
+  /* Slate 500: Supporting text and labels */
+  --color-borders: #E2E8F0;
+  /* Slate 200: Dividers and component boundaries */
+  --color-success: #16A34A;
+  /* Green: Completed and successful states */
+  --color-warning: #D97706;
+  /* Amber: Pending actions and warnings */
+  --color-error: #DC2626;
+  /* Red: Failed actions and critical issues */
+  --color-info: #2563EB;
+  /* Blue: Informational notifications */
+  --color-chart-violet: #7C3AED;
+  /* Violet: Chart extension */
 
   /* Semantic Badges */
   --badge-completed-bg: #F0FDF4;
@@ -74,13 +87,16 @@
   --sidebar-active-accent: #4F46E5;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   width: 100%;
   font-family: var(--font-family);
@@ -360,7 +376,7 @@ html, body {
   display: flex;
   align-items: center;
   gap: 12px;
-  height: 40px;
+  height: 36px;
   width: 100%;
   padding: 0 14px;
   border-radius: 12px;
@@ -454,8 +470,13 @@ html, body {
 
 /* Table Row Status Highlight Animation */
 @keyframes rowStatusFlash {
-  0% { background-color: rgba(99, 102, 241, 0.15); }
-  100% { background-color: transparent; }
+  0% {
+    background-color: rgba(99, 102, 241, 0.15);
+  }
+
+  100% {
+    background-color: transparent;
+  }
 }
 
 .row-status-changed {
@@ -464,6 +485,7 @@ html, body {
 
 /* Accessibility: Respect prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
+
   .sidebar-nav-item,
   .sidebar-nav-item::before,
   .sidebar-item-icon,

@@ -75,10 +75,9 @@ public class SettingsService {
         String trimmedName = request.getDisplayName().trim();
         settings.setDisplayName(trimmedName);
 
-        // Email and department are locked for the logged-in account and cannot be changed via profile update.
+        // Email, department, and job title are locked for the logged-in account and cannot be changed via profile update.
         settings.setPhone(normalizeAndValidatePhone(request.getPhone()));
         settings.setEmployeeId(trimToNull(request.getEmployeeId()));
-        settings.setJobTitle(trimToNull(request.getJobTitle()));
         if (request.getAvatarUrl() != null) {
             settings.setAvatarUrl(sanitizeAvatarUrl(request.getAvatarUrl()));
         }
@@ -466,7 +465,9 @@ public class SettingsService {
     private UserSettingsEntity buildDefaultSettingsEntity(AuthenticatedUserContext ctx) {
         EmployeeEntity employee = employeeRepository.findByWorkEmail(ctx.email()).orElse(null);
 
-        String department = employee != null ? trimToNull(employee.getDepartment()) : null;
+        String department = employee != null && trimToNull(employee.getDepartment()) != null
+                ? trimToNull(employee.getDepartment())
+                : ctx.role();
         String employeeId = employee != null ? trimToNull(employee.getEmployeeId()) : null;
         String phone = employee != null ? trimToNull(employee.getPhone()) : null;
         String jobTitle = employee != null && trimToNull(employee.getDesignation()) != null
@@ -507,7 +508,9 @@ public class SettingsService {
                         .username(settings.getUserKey())
                         .displayName(settings.getDisplayName())
                         .role(settings.getRoleLabel())
-                        .department(settings.getDepartment())
+                        .department(trimToNull(settings.getDepartment()) != null
+                                ? settings.getDepartment()
+                                : (trimToNull(settings.getRoleLabel()) != null ? settings.getRoleLabel() : "ADMIN"))
                         .employeeId(settings.getEmployeeId())
                         .email(settings.getEmail())
                         .phone(settings.getPhone())

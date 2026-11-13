@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Code2, RotateCw, Download, Plus } from 'lucide-react';
+import { Code2, Download, Plus } from 'lucide-react';
+import { ReloadButton } from '../../../components/ui/ReloadButton';
 
 interface DevelopmentPageHeaderProps {
   onRefresh?: () => void;
@@ -42,15 +43,12 @@ export const DevelopmentPageHeader: React.FC<DevelopmentPageHeaderProps> = ({
       {/* Right Controls: Refresh, Export, + Add Development */}
       <div className="flex items-center gap-3 self-end sm:self-center">
         <div className="flex items-center gap-2 text-xs text-slate-400">
-          <button
-            type="button"
+          <ReloadButton
             onClick={handleRefreshClick}
+            isRefreshing={isRefreshing}
             title="Refresh"
-            aria-label="Refresh Development data"
-            className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
-          >
-            <RotateCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-[#4F46E5]' : ''}`} />
-          </button>
+            ariaLabel="Refresh Development data"
+          />
         </div>
 
         <button
