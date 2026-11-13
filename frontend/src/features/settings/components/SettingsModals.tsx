@@ -12,7 +12,6 @@ import {
   LogOut,
   Camera,
   Trash2,
-  ChevronDown,
 } from 'lucide-react';
 import {
   ChangePasswordPayload,
@@ -579,7 +578,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
         phone: formattedPhone,
         department: profile.department || '',
         employeeId: form.employeeId.trim(),
-        jobTitle: form.jobTitle.trim(),
+        jobTitle: profile.jobTitle || '',
         ...(form.avatarUrl !== null && form.avatarUrl !== undefined
           ? { avatarUrl: form.avatarUrl }
           : {}),
@@ -704,7 +703,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
             />
           </div>
 
-          <div>
+          <div className="sm:col-span-2">
             <label
               htmlFor="edit-profile-phone"
               className="block text-[12px] font-medium text-[#334155] mb-1"
@@ -712,24 +711,18 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
               Phone Number
             </label>
             <div className="flex items-center gap-2">
-              <div className="relative shrink-0">
-                <select
-                  aria-label="Country code"
-                  value={countryIso}
-                  onChange={(e) => setCountryIso(e.target.value)}
-                  className="w-[72px] h-9 pl-2.5 pr-6 appearance-none rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] text-[13px] text-[#0F172A] tabular-nums focus:outline-none focus:border-[#4F46E5] focus:bg-white cursor-pointer"
-                >
-                  {UNIQUE_DIAL_CODE_OPTIONS.map((country) => (
-                    <option key={country.iso} value={country.iso} title={country.name}>
-                      {country.dialCode}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown
-                  className="w-3.5 h-3.5 text-[#0F172A] pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2"
-                  aria-hidden="true"
-                />
-              </div>
+              <select
+                aria-label="Country code"
+                value={countryIso}
+                onChange={(e) => setCountryIso(e.target.value)}
+                className="w-[96px] shrink-0 h-9 px-2.5 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] text-[13px] text-[#0F172A] tabular-nums focus:outline-none focus:border-[#4F46E5] focus:bg-white cursor-pointer"
+              >
+                {UNIQUE_DIAL_CODE_OPTIONS.map((country) => (
+                  <option key={country.iso} value={country.iso} title={country.name}>
+                    {country.dialCode}
+                  </option>
+                ))}
+              </select>
               <input
                 id="edit-profile-phone"
                 type="tel"
@@ -746,7 +739,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
             </div>
           </div>
 
-          <div>
+          <div className="sm:col-span-2">
             <label
               htmlFor="edit-profile-department"
               className="block text-[12px] font-medium text-[#334155] mb-1"
@@ -756,11 +749,11 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
             <input
               id="edit-profile-department"
               type="text"
-              value={form.department}
+              value={form.department || profile.role || 'ADMIN'}
               disabled
               readOnly
-              className="w-full h-9 px-3 rounded-lg border border-[#E2E8F0] bg-slate-100 text-[13px] text-[#64748B] cursor-not-allowed focus:outline-none"
-              placeholder="e.g. Management"
+              className="w-full h-9 px-3 rounded-lg border border-[#E2E8F0] bg-slate-100 text-[13px] text-[#64748B] cursor-not-allowed focus:outline-none uppercase"
+              placeholder="ADMIN"
             />
           </div>
         </div>
@@ -1196,9 +1189,8 @@ export const LoginHistoryModal: React.FC<LoginHistoryModalProps> = ({
                 <div key={item.id} className="py-3 flex items-start justify-between gap-4">
                   <div className="flex items-start gap-3 min-w-0">
                     <div
-                      className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
-                        isFailed ? 'bg-rose-50 text-rose-600' : 'bg-[#EFF6FF] text-[#4F46E5]'
-                      }`}
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${isFailed ? 'bg-rose-50 text-rose-600' : 'bg-[#EFF6FF] text-[#4F46E5]'
+                        }`}
                     >
                       {isFailed ? <AlertCircle size={15} /> : <Clock size={15} />}
                     </div>
@@ -1213,11 +1205,10 @@ export const LoginHistoryModal: React.FC<LoginHistoryModalProps> = ({
                   </div>
                   <div className="text-right shrink-0">
                     <span
-                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
-                        isFailed
+                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${isFailed
                           ? 'bg-rose-50 border-rose-200 text-rose-700'
                           : 'bg-[#ECFDF5] border-[#A7F3D0] text-[#059669]'
-                      }`}
+                        }`}
                     >
                       {!isFailed && <CheckCircle2 size={10} />}
                       {item.status}

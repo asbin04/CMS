@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Crown, RotateCw } from 'lucide-react';
+import { Crown } from 'lucide-react';
+import { ReloadButton } from '../../../components/ui/ReloadButton';
 import { FullDashboardData } from '../../../types/dashboard';
 import { dashboardService } from '../../../services/dashboardService';
 import { apiClient } from '../../../services/api/apiClient';
@@ -103,8 +104,9 @@ export const CeoDashboardPage: React.FC<CeoDashboardPageProps> = ({
 
         {/* Refresh Action */}
         <div className="flex items-center gap-2 text-xs text-slate-400">
-          <button
+          <ReloadButton
             onClick={handleManualRefresh}
+            isRefreshing={isRefreshing}
             disabled={isLoading || isRefreshing}
             className="p-1.5 rounded-md hover:bg-slate-200/60 text-[#64748B] hover:text-[#0F172A] transition-colors cursor-pointer disabled:opacity-50"
             title="Refresh dashboard data"

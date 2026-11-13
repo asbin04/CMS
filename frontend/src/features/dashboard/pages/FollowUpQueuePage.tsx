@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
+import { ReloadButton } from '../../../components/ui/ReloadButton';
 import {
   AlertTriangle,
   RotateCcw,
@@ -92,7 +93,6 @@ export const FollowUpQueuePage: React.FC<FollowUpQueuePageProps> = (props) => {
   const [items, setItems] = useState<FollowUpItemData[]>([]);
   const [summary, setSummary] = useState<FollowUpSummaryData | null>(null);
   const [selectedFilter, setSelectedFilter] = useState<PriorityLevel | 'all'>('all');
-  const [lastRefreshed, setLastRefreshed] = useState<string>('—');
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -104,16 +104,6 @@ export const FollowUpQueuePage: React.FC<FollowUpQueuePageProps> = (props) => {
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3200);
-  };
-
-  const formatTimestamp = (date: Date = new Date()) => {
-    return date.toLocaleDateString('en-GB', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
   };
 
   // Fetch items and summary from backend database
@@ -133,12 +123,6 @@ export const FollowUpQueuePage: React.FC<FollowUpQueuePageProps> = (props) => {
 
       setItems(fetchedItems);
       setSummary(fetchedSummary);
-
-      if (fetchedSummary.lastRefreshed) {
-        setLastRefreshed(formatTimestamp(new Date(fetchedSummary.lastRefreshed)));
-      } else {
-        setLastRefreshed(formatTimestamp());
-      }
 
       if (isRefreshAction) {
         showToast('Queue data refreshed successfully from database');
@@ -525,7 +509,7 @@ export const FollowUpQueuePage: React.FC<FollowUpQueuePageProps> = (props) => {
           </div>
         </div>
 
-        {/* Right: Timestamp & Refresh Button */}
+        {/* Right: Refresh Button */}
         <div className="flex flex-row items-center p-0 gap-3 h-[30px]">
           <div className="flex flex-row items-center p-0 gap-1.5 h-4">
             <span

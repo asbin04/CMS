@@ -1,5 +1,7 @@
 package com.company.project.security;
 
+import com.company.project.security.repository.AppUserRepository;
+import com.company.project.security.service.AdminAllowlistService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -17,8 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
-import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
@@ -28,13 +28,22 @@ public class SecurityConfig {
 
     private final CorsConfigurationSource corsConfigurationSource;
     private final JwtTokenProvider jwtTokenProvider;
+    private final AppUserRepository userRepository;
+    private final AdminAllowlistService allowlistService;
 
     @Value("${spring.profiles.active}")
     private String activeProfile;
 
-    public SecurityConfig(CorsConfigurationSource corsConfigurationSource, JwtTokenProvider jwtTokenProvider) {
+    public SecurityConfig(
+            CorsConfigurationSource corsConfigurationSource,
+            JwtTokenProvider jwtTokenProvider,
+            AppUserRepository userRepository,
+            AdminAllowlistService allowlistService
+    ) {
         this.corsConfigurationSource = corsConfigurationSource;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.userRepository = userRepository;
+        this.allowlistService = allowlistService;
     }
 
     @Bean
@@ -44,7 +53,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtTokenProvider);
+        return new JwtAuthenticationFilter(jwtTokenProvider, userRepository, allowlistService);
     }
 
     @Bean
@@ -61,16 +70,28 @@ public class SecurityConfig {
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                    response.getWriter().write("{\"success\":false,\"message\":\"Access denied: insufficient permissions\",\"status\":403}");
+                    response.getWriter().write("{\"success\":false,\"message\":\"Access restricted to administrators\",\"status\":403}");
                 })
             )
             .authorizeHttpRequests(auth -> {
-                // Pre-flight requests
                 auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
 
-                // Public Actuator / Health and Auth endpoints
-                auth.requestMatchers("/actuator/**").permitAll()
-                    .requestMatchers("/api/v1/auth/**", "/api/auth/**").permitAll();
+                // Minimal public health endpoint; all other actuator endpoints require ADMIN
+                auth.requestMatchers(HttpMethod.GET, "/actuator/health", "/actuator/health/**").permitAll();
+                auth.requestMatchers("/actuator/**").hasRole("ADMIN");
+
+                // Public auth endpoints (login & password reset only; /me is protected)
+                auth.requestMatchers(
+                        HttpMethod.POST,
+                        "/api/v1/auth/login",
+                        "/api/auth/login",
+                        "/api/v1/auth/forgot-password",
+                        "/api/auth/forgot-password",
+                        "/api/v1/auth/verify-otp",
+                        "/api/auth/verify-otp",
+                        "/api/v1/auth/reset-password",
+                        "/api/auth/reset-password"
+                ).permitAll();
 
                 // Swagger documentation permitted only in dev profile
                 if (isDev) {
@@ -79,17 +100,8 @@ public class SecurityConfig {
                     auth.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").denyAll();
                 }
 
-                // Reset and DELETE operations strictly require ROLE_ADMIN in ALL profiles, including dev
-                auth.requestMatchers(
-                        PathPatternRequestMatcher.withDefaults().matcher("/api/v1/*/reset"),
-                        RegexRequestMatcher.regexMatcher("^/api/v1/(?:.+/)?reset(?:\\?.*)?$")
-                    ).hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.DELETE, "/api/v1/**").hasRole("ADMIN");
-
-                // All other /api/v1/** endpoints require authentication
-                auth.requestMatchers("/api/v1/**").authenticated();
-
-                auth.anyRequest().permitAll();
+                // Deny-by-default: everything else requires authenticated ADMIN
+                auth.anyRequest().hasRole("ADMIN");
             });
 
         return http.build();

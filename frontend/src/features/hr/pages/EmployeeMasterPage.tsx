@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { ReloadButton } from '../../../components/ui/ReloadButton';
 import {
   Users,
   RotateCcw,
@@ -423,9 +424,9 @@ export const EmployeeMasterPage: React.FC = () => {
           </div>
 
           <div className="flex items-center flex-wrap gap-2">
-            <button
+            <ReloadButton
               onClick={handleRefresh}
-              disabled={isRefreshing}
+              isRefreshing={isRefreshing}
               title="Refresh employee data"
               className="w-[34px] h-[34px] p-2 bg-white border border-[#E2E8F0] rounded-[8px] flex items-center justify-center text-[#64748B] hover:bg-slate-50 transition-colors shadow-sm"
             >

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { FileCheck, RotateCw } from 'lucide-react';
+import { FileCheck } from 'lucide-react';
+import { ReloadButton } from '../../../components/ui/ReloadButton';
 import { approvalsService, AllApprovalsData } from '../../../services/approvalsService';
 import { ApprovalMetricCards } from '../../../components/approvals/ApprovalMetricCards';
 import { EmployeeApprovalsSection } from '../../../components/approvals/EmployeeApprovalsSection';
@@ -196,14 +197,13 @@ export const ApprovalInboxPage: React.FC = () => {
 
         {/* Refresh button */}
         <div className="flex flex-row items-center gap-2 text-xs text-[#64748B]">
-          <button
+          <ReloadButton
             onClick={handleManualRefresh}
+            isRefreshing={isRefreshing}
             disabled={isLoading || isRefreshing}
             className="p-1 rounded hover:bg-slate-200/60 text-[#64748B] hover:text-[#0F172A] transition-colors cursor-pointer disabled:opacity-50"
             title="Refresh inbox data"
-          >
-            <RotateCw size={14} className={isRefreshing ? 'animate-spin' : ''} />
-          </button>
+          />
         </div>
       </div>
 

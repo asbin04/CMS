@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Calendar, RotateCw, Plus, Upload, Download, Loader2 } from 'lucide-react';
+import { Calendar, Plus, Upload, Download, Loader2 } from 'lucide-react';
+import { ReloadButton } from '../../../components/ui/ReloadButton';
 import { AttendanceRecord, AttendanceFilterState, AttendanceSortOption } from '../types/attendance';
 import { attendanceService } from '../services/attendanceService';
 import { AttendanceMetricCards } from '../components/AttendanceMetricCards';
@@ -414,26 +415,11 @@ export const AttendancePage: React.FC = () => {
         {/* Right Header Actions */}
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
           {/* Refresh Button */}
-          <button
-            type="button"
+          <ReloadButton
             onClick={handleRefresh}
-            disabled={isRefreshing}
-            style={{
-              width: '32px',
-              height: '32px',
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              borderRadius: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: isRefreshing ? 'not-allowed' : 'pointer',
-              color: '#64748B',
-            }}
+            isRefreshing={isRefreshing}
             title="Refresh database records"
-          >
-            <RotateCw size={15} className={isRefreshing ? 'animate-spin' : ''} />
-          </button>
+          />
 
           {/* Import Button */}
           <button

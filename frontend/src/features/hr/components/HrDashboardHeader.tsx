@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Users2, RotateCw } from 'lucide-react';
+import { Users2 } from 'lucide-react';
+import { ReloadButton } from '../../../components/ui/ReloadButton';
 import { Department } from '../types';
 
 interface HrDashboardHeaderProps {
@@ -49,9 +50,9 @@ export const HrDashboardHeader: React.FC<HrDashboardHeaderProps> = ({
 
         {/* Right side: Refresh */}
         <div className="flex items-center gap-2.5 shrink-0">
-          <button
-            type="button"
+          <ReloadButton
             onClick={handleRefreshClick}
+            isRefreshing={isRefreshing}
             title="Refresh HR data"
             className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-[#64748B] hover:text-[#0F172A] transition-colors shadow-2xs cursor-pointer flex items-center justify-center"
           >

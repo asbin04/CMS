@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, Clock, UserCheck, Shield, FileText, TrendingUp, Bell } from 'lucide-react';
+import { Clock, UserCheck, Shield, FileText, TrendingUp, Bell } from 'lucide-react';
+import { CalendarDateRangePicker } from '../ui/CalendarDateRangePicker';
 import {
   notificationService,
   PortalNotification,
@@ -446,29 +447,17 @@ export const TopNav: React.FC<TopNavProps> = ({
             </div>
           </button>
 
-          {isDateOpen && (
-            <div className="absolute right-0 mt-1.5 w-52 bg-white border border-[#E2E8F0] rounded-lg shadow-lg py-1 z-50">
-              <div className="px-3 py-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                Select Period
-              </div>
-              {dateRanges.map((range) => (
-                <button
-                  key={range}
-                  type="button"
-                  onClick={() => {
-                    onDateRangeChange?.(range);
-                    setIsDateOpen(false);
-                  }}
-                  className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-slate-50 transition-colors ${
-                    selectedDateRange === range ? 'text-blue-600 font-semibold bg-blue-50/50' : 'text-[#334155]'
-                  }`}
-                >
-                  <span>{range}</span>
-                  {selectedDateRange === range && <Check className="w-3.5 h-3.5 text-blue-600" />}
-                </button>
-              ))}
-            </div>
-          )}
+          {/* Date Picker Component */}
+          <CalendarDateRangePicker
+            value={selectedDateRange}
+            onChange={(range) => {
+              onDateRangeChange?.(range);
+              setIsDateOpen(false);
+            }}
+            isOpen={isDateOpen}
+            onClose={() => setIsDateOpen(false)}
+            showPresets={false}
+          />
         </div>
 
         {/* Button - Notification Bell */}
@@ -642,7 +631,10 @@ export const TopNav: React.FC<TopNavProps> = ({
 
         {/* User Profile */}
         <div style={{ position: 'relative', flexShrink: 0 }}>
-          <div
+          <button
+            type="button"
+            onClick={() => navigate('/settings')}
+            className="group hover:opacity-90 transition-opacity"
             style={{
               boxSizing: 'border-box',
               display: 'flex',
@@ -653,6 +645,10 @@ export const TopNav: React.FC<TopNavProps> = ({
               gap: '8px',
               width: 'auto',
               height: '32px',
+              border: 'none',
+              background: 'transparent',
+              textAlign: 'left',
+              cursor: 'pointer',
               userSelect: 'none',
               flex: 'none',
               order: 2,
@@ -798,7 +794,7 @@ export const TopNav: React.FC<TopNavProps> = ({
                 </span>
               </div>
             </div>
-          </div>
+          </button>
         </div>
       </div>
     </header>

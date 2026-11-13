@@ -2,7 +2,11 @@ package com.company.project.security;
 
 import com.company.project.dashboard.dto.CeoDashboardUpdateRequest;
 import com.company.project.dashboard.entity.DashboardSettings;
+import com.company.project.security.entity.AppUser;
+import com.company.project.security.repository.AppUserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +21,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.Date;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -73,19 +79,41 @@ class AuthSecurityTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private AppUserRepository userRepository;
+
     @Value("${app.auth.admin.username:${ADMIN_USERNAME:asbin.t.s@kalpanaaa.in}}")
     private String adminUsername;
 
     @Value("${app.auth.admin.password:${ADMIN_PASSWORD:Admin123}}")
     private String adminPassword;
 
-    private String validCeoToken;
+    @Value("${app.auth.jwt.secret:${JWT_SECRET:}}")
+    private String jwtSecret;
+
+    private String validNonAdminToken;
     private String validAdminToken;
 
     @BeforeEach
     void setUp() {
         rateLimiter.clearAll();
-        validCeoToken = "Bearer " + jwtTokenProvider.generateToken("akshit.ujjain", "CEO");
+
+        AppUser nonAdmin = userRepository.findByEmailIgnoreCase("valid.user@kalpanaaa.in")
+                .orElseGet(() -> AppUser.builder()
+                        .username("valid.user")
+                        .email("valid.user@kalpanaaa.in")
+                        .passwordHash(passwordEncoder.encode("UserPass@123"))
+                        .displayName("Regular User")
+                        .role("CEO")
+                        .status("ACTIVE")
+                        .passwordChangedAt(Instant.now())
+                        .build());
+        nonAdmin.setPasswordHash(passwordEncoder.encode("UserPass@123"));
+        nonAdmin.setRole("CEO");
+        nonAdmin.setStatus("ACTIVE");
+        userRepository.save(nonAdmin);
+
+        validNonAdminToken = "Bearer " + jwtTokenProvider.generateToken("valid.user@kalpanaaa.in", "CEO");
         validAdminToken = "Bearer " + jwtTokenProvider.generateToken(adminUsername, "ADMIN");
     }
 
@@ -263,42 +291,103 @@ class AuthSecurityTest {
     }
 
     @Test
-    @DisplayName("Admin password shorter than 12 characters fails fast on startup")
-    void testShortAdminPasswordFailsFast() throws Exception {
-        AuthController controller = new AuthController(jwtTokenProvider, passwordEncoder, rateLimiter);
-        Field passField = AuthController.class.getDeclaredField("configuredAdminPassword");
-        passField.setAccessible(true);
-        passField.set(controller, "shortpass1"); // 10 characters (< 12)
+    @DisplayName("Valid non-admin account cannot log in (403 Forbidden) and wrong password returns 401")
+    void testValidNonAdminLoginReturns403AndWrongPasswordReturns401() throws Exception {
+        AuthController.LoginRequest validNonAdmin = new AuthController.LoginRequest("valid.user@kalpanaaa.in", "UserPass@123");
+        mockMvc.perform(post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(validNonAdmin)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Access restricted to administrators"));
 
-        assertThatThrownBy(controller::initAdminCredentials)
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("at least 12 characters long");
+        AuthController.LoginRequest wrongPassNonAdmin = new AuthController.LoginRequest("valid.user@kalpanaaa.in", "WrongPassword123!");
+        mockMvc.perform(post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(wrongPassNonAdmin)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Invalid credentials"));
     }
 
     @Test
-    @DisplayName("DELETE and */reset endpoints require ROLE_ADMIN (ROLE_CEO gets 403)")
+    @DisplayName("Unknown email and wrong password both fail with the same generic 401 response")
+    void testUnknownEmailAndWrongPasswordSameGenericResponse() throws Exception {
+        AuthController.LoginRequest unknownReq = new AuthController.LoginRequest("unknown.person@external.com", "Admin123");
+        AuthController.LoginRequest wrongPassReq = new AuthController.LoginRequest(adminUsername, "WrongPassword123!");
+
+        mockMvc.perform(post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(unknownReq)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Invalid credentials"));
+
+        mockMvc.perform(post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(wrongPassReq)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Invalid credentials"));
+    }
+
+    @Test
+    @DisplayName("No public registration or signup endpoint exists")
+    void testNoRegistrationEndpointExists() throws Exception {
+        mockMvc.perform(post("/api/v1/auth/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"new@example.com\",\"password\":\"Password@123\"}"))
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(post("/api/v1/auth/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"new@example.com\",\"password\":\"Password@123\"}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("JWT secret shorter than 32 bytes fails fast on startup")
+    void testShortJwtSecretFailsFast() {
+        assertThatThrownBy(() -> new JwtTokenProvider("too-short-secret", 14400000L))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("32 bytes");
+    }
+
+    @Test
+    @DisplayName("Protected endpoints and /reset require ROLE_ADMIN (non-admin gets 403, admin gets 200)")
     void testDeleteAndResetRequireAdminRole() throws Exception {
-        // CEO role attempting to reset contracts -> 403 Forbidden
+        // Non-admin role attempting to reset contracts -> 403 Forbidden
         mockMvc.perform(post("/api/v1/contracts/reset")
-                .header("Authorization", validCeoToken))
+                .header("Authorization", validNonAdminToken))
                 .andExpect(status().isForbidden());
 
-        // CEO role attempting to DELETE contract -> 403 Forbidden
+        // Non-admin role attempting to DELETE contract -> 403 Forbidden
         mockMvc.perform(delete("/api/v1/contracts/999999")
-                .header("Authorization", validCeoToken))
+                .header("Authorization", validNonAdminToken))
+                .andExpect(status().isForbidden());
+
+        // Non-admin role attempting to access /api/v1/auth/me -> 403 Forbidden
+        mockMvc.perform(get("/api/v1/auth/me")
+                .header("Authorization", validNonAdminToken))
                 .andExpect(status().isForbidden());
 
         // ADMIN role attempting reset -> succeeds (200 OK)
         mockMvc.perform(post("/api/v1/contracts/reset")
                 .header("Authorization", validAdminToken))
                 .andExpect(status().isOk());
+
+        // ADMIN role attempting /api/v1/auth/me -> succeeds (200 OK)
+        mockMvc.perform(get("/api/v1/auth/me")
+                .header("Authorization", validAdminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.role").value("ADMIN"));
     }
 
     @Test
-    @DisplayName("Authenticated request with valid Bearer token accesses /api/v1/dashboard/sidebar/counts")
+    @DisplayName("Authenticated admin accesses /api/v1/dashboard/sidebar/counts")
     void testAuthenticatedSidebarCounts() throws Exception {
         mockMvc.perform(get("/api/v1/dashboard/sidebar/counts")
-                .header("Authorization", validCeoToken))
+                .header("Authorization", validAdminToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.pendingApprovals").isNumber())
@@ -306,7 +395,7 @@ class AuthSecurityTest {
     }
 
     @Test
-    @DisplayName("PUT /api/v1/dashboard/ceo with valid token updates settings")
+    @DisplayName("PUT /api/v1/dashboard/ceo with valid admin token updates settings")
     void testUpdateDashboardSettings() throws Exception {
         DashboardSettings updateSettings = new DashboardSettings();
         updateSettings.setCompanyName("KALPANAAA SOFTWARE SOLUTIONS");
@@ -316,7 +405,7 @@ class AuthSecurityTest {
         request.setSettings(updateSettings);
 
         mockMvc.perform(put("/api/v1/dashboard/ceo")
-                .header("Authorization", validCeoToken)
+                .header("Authorization", validAdminToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -325,7 +414,7 @@ class AuthSecurityTest {
     }
 
     @Test
-    @DisplayName("POST /api/v1/collections/invoices/INV-2024-001/reminder logs reminder")
+    @DisplayName("POST /api/v1/collections/invoices/INV-2024-001/reminders logs reminder for admin")
     void testSendReminderEndpoint() throws Exception {
         Map<String, Object> reminderRequest = Map.of(
                 "channels", Map.of("email", true, "whatsapp", true),
@@ -333,7 +422,7 @@ class AuthSecurityTest {
                 "recipient", "finance@example.com");
 
         mockMvc.perform(post("/api/v1/collections/invoices/INV-2024-001/reminders")
-                .header("Authorization", validCeoToken)
+                .header("Authorization", validAdminToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(reminderRequest)))
                 .andExpect(status().isCreated())
@@ -341,7 +430,7 @@ class AuthSecurityTest {
     }
 
     @Test
-    @DisplayName("POST /api/v1/collections/invoices/INV-2024-001/communication logs communication history")
+    @DisplayName("POST /api/v1/collections/invoices/INV-2024-001/communications logs communication history for admin")
     void testLogCommunicationEndpoint() throws Exception {
         Map<String, Object> commRequest = Map.of(
                 "communicationType", "EMAIL",
@@ -350,7 +439,7 @@ class AuthSecurityTest {
                 "message", "Please settle the outstanding balance.");
 
         mockMvc.perform(post("/api/v1/collections/invoices/INV-2024-001/communications")
-                .header("Authorization", validCeoToken)
+                .header("Authorization", validAdminToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(commRequest)))
                 .andExpect(status().isCreated())
@@ -358,10 +447,22 @@ class AuthSecurityTest {
     }
 
     @Test
-    @DisplayName("Invalid token to protected endpoint returns 401 Unauthorized")
-    void testInvalidTokenReturns401() throws Exception {
+    @DisplayName("Tampered and expired JWT tokens are rejected with 401 Unauthorized")
+    void testInvalidAndExpiredTokensReturn401() throws Exception {
         mockMvc.perform(get("/api/v1/dashboard/ceo")
                 .header("Authorization", "Bearer invalid.fake.token"))
+                .andExpect(status().isUnauthorized());
+
+        String expiredJwt = Jwts.builder()
+                .setSubject(adminUsername)
+                .claim("role", "ADMIN")
+                .setIssuedAt(Date.from(Instant.now().minusSeconds(7200)))
+                .setExpiration(Date.from(Instant.now().minusSeconds(3600)))
+                .signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8)))
+                .compact();
+
+        mockMvc.perform(get("/api/v1/dashboard/ceo")
+                .header("Authorization", "Bearer " + expiredJwt))
                 .andExpect(status().isUnauthorized());
     }
 }

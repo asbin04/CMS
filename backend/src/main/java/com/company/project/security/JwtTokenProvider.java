@@ -17,9 +17,12 @@ public class JwtTokenProvider {
     private final long expirationMs;
 
     public JwtTokenProvider(
-            @Value("${app.jwt.secret}") String secret,
-            @Value("${app.jwt.expiration-ms:86400000}") long expirationMs
+            @Value("${app.jwt.secret:}") String secret,
+            @Value("${app.jwt.expiration-ms:14400000}") long expirationMs
     ) {
+        if (secret == null || secret.isBlank() || secret.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalStateException("JWT_SECRET must be at least 32 bytes long.");
+        }
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expirationMs = expirationMs;
     }
@@ -56,6 +59,10 @@ public class JwtTokenProvider {
 
     public String getRole(String token) {
         return getClaims(token).get("role", String.class);
+    }
+
+    public Date getIssuedAt(String token) {
+        return getClaims(token).getIssuedAt();
     }
 }
 

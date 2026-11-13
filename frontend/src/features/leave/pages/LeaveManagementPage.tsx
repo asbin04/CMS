@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Calendar, RefreshCw, Download, Plus } from 'lucide-react';
+import { Calendar, Download, Plus } from 'lucide-react';
+import { ReloadButton } from '../../../components/ui/ReloadButton';
 import {
   CreateLeavePayload,
   LeaveFilterState,
@@ -427,14 +428,11 @@ export const LeaveManagementPage: React.FC = () => {
 
         {/* Right side controls */}
         <div className="flex flex-wrap items-center gap-3 self-end md:self-auto">
-          <button
-            type="button"
+          <ReloadButton
             onClick={fetchData}
+            isRefreshing={loading}
             title="Refresh from database"
-            className="p-2 text-[#64748B] hover:text-[#0F172A] bg-white border border-[#E2E8F0] rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
-          >
-            <RefreshCw className={`w-4 h-4 text-[#64748B] ${loading ? 'animate-spin' : ''}`} />
-          </button>
+          />
 
           <button
             type="button"

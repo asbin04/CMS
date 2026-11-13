@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { dashboardService } from '../../services/dashboardService';
 import { settingsService } from '../../features/settings/services/settingsService';
+import { apiClient } from '../../services/api/apiClient';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { TopNav } from './TopNav';
@@ -21,15 +22,9 @@ export const AppLayout: React.FC = () => {
   const [dateRange, setDateRange] = useState<string>(() => {
     return (typeof window !== 'undefined' ? localStorage.getItem('cms_active_date_range') : null) || '—';
   });
-  const [userName, setUserName] = useState<string>(() => {
-    return (typeof window !== 'undefined' ? localStorage.getItem('auth_user_name') : null) || '—';
-  });
-  const [userRole, setUserRole] = useState<string>(() => {
-    return (typeof window !== 'undefined' ? localStorage.getItem('auth_user_role') : null) || '—';
-  });
-  const [userEmail, setUserEmail] = useState<string>(() => {
-    return (typeof window !== 'undefined' ? localStorage.getItem('auth_user_email') : null) || '—';
-  });
+  const [userName, setUserName] = useState<string>('—');
+  const [userRole, setUserRole] = useState<string>('—');
+  const [userEmail, setUserEmail] = useState<string>('—');
   const [userAvatar, setUserAvatar] = useState<string>(() => {
     return (typeof window !== 'undefined' ? localStorage.getItem('auth_user_avatar') : null) || '';
   });
@@ -37,19 +32,34 @@ export const AppLayout: React.FC = () => {
 
   useEffect(() => {
     const syncAuthUser = () => {
-      const storedName = localStorage.getItem('auth_user_name');
-      const storedRole = localStorage.getItem('auth_user_role');
-      const storedEmail = localStorage.getItem('auth_user_email');
       const storedAvatar = localStorage.getItem('auth_user_avatar');
-      if (storedName) setUserName(storedName);
-      if (storedRole) setUserRole(storedRole);
-      if (storedEmail) setUserEmail(storedEmail);
       setUserAvatar(storedAvatar || '');
     };
 
     syncAuthUser();
     window.addEventListener('auth_user_changed', syncAuthUser);
     window.addEventListener('storage', syncAuthUser);
+
+    apiClient
+      .get<{ username: string; name: string; role: string; email: string }>('/auth/me', undefined, { skipCache: true })
+      .then((res) => {
+        const me = res?.data;
+        if (!me) return;
+        const verifiedName = me.name || me.username || '—';
+        const verifiedRole = me.role || '—';
+        const verifiedEmail = me.email || '—';
+        setUserName(verifiedName);
+        setUserRole(verifiedRole);
+        setUserEmail(verifiedEmail);
+        try {
+          if (verifiedName !== '—') localStorage.setItem('auth_user_name', verifiedName);
+          if (verifiedRole !== '—') localStorage.setItem('auth_user_role', verifiedRole);
+          if (verifiedEmail !== '—') localStorage.setItem('auth_user_email', verifiedEmail);
+        } catch {
+          // ignore storage errors
+        }
+      })
+      .catch(() => { });
 
     settingsService.getSettings()
       .then((settingsData) => {
@@ -77,10 +87,6 @@ export const AppLayout: React.FC = () => {
             // ignore storage errors
           }
         }
-        const storedName = localStorage.getItem('auth_user_name');
-        const storedRole = localStorage.getItem('auth_user_role');
-        if (!storedName && data.settings?.user_name) setUserName(data.settings.user_name);
-        if (!storedRole && data.settings?.user_role) setUserRole(data.settings.user_role);
       })
       .catch(() => { });
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FileText, RotateCw, Plus } from 'lucide-react';
+import { FileText, Plus } from 'lucide-react';
+import { ReloadButton } from '../../../components/ui/ReloadButton';
 
 interface ProposalsHeaderProps {
   lastUpdated: string;
@@ -49,18 +50,11 @@ export const ProposalsHeader: React.FC<ProposalsHeaderProps> = ({
       <div className="flex items-center gap-4 sm:gap-5 shrink-0 self-start md:self-center">
         {/* 2. Middle/right Area: Refresh control */}
         <div className="flex items-center gap-2 text-xs text-slate-500 whitespace-nowrap">
-          <button
-            type="button"
+          <ReloadButton
             onClick={handleRefreshClick}
+            isRefreshing={isRefreshing}
             title="Refresh proposal data"
-            className="p-1 rounded-md text-[#64748B] hover:text-[#0F172A] hover:bg-slate-100 transition-colors cursor-pointer flex items-center justify-center"
-          >
-            <RotateCw
-              className={`w-3.5 h-3.5 stroke-[2] text-[#64748B] ${
-                isRefreshing ? 'animate-spin' : ''
-              }`}
-            />
-          </button>
+          />
         </div>
 
         {/* 3. Far right Area: Create Proposal button */}

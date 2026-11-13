@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Users, RotateCw, Plus } from 'lucide-react';
+import { Users, Plus } from 'lucide-react';
+import { ReloadButton } from '../../../components/ui/ReloadButton';
 import { Lead, LeadsFilterState, LeadSortOption, LeadsMetrics } from '../types/leads';
 import { leadsService } from '../services/leadsService';
 import { LeadsMetricCards } from '../components/LeadsMetricCards';
@@ -296,14 +297,11 @@ export const LeadsPage: React.FC = () => {
         {/* Right Actions: Refresh + Add Lead Button */}
         <div className="flex items-center gap-3 sm:gap-4">
           <div className="flex flex-row items-center gap-2 text-xs text-[#64748B]">
-            <button
+            <ReloadButton
               onClick={handleRefresh}
-              disabled={isRefreshing}
-              className="p-1 rounded hover:bg-slate-200/60 text-[#64748B] hover:text-[#0F172A] transition-colors cursor-pointer disabled:opacity-50"
+              isRefreshing={isRefreshing}
               title="Sync with database"
-            >
-              <RotateCw size={14} className={isRefreshing ? 'animate-spin' : ''} />
-            </button>
+            />
           </div>
 
           <button

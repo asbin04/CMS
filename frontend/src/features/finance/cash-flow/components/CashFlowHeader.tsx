@@ -1,5 +1,6 @@
 import React from 'react';
-import { Wallet, RotateCw, Download, Plus } from 'lucide-react';
+import { Wallet, Download, Plus } from 'lucide-react';
+import { ReloadButton } from '../../../../components/ui/ReloadButton';
 
 interface CashFlowHeaderProps {
   lastUpdated?: string;
@@ -34,9 +35,9 @@ export const CashFlowHeader: React.FC<CashFlowHeaderProps> = ({
 
       <div className="flex items-center gap-3 self-end sm:self-center">
         {onRefresh && (
-          <button
-            type="button"
+          <ReloadButton
             onClick={onRefresh}
+            isRefreshing={isRefreshing}
             title="Refresh"
             aria-label="Refresh Cash Flow data"
             className="p-1.5 rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-slate-100 transition-colors cursor-pointer"

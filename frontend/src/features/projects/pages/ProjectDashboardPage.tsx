@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { ReloadButton } from '../../../components/ui/ReloadButton';
 import {
   LayoutDashboard,
   Package,
-  RotateCw,
   Calendar,
   Download,
   AlertTriangle,
@@ -438,14 +438,12 @@ export const ProjectDashboardPage: React.FC = () => {
         {/* Right: Refresh & Export Report Buttons */}
         <div className="flex items-center gap-3">
           {/* Refresh Button */}
-          <button
+          <ReloadButton
             onClick={handleManualRefresh}
-            disabled={isRefreshing || summaryLoading || tableLoading}
+            isRefreshing={isRefreshing}
+            disabled={summaryLoading || tableLoading}
             title="Refresh Data"
-            className="p-1.5 text-[#64748B] hover:text-[#0F172A] transition-colors disabled:opacity-50 cursor-pointer flex items-center justify-center"
-          >
-            <RotateCw className={`w-4 h-4 text-[#64748B] ${isRefreshing ? 'animate-spin' : ''}`} />
-          </button>
+          />
 
           {/* Export Report Button */}
           <button

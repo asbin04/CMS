@@ -40,11 +40,13 @@ export function clearAuthStorage(): void {
   if (typeof window === 'undefined') return;
   localStorage.removeItem('auth_token');
   localStorage.removeItem('auth_user_name');
+  localStorage.removeItem('auth_user_username');
   localStorage.removeItem('auth_user_role');
   localStorage.removeItem('auth_user_email');
   localStorage.removeItem('auth_user_avatar');
   sessionStorage.removeItem('auth_token');
   sessionStorage.removeItem('auth_user_name');
+  sessionStorage.removeItem('auth_user_username');
   sessionStorage.removeItem('auth_user_role');
   sessionStorage.removeItem('auth_user_email');
   sessionStorage.removeItem('auth_user_avatar');
@@ -63,51 +65,6 @@ export function redirectToLogin(): void {
   if (window.location.pathname !== '/login') {
     const redirectUrl = `/login?redirect=${encodeURIComponent(currentPath)}`;
     window.location.href = redirectUrl;
-  }
-}
-
-let devTokenPromise: Promise<string | null> | null = null;
-
-async function acquireDevToken(): Promise<string | null> {
-  if (devTokenPromise) {
-    return devTokenPromise;
-  }
-
-  devTokenPromise = (async () => {
-    try {
-      const preferredUsername =
-        (typeof window !== 'undefined' ? localStorage.getItem('auth_user_username') : null) ||
-        'admin';
-      const authRes = await fetch(`${BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ username: preferredUsername, password: 'Admin@123' }),
-      });
-      if (authRes.ok) {
-        const resData = await authRes.json();
-        const jwt = resData?.data?.token;
-        if (jwt) {
-          localStorage.setItem('auth_token', jwt);
-          if (resData?.data?.username) {
-            localStorage.setItem('auth_user_name', resData.data.name || resData.data.username);
-            localStorage.setItem('auth_user_username', resData.data.username);
-          }
-          if (resData?.data?.role) {
-            localStorage.setItem('auth_user_role', resData.data.role);
-          }
-          return jwt;
-        }
-      }
-    } catch {
-      // ignore
-    }
-    return null;
-  })();
-
-  try {
-    return await devTokenPromise;
-  } finally {
-    devTokenPromise = null;
   }
 }
 
@@ -132,14 +89,9 @@ async function executeRequest<T>(
     : normalizedEndpoint;
 
   const isAuthLogin = endpoint.includes('/auth/login');
-  let token = getStoredAuthToken();
+  const token = getStoredAuthToken();
 
   const isTestEnv = isTestEnvironment();
-
-  // In dev browser sessions without token, if not logged out and not /auth/login, try acquiring dev token
-  if (!token && import.meta.env.DEV && !isTestEnv && !isAuthLogin) {
-    token = await acquireDevToken();
-  }
 
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
@@ -160,31 +112,20 @@ async function executeRequest<T>(
     throw new ApiError(message, 0);
   }
 
-  // Handle 401/403 Unauthorized
-  if (response.status === 401 || response.status === 403) {
+  // Handle 401/403 Unauthorized or Forbidden on protected requests
+  if ((response.status === 401 || response.status === 403) && !isAuthLogin) {
     clearAuthStorage();
 
-    // Never loop: retry at most once, and never retry /auth/login
-    if (!options.isRetry && !isAuthLogin && import.meta.env.DEV && !isTestEnv && sessionStorage.getItem('logged_out') !== 'true') {
-      const freshToken = await acquireDevToken();
-      if (freshToken) {
-        return executeRequest<T>(endpoint, {
-          ...options,
-          isRetry: true,
-          headers: {
-            ...options.headers,
-            Authorization: `Bearer ${freshToken}`,
-          },
-        });
-      }
-    }
-
-    // Otherwise redirect to /login
-    if (!isAuthLogin && !isTestEnv) {
+    if (!isTestEnv) {
       redirectToLogin();
     }
 
-    throw new ApiError('Unauthorized: Please log in again.', 401);
+    throw new ApiError(
+      response.status === 403
+        ? 'Access restricted to administrators'
+        : 'Unauthorized: Please log in again.',
+      response.status
+    );
   }
 
   const method = (options.method || 'GET').toUpperCase();

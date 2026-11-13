@@ -30,11 +30,11 @@ describe('LoginPage Component', () => {
     // Headings and labels
     expect(screen.getByRole('heading', { name: /sign in with email/i })).toBeInTheDocument();
     expect(
-      screen.getByText(/make a new doc to bring your words, data, and teams together\. for free/i)
+      screen.getByText(/log in to manage your workspace and\s*company operations\./i)
     ).toBeInTheDocument();
 
     // Logos
-    expect(screen.getByAltText('KALPANAAA SOFTWARE SOLUTIONS')).toBeInTheDocument();
+    expect(screen.queryByAltText('KALPANAAA SOFTWARE SOLUTIONS')).not.toBeInTheDocument();
     expect(screen.getByAltText('KALPANAAA Emblem')).toBeInTheDocument();
 
     // Inputs
@@ -160,6 +160,29 @@ describe('LoginPage Component', () => {
     await waitFor(() => {
       expect(screen.getByText(/invalid email or password/i)).toBeInTheDocument();
     });
+  });
+
+  it('displays access restricted message on 403 and stores nothing', async () => {
+    localStorage.clear();
+    const err = Object.assign(new Error('Access restricted to administrators'), { status: 403 });
+    vi.spyOn(apiClient, 'post').mockRejectedValueOnce(err);
+
+    render(
+      <MemoryRouter>
+        <LoginPage />
+      </MemoryRouter>
+    );
+
+    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'user@example.com' } });
+    fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'Secret@123' } });
+
+    fireEvent.click(screen.getByRole('button', { name: /^login$/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/access restricted to administrators/i)).toBeInTheDocument();
+    });
+    expect(localStorage.getItem('token')).toBeNull();
+    expect(localStorage.getItem('userRole')).toBeNull();
   });
 });
 

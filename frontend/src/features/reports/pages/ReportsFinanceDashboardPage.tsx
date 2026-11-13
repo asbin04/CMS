@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { ReloadButton } from '../../../components/ui/ReloadButton';
 import {
   CreditCard,
   FileText,
@@ -509,41 +510,11 @@ export const ReportsFinanceDashboardPage: React.FC = () => {
         {/* Right: Actions */}
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
           {/* Refresh Button */}
-          <button
+          <ReloadButton
             onClick={handleRefresh}
+            isRefreshing={isRefreshing}
             title="Refresh"
-            style={{
-              boxSizing: 'border-box',
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: '34px',
-              height: '34px',
-              background: '#FFFFFF',
-              border: '1px solid #CBD5E1',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              transition: 'all 0.15s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = '#F8FAFC';
-              e.currentTarget.style.borderColor = '#94A3B8';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = '#FFFFFF';
-              e.currentTarget.style.borderColor = '#CBD5E1';
-            }}
-          >
-            <RotateCw
-              style={{
-                width: '14px',
-                height: '14px',
-                color: '#64748B',
-                animation: isRefreshing ? 'spin 1s linear infinite' : 'none',
-              }}
-            />
-          </button>
+          />
 
           {/* Export Button */}
           <button
