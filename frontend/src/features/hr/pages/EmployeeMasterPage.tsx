@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { ReloadButton } from '../../../components/ui/ReloadButton';
 import {
   Users,
   RotateCcw,
@@ -414,14 +415,11 @@ export const EmployeeMasterPage: React.FC = () => {
           </div>
 
           <div className="flex items-center flex-wrap gap-2">
-            <button
+            <ReloadButton
               onClick={handleRefresh}
-              disabled={isRefreshing}
+              isRefreshing={isRefreshing}
               title="Refresh employee data"
-              className="w-[34px] h-[34px] p-2 bg-white border border-[#E2E8F0] rounded-[8px] flex items-center justify-center text-[#475569] hover:bg-slate-50 transition-colors shadow-sm"
-            >
-              <RotateCcw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-indigo-600' : ''}`} />
-            </button>
+            />
             <button
               onClick={() => alert('Import CSV/Excel functionality')}
               className="h-[34px] px-3 py-2 gap-1.5 bg-white border border-[#E2E8F0] rounded-[8px] flex items-center text-[12px] font-semibold text-[#334155] hover:bg-slate-50 transition-colors shadow-sm"

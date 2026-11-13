@@ -95,14 +95,11 @@ describe('Sidebar Component - Search & Rail interaction', () => {
     // Verify panel width is fixed to 280px (matching the category panel width)
     expect(dialog).toHaveStyle({ width: '280px' });
 
-    // In default empty state, the ALL MODULES header row is removed
+    // In default empty state, no module list is shown until typing a search query
     expect(within(dialog).queryByText(/all modules/i)).not.toBeInTheDocument();
     expect(within(dialog).queryByText(/44 modules/i)).not.toBeInTheDocument();
     expect(within(dialog).getByText('ESC')).toBeInTheDocument();
-    const defaultRows = within(dialog).getAllByRole('link');
-    expect(defaultRows.length).toBeGreaterThan(0);
-    // Every row has fixed 44px height matching the category panel
-    expect(defaultRows[0]).toHaveStyle({ height: '44px' });
+    expect(within(dialog).queryAllByRole('link')).toHaveLength(0);
 
     // Type "em" in the search box
     const searchInput = within(dialog).getByPlaceholderText(/search navigation/i);
@@ -152,6 +149,8 @@ describe('Sidebar Component - Search & Rail interaction', () => {
     const searchDialog = screen.getByRole('dialog', { name: /navigation search/i });
     expect(searchDialog).toBeInTheDocument();
     expect(searchDialog).toHaveStyle({ width: '280px' });
+    const searchInput = within(searchDialog).getByPlaceholderText(/search navigation/i);
+    fireEvent.change(searchInput, { target: { value: 'admin' } });
     const searchRows = within(searchDialog).getAllByRole('link');
 
     // Confirm identical height and padding
@@ -204,6 +203,9 @@ describe('Sidebar Component - Search & Rail interaction', () => {
     const searchDialog = screen.getByRole('dialog', { name: /navigation search/i });
     expect(searchDialog).toBeInTheDocument();
 
+    const searchInput = within(searchDialog).getByPlaceholderText(/search navigation/i);
+    fireEvent.change(searchInput, { target: { value: 'admin' } });
+
     // Click on Admin Dashboard
     const ceoRow = within(searchDialog).getByRole('link', { name: /admin dashboard/i });
     fireEvent.click(ceoRow);
@@ -254,7 +256,14 @@ describe('Sidebar Component - Search & Rail interaction', () => {
     const settingsLink = screen.getByRole('link', { name: 'Settings' });
     const logoutBtn = screen.getByRole('button', { name: 'Log out' });
     expect(settingsLink).toBeInTheDocument();
+    expect(settingsLink).toHaveStyle({ backgroundColor: '#4338CA', color: '#FFFFFF', borderRadius: '8px' });
     expect(logoutBtn).toBeInTheDocument();
+    expect(logoutBtn).toHaveStyle({ borderRadius: '8px' });
+    fireEvent.mouseEnter(logoutBtn);
+    expect(logoutBtn).toHaveStyle({
+      backgroundColor: 'rgba(239, 68, 68, 0.18)',
+      color: '#F87171',
+    });
     expect(
       Boolean(settingsLink.compareDocumentPosition(logoutBtn) & Node.DOCUMENT_POSITION_FOLLOWING)
     ).toBe(true);
@@ -265,5 +274,18 @@ describe('Sidebar Component - Search & Rail interaction', () => {
     expect(localStorage.getItem('auth_token')).toBeNull();
     expect(sessionStorage.getItem('auth_user_name')).toBeNull();
     expect(screen.getByText('Login Page')).toBeInTheDocument();
+  });
+
+  it('renders single-item Clients section as a primary link without a dropdown', () => {
+    render(
+      <MemoryRouter initialEntries={['/clients/list']}>
+        <Sidebar isCollapsed={false} />
+      </MemoryRouter>
+    );
+
+    const clientsLinks = screen.getAllByRole('link', { name: 'Clients' });
+    expect(clientsLinks).toHaveLength(1);
+    expect(clientsLinks[0]).toHaveAttribute('href', '/clients/list');
+    expect(screen.queryByRole('button', { name: 'Clients' })).not.toBeInTheDocument();
   });
 });

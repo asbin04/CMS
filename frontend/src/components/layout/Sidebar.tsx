@@ -284,9 +284,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       <aside
-        className={`sidebar-rail-transition fixed inset-y-0 left-0 z-50 md:relative md:z-30 transition-transform duration-300 ease-in-out ${
-          isMobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'
-        }`}
+        className={`sidebar-rail-transition fixed inset-y-0 left-0 z-50 md:relative md:z-30 transition-transform duration-300 ease-in-out ${isMobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'
+          }`}
         style={{
           width: sidebarWidth,
           minWidth: sidebarWidth,
@@ -648,6 +647,46 @@ export const Sidebar: React.FC<SidebarProps> = ({
               const isActive = isSectionActive(section);
               const SectionIcon = section.icon;
 
+              if (section.items.length === 1) {
+                return (
+                  <NavLink
+                    key={section.id}
+                    to={section.items[0].path}
+                    tabIndex={isCollapsed ? 0 : -1}
+                    aria-label={section.title}
+                    title={section.title}
+                    style={{
+                      width: '44px',
+                      height: '44px',
+                      borderRadius: '10px',
+                      backgroundColor: isActive ? colors.secondaryBrand : 'transparent',
+                      color: isActive ? '#FFFFFF' : '#8A99B5',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      textDecoration: 'none',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      position: 'relative',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+                        e.currentTarget.style.color = '#FFFFFF';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.color = '#8A99B5';
+                      }
+                    }}
+                  >
+                    <SectionIcon size={19} strokeWidth={isActive ? 2.3 : 1.9} />
+                  </NavLink>
+                );
+              }
+
               return (
                 <div
                   key={section.id}
@@ -757,11 +796,80 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
             ) : (
               filteredSections.map((section: NavSection) => {
-                const isExpanded = menuSearch.trim()
-                  ? true
-                  : (expandedSections[section.id] ?? false);
+                const isSingleItem = section.items.length === 1;
+                const isExpanded =
+                  !isSingleItem &&
+                  (menuSearch.trim() ? true : (expandedSections[section.id] ?? false));
                 const isActive = isSectionActive(section);
                 const SectionIcon = section.icon;
+
+                if (isSingleItem) {
+                  const singleItem = section.items[0];
+                  return (
+                    <div
+                      key={section.id}
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        width: '235px',
+                        boxSizing: 'border-box',
+                      }}
+                    >
+                      <NavLink
+                        to={singleItem.path}
+                        onClick={() => onCloseMobile?.()}
+                        tabIndex={isCollapsed ? -1 : 0}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '11px',
+                          width: '100%',
+                          height: '36px',
+                          padding: '0 14px',
+                          borderRadius: '12px',
+                          textDecoration: 'none',
+                          backgroundColor: isActive ? colors.secondaryBrand : 'transparent',
+                          color: isActive ? '#FFFFFF' : '#CAD5E8',
+                          cursor: 'pointer',
+                          boxSizing: 'border-box',
+                          transition: 'background-color 0.12s ease, color 0.12s ease',
+                          fontFamily: "'Inter', sans-serif",
+                        }}
+                        onMouseEnter={(e) => {
+                          if (isActive) {
+                            e.currentTarget.style.backgroundColor = '#4338CA';
+                          } else {
+                            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                            e.currentTarget.style.color = '#FFFFFF';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (isActive) {
+                            e.currentTarget.style.backgroundColor = colors.secondaryBrand;
+                          } else {
+                            e.currentTarget.style.backgroundColor = 'transparent';
+                            e.currentTarget.style.color = '#CAD5E8';
+                          }
+                        }}
+                      >
+                        <SectionIcon
+                          size={18}
+                          strokeWidth={isActive ? 2.2 : 1.9}
+                          color={isActive ? '#FFFFFF' : '#8A99B5'}
+                        />
+                        <span
+                          style={{
+                            fontSize: isActive ? '14.5px' : '14px',
+                            fontWeight: 600,
+                            letterSpacing: '0.1px',
+                          }}
+                        >
+                          {section.title}
+                        </span>
+                      </NavLink>
+                    </div>
+                  );
+                }
 
                 return (
                   <div
@@ -785,7 +893,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           alignItems: 'center',
                           justifyContent: 'space-between',
                           width: '100%',
-                          height: '44px',
+                          height: '36px',
                           padding: '0 14px',
                           borderRadius: '12px',
                           backgroundColor: colors.secondaryBrand,
@@ -828,7 +936,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           alignItems: 'center',
                           justifyContent: 'space-between',
                           width: '100%',
-                          height: '44px',
+                          height: '36px',
                           padding: '0 14px',
                           borderRadius: '12px',
                           backgroundColor: 'transparent',
@@ -959,7 +1067,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     alignItems: 'center',
                     justifyContent: 'center',
                     textDecoration: 'none',
-                    backgroundColor: active ? colors.sidebarActivePill : 'transparent',
+                    backgroundColor: active ? '#4338CA' : 'transparent',
                     color: active ? '#FFFFFF' : '#8A99B5',
                     transition: 'all 0.15s ease',
                   }}
@@ -979,7 +1087,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <FooterIcon
                     size={17}
                     strokeWidth={1.9}
-                    color={active ? '#60A5FA' : '#7E8DA6'}
+                    color={active ? '#FFFFFF' : '#7E8DA6'}
                   />
                 </NavLink>
               );
@@ -1004,15 +1112,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 transition: 'all 0.15s ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
-                e.currentTarget.style.color = '#FFFFFF';
+                e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.18)';
+                e.currentTarget.style.color = '#F87171';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = 'transparent';
                 e.currentTarget.style.color = '#8A99B5';
               }}
             >
-              <LogOut size={17} strokeWidth={1.9} color="#7E8DA6" />
+              <LogOut size={17} strokeWidth={1.9} />
             </button>
           </div>
 
@@ -1054,13 +1162,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     gap: '12px',
                     height: '36px',
                     padding: '0 14px',
-                    borderRadius: '6px',
+                    borderRadius: '8px',
                     textDecoration: 'none',
                     fontSize: '13.5px',
                     fontFamily: "'Inter', sans-serif",
                     boxSizing: 'border-box',
                     transition: 'all 0.15s ease',
-                    backgroundColor: active ? colors.sidebarActivePill : 'transparent',
+                    backgroundColor: active ? '#4338CA' : 'transparent',
                     color: active ? '#FFFFFF' : '#8A99B5',
                     fontWeight: active ? 600 : 400,
                   }}
@@ -1080,7 +1188,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <FooterIcon
                     size={16}
                     strokeWidth={1.8}
-                    color={active ? '#60A5FA' : '#7E8DA6'}
+                    color={active ? '#FFFFFF' : '#7E8DA6'}
                   />
                   <span
                     style={{
@@ -1106,7 +1214,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 height: '36px',
                 padding: '0 14px',
                 border: 'none',
-                borderRadius: '6px',
+                borderRadius: '8px',
                 backgroundColor: 'transparent',
                 color: '#8A99B5',
                 fontSize: '13.5px',
@@ -1118,15 +1226,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 transition: 'all 0.15s ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.04)';
-                e.currentTarget.style.color = '#FFFFFF';
+                e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.18)';
+                e.currentTarget.style.color = '#F87171';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = 'transparent';
                 e.currentTarget.style.color = '#8A99B5';
               }}
             >
-              <LogOut size={16} strokeWidth={1.8} color="#7E8DA6" />
+              <LogOut size={16} strokeWidth={1.8} />
               <span
                 style={{
                   whiteSpace: 'nowrap',

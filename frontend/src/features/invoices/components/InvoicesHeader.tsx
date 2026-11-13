@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Receipt, RotateCw, Download, Plus } from 'lucide-react';
+import { Receipt, Download, Plus } from 'lucide-react';
+import { ReloadButton } from '../../../components/ui/ReloadButton';
 
 interface InvoicesHeaderProps {
   onRefresh?: () => void;
@@ -48,15 +49,11 @@ export const InvoicesHeader: React.FC<InvoicesHeaderProps> = ({
       <div className="flex items-center gap-3 self-end sm:self-auto shrink-0 flex-wrap">
         {/* Refresh Icon */}
         <div className="flex items-center gap-2 text-xs text-slate-500 mr-1">
-          <button
-            type="button"
+          <ReloadButton
             onClick={handleRefreshClick}
+            isRefreshing={isRefreshing}
             title="Refresh invoices"
-            className="p-1.5 rounded-[12px] text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer border border-[#E2E8F0] bg-[#FFFFFF]"
-            style={{ border: '1px solid #E2E8F0', borderRadius: '12px', background: '#FFFFFF' }}
-          >
-            <RotateCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-indigo-600' : ''}`} />
-          </button>
+          />
         </div>
 
         {/* Export Button (Secondary) */}

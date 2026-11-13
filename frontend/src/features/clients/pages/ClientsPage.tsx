@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Users, RotateCw, Plus, Loader2 } from 'lucide-react';
+import { Users, Plus, Loader2 } from 'lucide-react';
+import { ReloadButton } from '../../../components/ui/ReloadButton';
 import { Client, ClientsFilterState, ClientSortOption } from '../types/clients';
 import { clientsService } from '../services/clientsService';
 import { ClientsMetricCards } from '../components/ClientsMetricCards';
@@ -423,26 +424,11 @@ export const ClientsPage: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px' }}>
           {/* Timestamp text */}
           {/* Refresh Button */}
-          <button
-            type="button"
+          <ReloadButton
             onClick={handleRefresh}
-            disabled={isRefreshing}
-            style={{
-              width: '30px',
-              height: '30px',
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              borderRadius: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: isRefreshing ? 'not-allowed' : 'pointer',
-              color: '#94A3B8',
-            }}
+            isRefreshing={isRefreshing}
             title="Refresh database records"
-          >
-            <RotateCw size={16} className={isRefreshing ? 'animate-spin' : ''} />
-          </button>
+          />
 
           {/* + Add Client Button */}
           <button

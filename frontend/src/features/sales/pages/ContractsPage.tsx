@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { FileCheck, RefreshCw, Plus, RotateCcw } from 'lucide-react';
+import { FileCheck, Plus, RotateCcw } from 'lucide-react';
+import { ReloadButton } from '@/components/ui/ReloadButton';
 import { ContractData, ContractSummaryData, CreateContractPayload } from '@/types/contract';
 import { contractService } from '@/services/contractService';
 import { masterDataService, MasterClient } from '@/services/masterDataService';
@@ -430,33 +431,11 @@ export const ContractsPage: React.FC = () => {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px' }}>
-          <button
-            type="button"
+          <ReloadButton
             onClick={handleRefresh}
+            isRefreshing={isRefreshing}
             title="Refresh Data"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '8px',
-              width: '34px',
-              height: '34px',
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              borderRadius: '8px',
-              cursor: 'pointer',
-            }}
-          >
-            <RefreshCw
-              style={{
-                width: '16px',
-                height: '16px',
-                color: '#64748B',
-                transform: isRefreshing ? 'rotate(180deg)' : 'none',
-                transition: 'transform 0.5s ease',
-              }}
-            />
-          </button>
+          />
 
           {/* Reset button only in DEV */}
           {import.meta.env.DEV && (

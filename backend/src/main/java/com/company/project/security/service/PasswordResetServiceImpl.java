@@ -28,6 +28,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     private final PasswordResetRateLimiter rateLimiter;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
+    private final AdminAllowlistService allowlistService;
 
     @Value("${app.auth.otp.expiration-minutes:5}")
     private int otpExpirationMinutes;
@@ -52,10 +53,10 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             );
         }
 
-        // 2. User lookup - Always return uniform response even if user doesn't exist to prevent enumeration
+        // 2. User lookup - Always return uniform response even if user doesn't exist or is not an active allowlisted ADMIN
         Optional<AppUser> userOpt = userRepository.findByEmailIgnoreCase(normalizedEmail);
-        if (userOpt.isEmpty() || !"ACTIVE".equalsIgnoreCase(userOpt.get().getStatus())) {
-            log.info("Password reset requested for non-existent or inactive email: {}", normalizedEmail);
+        if (userOpt.isEmpty() || !allowlistService.isAuthorizedAdmin(userOpt.get())) {
+            log.info("Password reset requested for non-existent, inactive, or non-admin email: {}", normalizedEmail);
             // Record rate limiter attempt anyway to prevent blind brute-forcing
             rateLimiter.recordRequest(normalizedEmail, clientIp);
             return ForgotPasswordResponse.builder()
@@ -110,6 +111,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         }
 
         AppUser user = userRepository.findByEmailIgnoreCase(normalizedEmail)
+                .filter(allowlistService::isAuthorizedAdmin)
                 .orElseThrow(() -> new BusinessValidationException("Invalid OTP or request has expired."));
 
         PasswordResetOtp otpEntity = otpRepository.findTopByUserOrderByCreatedAtDesc(user)
@@ -194,6 +196,9 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         }
 
         AppUser user = otpEntity.getUser();
+        if (!allowlistService.isAuthorizedAdmin(user)) {
+            throw new BusinessValidationException("Password reset link is invalid or has already been used.");
+        }
 
         // Check if new password matches old password
         if (passwordEncoder.matches(newPassword, user.getPasswordHash())) {

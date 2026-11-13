@@ -158,8 +158,9 @@ describe('TopNav Notification System', () => {
     expect(parentContainer).toBeInTheDocument();
     expect(parentContainer).not.toHaveStyle({ width: '73px' });
 
-    // Clicking the profile does not open a Settings / Log out dropdown menu
+    // Clicking the profile redirects directly to /settings without opening a dropdown menu
     fireEvent.click(nameEl);
+    expect(window.location.pathname).toBe('/settings');
     expect(screen.queryByRole('button', { name: 'Settings' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Log out' })).not.toBeInTheDocument();
   });

@@ -439,7 +439,7 @@ export const SearchFlyoutPortal: React.FC<SearchFlyoutPortalProps> = ({
 
   const flyoutWidth = FLYOUT_PANEL_WIDTH;
   const padding = 16;
-  const totalItemCount = matchingItems.length + (searchQuery ? 0 : recentItems.length);
+  const totalItemCount = searchQuery.trim() ? matchingItems.length : recentItems.length;
   const effectiveHeight = measuredHeight || Math.min(520, 110 + totalItemCount * 47);
 
   let top = anchorRect.top;
@@ -577,6 +577,7 @@ export const SearchFlyoutPortal: React.FC<SearchFlyoutPortalProps> = ({
       </div>
 
       {/* Results List */}
+      {(searchQuery.trim() || recentItems.length > 0) && (
       <div
         className="search-flyout-scrollable"
         style={{
@@ -708,27 +709,10 @@ export const SearchFlyoutPortal: React.FC<SearchFlyoutPortalProps> = ({
                 ))}
               </>
             )}
-
-            {recentItems.length > 0 && (
-              <div
-                style={{
-                  margin: '4px 12px 6px 12px',
-                  borderTop: '1px solid rgba(255, 255, 255, 0.06)',
-                }}
-              />
-            )}
-
-            {matchingItems.map(({ item }) => (
-              <PaletteRow
-                key={item.id}
-                item={item}
-                isActive={isItemActive(item.path)}
-                onSelect={() => handleSelect(item.path)}
-              />
-            ))}
           </>
         )}
       </div>
+      )}
     </div>,
     document.body
   );

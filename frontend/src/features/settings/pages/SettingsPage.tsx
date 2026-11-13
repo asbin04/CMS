@@ -284,8 +284,8 @@ export const SettingsPage: React.FC = () => {
 
   const displayName = profile?.displayName || (loading ? 'Loading...' : '—');
   const initials = profile?.displayName ? getInitials(profile.displayName) : '--';
-  const roleLabel = profile?.role || '—';
-  const department = profile?.department || '—';
+  const roleLabel = profile?.role || 'ADMIN';
+  const department = profile?.department || profile?.role || 'ADMIN';
   const email = profile?.email || '—';
   const phone = profile?.phone || '—';
 
@@ -455,7 +455,7 @@ export const SettingsPage: React.FC = () => {
                 <span className="text-[11px] font-medium leading-[17px] text-[#64748B]">
                   Department
                 </span>
-                <span className="text-[14px] font-medium leading-[20px] text-[#0F172A] truncate">
+                <span className="text-[14px] font-medium leading-[20px] text-[#0F172A] truncate uppercase">
                   {department}
                 </span>
               </div>

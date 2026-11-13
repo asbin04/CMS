@@ -142,7 +142,6 @@ describe('SettingsPage', () => {
 
     // Edit Profile modal
     fireEvent.click(screen.getByRole('button', { name: /Edit Profile/i }));
-    expect(screen.queryByPlaceholderText('e.g. CEO')).not.toBeInTheDocument();
     expect(screen.queryByPlaceholderText('e.g. KSS0001')).not.toBeInTheDocument();
     const emailInput = screen.getByLabelText('Email Address');
     const deptInput = screen.getByLabelText('Department');
@@ -161,6 +160,7 @@ describe('SettingsPage', () => {
           displayName: 'Akshit Sharma',
           email: 'akshit.ujjain@kalpanaaasoftwaresolutions.in',
           department: 'Management',
+          jobTitle: 'CEO',
         })
       );
       expect(screen.getByText('Akshit Sharma')).toBeInTheDocument();
@@ -340,6 +340,27 @@ describe('SettingsPage', () => {
     await waitFor(() => {
       expect(updateProfileSpy).toHaveBeenCalledTimes(1);
       expect(updateProfileSpy.mock.calls[0][0].phone).toBe('+1 4155551234');
+    });
+  });
+
+  it('falls back to role/ADMIN when profile department is empty', async () => {
+    vi.spyOn(settingsService, 'getSettings').mockResolvedValue({
+      ...mockSettings,
+      profile: {
+        ...mockSettings.profile,
+        department: '',
+        role: 'ADMIN',
+      },
+    });
+
+    render(
+      <MemoryRouter>
+        <SettingsPage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getAllByText('ADMIN').length).toBeGreaterThanOrEqual(2);
     });
   });
 

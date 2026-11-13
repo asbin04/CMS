@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useOutletContext } from 'react-router-dom';
+import { ReloadButton } from '../../../components/ui/ReloadButton';
 import {
   FileText,
   CreditCard,
@@ -266,15 +267,11 @@ export const FinanceDashboardPage: React.FC = () => {
         {/* Frame 7: Refresh, Export */}
         <div className="flex items-center gap-[11px] self-end sm:self-auto">
           {/* Refresh Button */}
-          <button
-            type="button"
-            aria-label="Refresh Dashboard"
+          <ReloadButton
             onClick={() => loadData(true)}
-            disabled={isRefreshing}
-            className="w-[26px] h-[26px] p-[6px] rounded-[8px] bg-white border border-[#E2E8F0] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] hover:bg-[#F8FAFC] active:scale-95 flex items-center justify-center text-[#94A3B8] hover:text-[#475569] transition-all cursor-pointer disabled:opacity-60"
-          >
-            <RotateCcw className={`w-[14px] h-[14px] ${isRefreshing ? 'animate-spin text-[#4F46E5]' : ''}`} />
-          </button>
+            isRefreshing={isRefreshing}
+            ariaLabel="Refresh Dashboard"
+          />
 
           {/* Export Button */}
           <button

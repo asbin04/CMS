@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FileText, RotateCw, Upload, Plus } from 'lucide-react';
+import { FileText, Upload, Plus } from 'lucide-react';
+import { ReloadButton } from '../../../components/ui/ReloadButton';
 
 interface CollectionsHeaderProps {
   onRefresh?: () => void;
@@ -52,14 +53,11 @@ export const CollectionsHeader: React.FC<CollectionsHeaderProps> = ({
       <div className="flex items-center gap-3 self-end sm:self-auto shrink-0 flex-wrap">
         {/* Refresh Icon */}
         <div className="flex items-center gap-2 text-xs text-slate-500 mr-1">
-          <button
-            type="button"
+          <ReloadButton
             onClick={handleRefreshClick}
+            isRefreshing={isRefreshing}
             title="Refresh collections data"
-            className="p-1 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
-          >
-            <RotateCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-indigo-600' : ''}`} />
-          </button>
+          />
         </div>
 
         {/* Export Button (Secondary) */}

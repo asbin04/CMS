@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { Target, RefreshCw, Plus, RotateCcw } from 'lucide-react';
+import { Target, Plus, RotateCcw } from 'lucide-react';
+import { ReloadButton } from '@/components/ui/ReloadButton';
 import { OpportunityData, OpportunitySummaryData, CreateOpportunityPayload } from '@/types/opportunity';
 import { opportunityService } from '@/services/opportunityService';
 import { masterDataService, MasterEmployee, MasterClient } from '@/services/masterDataService';
@@ -512,33 +513,11 @@ export const OpportunitiesPage: React.FC = () => {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px' }}>
-          <button
+          <ReloadButton
             onClick={handleRefresh}
+            isRefreshing={isRefreshing}
             title="Refresh"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '34px',
-              height: '34px',
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            <RefreshCw
-              style={{
-                width: '16px',
-                height: '16px',
-                color: '#64748B',
-                strokeWidth: 1.33,
-                transform: isRefreshing ? 'rotate(180deg)' : 'none',
-                transition: 'transform 0.5s ease',
-              }}
-            />
-          </button>
+          />
 
           {/* Reset button only in DEV */}
           {import.meta.env.DEV && (

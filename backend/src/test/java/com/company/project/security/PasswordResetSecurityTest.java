@@ -19,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -35,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestPropertySource(properties = "app.auth.admin.allowed-emails=asbin.t.s@kalpanaaa.in,founder@kalpanaaasoftwaresolutions.in,akshit.ujjain@kalpanaaasoftwaresolutions.in,testreset@kalpanaaa.in")
 class PasswordResetSecurityTest {
 
     static {
@@ -241,5 +243,41 @@ class PasswordResetSecurityTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.token").isNotEmpty())
                 .andExpect(jsonPath("$.data.email").value(TEST_EMAIL));
+    }
+
+    @Test
+    @DisplayName("4. Non-admin or unallowlisted account cannot request OTP or verify OTP (generic response)")
+    void testNonAdminCannotResetPassword() throws Exception {
+        String nonAdminEmail = "nonadmin.reset@kalpanaaa.in";
+        AppUser nonAdmin = userRepository.findByEmailIgnoreCase(nonAdminEmail)
+                .orElseGet(() -> AppUser.builder()
+                        .username("nonadmin.reset")
+                        .email(nonAdminEmail)
+                        .passwordHash(passwordEncoder.encode(INITIAL_PASSWORD))
+                        .displayName("Non Admin")
+                        .role("CEO")
+                        .status("ACTIVE")
+                        .passwordChangedAt(Instant.now())
+                        .build());
+        nonAdmin.setRole("CEO");
+        nonAdmin.setStatus("ACTIVE");
+        nonAdmin = userRepository.save(nonAdmin);
+        rateLimiter.reset(nonAdminEmail, "127.0.0.1");
+
+        long countBefore = otpRepository.count();
+
+        mockMvc.perform(post("/api/v1/auth/forgot-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new ForgotPasswordRequest(nonAdminEmail))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.message").value("If an account with that email exists, an OTP has been sent."));
+
+        assertThat(otpRepository.count()).isEqualTo(countBefore);
+
+        mockMvc.perform(post("/api/v1/auth/verify-otp")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new VerifyOtpRequest(nonAdminEmail, "123456"))))
+                .andExpect(status().isBadRequest());
     }
 }
