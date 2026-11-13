@@ -110,9 +110,7 @@ export const CeoDashboardPage: React.FC<CeoDashboardPageProps> = ({
             disabled={isLoading || isRefreshing}
             className="p-1.5 rounded-md hover:bg-slate-200/60 text-[#64748B] hover:text-[#0F172A] transition-colors cursor-pointer disabled:opacity-50"
             title="Refresh dashboard data"
-          >
-            <RotateCw size={14} className={`text-[#64748B] ${isRefreshing ? 'animate-spin' : ''}`} />
-          </button>
+          />
         </div>
       </div>
 

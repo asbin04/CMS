@@ -41,9 +41,7 @@ export const CashFlowHeader: React.FC<CashFlowHeaderProps> = ({
             title="Refresh"
             aria-label="Refresh Cash Flow data"
             className="p-1.5 rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-slate-100 transition-colors cursor-pointer"
-          >
-            <RotateCw className={`w-3.5 h-3.5 text-[#64748B] ${isRefreshing ? 'animate-spin' : ''}`} />
-          </button>
+          />
         )}
 
         <button
