@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Users, Plus, Loader2 } from 'lucide-react';
+import { Handshake, Users, Plus, Loader2 } from 'lucide-react';
 import { ReloadButton } from '../../../components/ui/ReloadButton';
 import { Client, ClientsFilterState, ClientSortOption } from '../types/clients';
 import { clientsService } from '../services/clientsService';

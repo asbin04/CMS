@@ -7,6 +7,7 @@ export interface CalendarDateRangePickerProps {
   isOpen: boolean;
   onClose: () => void;
   showPresets?: boolean;
+  align?: 'left' | 'right' | 'auto';
 }
 
 export const CalendarDateRangePicker: React.FC<CalendarDateRangePickerProps> = ({
@@ -15,8 +16,30 @@ export const CalendarDateRangePicker: React.FC<CalendarDateRangePickerProps> = (
   isOpen,
   onClose,
   showPresets = true,
+  align = 'auto',
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [computedAlign, setComputedAlign] = useState<'left' | 'right'>(
+    align === 'right' ? 'right' : 'left'
+  );
+
+  useEffect(() => {
+    if (!isOpen) return;
+    if (align === 'left' || align === 'right') {
+      setComputedAlign(align);
+      return;
+    }
+
+    if (containerRef.current?.parentElement) {
+      const parentRect = containerRef.current.parentElement.getBoundingClientRect();
+      const spaceOnRight = window.innerWidth - parentRect.left;
+      if (spaceOnRight < 510 && parentRect.right > 510) {
+        setComputedAlign('right');
+      } else {
+        setComputedAlign('left');
+      }
+    }
+  }, [isOpen, align]);
 
   const initialRange = useMemo(() => {
     const currentYear = new Date().getFullYear();
@@ -183,7 +206,7 @@ export const CalendarDateRangePicker: React.FC<CalendarDateRangePickerProps> = (
       ref={containerRef}
       role="dialog"
       aria-label="Date Range Picker"
-      className="absolute right-0 top-full mt-2 bg-white border border-[#E2E8F0] rounded-2xl shadow-2xl z-50 overflow-hidden animate-fade-in select-none text-slate-800"
+      className={`absolute ${computedAlign === 'right' ? 'right-0' : 'left-0'} top-full mt-2 bg-white border border-[#E2E8F0] rounded-2xl shadow-2xl z-50 overflow-hidden animate-fade-in select-none text-slate-800`}
       style={{
         boxShadow: '0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.1)',
       }}

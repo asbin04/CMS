@@ -1,5 +1,6 @@
 package com.company.project.sales.service;
 
+import com.company.project.common.exception.BusinessValidationException;
 import com.company.project.common.exception.ResourceNotFoundException;
 import com.company.project.common.response.PageResponse;
 import com.company.project.common.util.TrendCalculationUtil;
@@ -144,8 +145,26 @@ public class LeadService {
         return mapToResponse(entity);
     }
 
+    private static final String CONTACT_NAME_REGEX = "^(?=[^0-9]*$)(?=[\\s.'-]*\\p{L})[\\p{L}\\s.'-]+$";
+    private static final String EMAIL_REGEX = "^(?!.*\\.\\.)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)*\\.[a-zA-Z]{2,}$";
+    private static final String PHONE_REGEX = "^[6-9]\\d{9}$";
+
+    private void validateLeadFields(String contactName, String email, String phone) {
+        if (contactName == null || !contactName.matches(CONTACT_NAME_REGEX)) {
+            throw new BusinessValidationException("Name must contain letters only. Numbers and special characters are not allowed.");
+        }
+        if (email == null || !email.matches(EMAIL_REGEX)) {
+            throw new BusinessValidationException("Enter a valid email address.");
+        }
+        if (phone == null || !phone.matches(PHONE_REGEX)) {
+            throw new BusinessValidationException("Enter a valid 10-digit Indian mobile number.");
+        }
+    }
+
     @Transactional
     public LeadResponse createLead(CreateLeadRequest request) {
+        validateLeadFields(request.getContactName(), request.getEmail(), request.getPhone());
+
         int year = request.getLeadDate() != null ? request.getLeadDate().getYear() : LocalDate.now().getYear();
         String generatedId = leadIdGeneratorService.generateAndAllocateNextLeadId(year);
 
@@ -193,9 +212,24 @@ public class LeadService {
 
         if (request.getLeadDate() != null) existing.setLeadDate(request.getLeadDate());
         if (request.getCompany() != null) existing.setCompany(request.getCompany());
-        if (request.getContactName() != null) existing.setContactName(request.getContactName());
-        if (request.getEmail() != null) existing.setEmail(request.getEmail());
-        if (request.getPhone() != null) existing.setPhone(request.getPhone());
+        if (request.getContactName() != null) {
+            if (!request.getContactName().matches(CONTACT_NAME_REGEX)) {
+                throw new BusinessValidationException("Name must contain letters only. Numbers and special characters are not allowed.");
+            }
+            existing.setContactName(request.getContactName());
+        }
+        if (request.getEmail() != null) {
+            if (!request.getEmail().matches(EMAIL_REGEX)) {
+                throw new BusinessValidationException("Enter a valid email address.");
+            }
+            existing.setEmail(request.getEmail());
+        }
+        if (request.getPhone() != null) {
+            if (!request.getPhone().matches(PHONE_REGEX)) {
+                throw new BusinessValidationException("Enter a valid 10-digit Indian mobile number.");
+            }
+            existing.setPhone(request.getPhone());
+        }
         if (request.getSource() != null) existing.setSource(request.getSource());
         if (request.getServiceInterest() != null) existing.setServiceInterest(request.getServiceInterest());
         if (request.getCountry() != null) existing.setCountry(request.getCountry());

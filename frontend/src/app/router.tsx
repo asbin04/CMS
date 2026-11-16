@@ -199,6 +199,7 @@ export const AppRouter: React.FC = () => {
         <Route path="/sales-dashboard" element={<Navigate to="/reports/sales-dashboard" replace />} />
         <Route path="/reports/hr-dashboard" element={<HrReportsDashboardPage />} />
         <Route path="/hr-dashboard" element={<Navigate to="/reports/hr-dashboard" replace />} />
+        <Route path="/settings" element={<SettingsPage />} />
 
         {/* Generate dynamic module engine routes for all other navigation items */}
         {navigationSections.map((section) =>

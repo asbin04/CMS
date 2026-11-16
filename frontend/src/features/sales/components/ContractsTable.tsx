@@ -38,91 +38,24 @@ export const ContractsTable: React.FC<ContractsTableProps> = ({
   renderStatusBadge,
 }) => {
   return (
-    <div
-      style={{
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        padding: 0,
-        width: '100%',
-        backgroundColor: '#FFFFFF',
-        border: '1px solid #E2E8F0',
-        boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
-        borderRadius: '12px',
-        overflow: 'hidden',
-      }}
-    >
+    <div className="flex flex-col w-full">
       {/* Table Header Bar */}
-      <div
-        style={{
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '16px',
-          width: '100%',
-          height: '63px',
-          borderBottom: '1px solid #F1F5F9',
-        }}
-      >
-        <h2
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            fontWeight: 700,
-            fontSize: '16px',
-            lineHeight: '24px',
-            color: '#0F172A',
-            margin: 0,
-          }}
-        >
+      <div className="px-4 sm:px-5 pt-4 sm:pt-5 pb-3 sm:pb-4 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white w-full">
+        <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight m-0">
           Contracts ({totalCount})
         </h2>
 
-        {/* Right Action: Sort & Export */}
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px' }}>
-          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
-            <span
-              style={{
-                fontFamily: "'Inter', sans-serif",
-                fontWeight: 400,
-                fontSize: '12px',
-                lineHeight: '16px',
-                color: '#64748B',
-              }}
-            >
+        {/* Right Action: Sort by & Export */}
+        <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-500 font-medium whitespace-nowrap">
               Sort by
             </span>
-            <div
-              style={{
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-                boxSizing: 'border-box',
-                height: '30px',
-                backgroundColor: '#F8FAFC',
-                border: '1px solid #E2E8F0',
-                borderRadius: '8px',
-                padding: '6px 28px 6px 12px',
-                cursor: 'pointer',
-              }}
-            >
+            <div className="relative">
               <select
                 value={sortBy}
                 onChange={(e) => onSortChange(e.target.value)}
-                style={{
-                  border: 'none',
-                  backgroundColor: 'transparent',
-                  outline: 'none',
-                  fontFamily: "'Inter', sans-serif",
-                  fontWeight: 400,
-                  fontSize: '12px',
-                  lineHeight: '16px',
-                  color: '#334155',
-                  appearance: 'none',
-                  cursor: 'pointer',
-                }}
+                className="appearance-none pl-3 pr-8 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-2xs"
               >
                 <option value="Start Date (Newest)">Start Date (Newest)</option>
                 <option value="Start Date (Oldest)">Start Date (Oldest)</option>
@@ -131,47 +64,25 @@ export const ContractsTable: React.FC<ContractsTableProps> = ({
                 <option value="End Date (Nearest)">End Date (Nearest)</option>
               </select>
               <ChevronDown
-                style={{
-                  position: 'absolute',
-                  right: '8px',
-                  width: '12px',
-                  height: '12px',
-                  color: '#94A3B8',
-                  pointerEvents: 'none',
-                }}
+                size={14}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
               />
             </div>
           </div>
 
           <button
+            type="button"
             onClick={onExport}
-            style={{
-              boxSizing: 'border-box',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              padding: '6px 12px',
-              gap: '6px',
-              height: '30px',
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              color: '#334155',
-              fontFamily: "'Inter', sans-serif",
-              fontWeight: 500,
-              fontSize: '12px',
-              lineHeight: '16px',
-            }}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold transition-colors shadow-2xs cursor-pointer active:scale-98"
           >
-            <Download style={{ width: '14px', height: '14px', color: '#334155', strokeWidth: 1.2 }} />
+            <Download size={14} className="text-slate-500" />
             <span>Export</span>
           </button>
         </div>
       </div>
 
       {/* Horizontal Data Table */}
-      <div style={{ width: '100%', overflowX: 'auto' }}>
+      <div className="w-full overflow-x-auto horizontal-table-scroll">
         {isLoading ? (
           <div className="p-6 space-y-4">
             {Array.from({ length: 5 }).map((_, idx) => (
@@ -208,7 +119,7 @@ export const ContractsTable: React.FC<ContractsTableProps> = ({
               <tr
                 style={{
                   height: '41px',
-                  backgroundColor: 'rgba(248, 250, 252, 0.75)',
+                  backgroundColor: '#FFFFFF',
                   borderBottom: '1px solid #E2E8F0',
                 }}
               >
@@ -310,72 +221,30 @@ export const ContractsTable: React.FC<ContractsTableProps> = ({
 
       {/* Pagination Footer */}
       {!isLoading && contracts.length > 0 && (
-        <div
-          style={{
-            boxSizing: 'border-box',
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '0 16px',
-            width: '100%',
-            height: '61px',
-            borderTop: '1px solid #F1F5F9',
-          }}
-        >
-          <span
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontWeight: 400,
-              fontSize: '12px',
-              lineHeight: '16px',
-              color: '#64748B',
-            }}
-          >
+        <div className="px-4 sm:px-5 py-3.5 border-t border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 rounded-b-xl w-full">
+          <span>
             Showing {totalCount > 0 ? startIndex + 1 : 0} –{' '}
             {Math.min(startIndex + pageSize, totalCount)} of {totalCount} contracts
           </span>
 
-          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '4px' }}>
+          <div className="flex items-center gap-1">
             <button
               disabled={currentPage === 1}
               onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '28px',
-                height: '28px',
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #E2E8F0',
-                borderRadius: '4px',
-                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                opacity: currentPage === 1 ? 0.6 : 1,
-              }}
+              className="flex items-center justify-center w-7 h-7 bg-white border border-slate-200 rounded text-slate-400 hover:text-slate-600 hover:border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              <ChevronLeft style={{ width: '14px', height: '14px', color: '#94A3B8' }} />
+              <ChevronLeft size={14} />
             </button>
 
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
                 key={page}
                 onClick={() => onPageChange(page)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '28px',
-                  height: '28px',
-                  backgroundColor: currentPage === page ? '#4F46E5' : 'transparent',
-                  border: 'none',
-                  borderRadius: '4px',
-                  fontFamily: "'Inter', sans-serif",
-                  fontWeight: currentPage === page ? 600 : 400,
-                  fontSize: '12px',
-                  lineHeight: '16px',
-                  color: currentPage === page ? '#FFFFFF' : '#64748B',
-                  cursor: 'pointer',
-                }}
+                className={`flex items-center justify-center w-7 h-7 rounded text-xs transition-colors cursor-pointer ${
+                  currentPage === page
+                    ? 'bg-[#4F46E5] text-white font-semibold'
+                    : 'bg-transparent text-slate-600 hover:bg-slate-100 font-normal'
+                }`}
               >
                 {page}
               </button>
@@ -384,20 +253,9 @@ export const ContractsTable: React.FC<ContractsTableProps> = ({
             <button
               disabled={currentPage === totalPages}
               onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '28px',
-                height: '28px',
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #E2E8F0',
-                borderRadius: '4px',
-                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                opacity: currentPage === totalPages ? 0.6 : 1,
-              }}
+              className="flex items-center justify-center w-7 h-7 bg-white border border-slate-200 rounded text-slate-400 hover:text-slate-600 hover:border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              <ChevronRight style={{ width: '14px', height: '14px', color: '#94A3B8' }} />
+              <ChevronRight size={14} />
             </button>
           </div>
         </div>
@@ -405,4 +263,3 @@ export const ContractsTable: React.FC<ContractsTableProps> = ({
     </div>
   );
 };
-

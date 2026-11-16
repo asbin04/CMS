@@ -439,40 +439,43 @@ export const ProposalsPage: React.FC = () => {
       {/* 2. Four KPI Cards */}
       <ProposalsKpiCards summary={kpiSummary} isLoading={isKpiLoading} />
 
-      {/* 3. Search and Filter Panel */}
-      <ProposalsFilterCard
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        onClearFilters={handleClearFilters}
-        ownerOptions={ownerOptions}
-        clientOptions={clientOptions}
-        opportunityOptions={opportunityOptions}
-        serviceOptions={serviceOptions}
-      />
+      {/* Main Unified Proposals Container: Filters + Header + Table */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col w-full">
+        {/* Search and Filter Panel */}
+        <ProposalsFilterCard
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onClearFilters={handleClearFilters}
+          ownerOptions={ownerOptions}
+          clientOptions={clientOptions}
+          opportunityOptions={opportunityOptions}
+          serviceOptions={serviceOptions}
+        />
 
-      {/* 4. Proposals Table with Horizontal Overflow and Pagination */}
-      <ProposalsTable
-        proposals={proposals}
-        totalCount={totalCount}
-        currentPage={currentPage}
-        pageSize={pageSize}
-        sortOption={sortOption}
-        onSortChange={setSortOption}
-        onPageChange={setCurrentPage}
-        onPageSizeChange={(size) => {
-          setPageSize(size);
-          setCurrentPage(1);
-        }}
-        onExport={handleExport}
-        onViewDetails={handleViewDetails}
-        onEditProposal={handleEditProposal}
-        onDeleteProposal={handleDeleteProposal}
-        onUpdateStatus={handleUpdateStatus}
-        isLoading={isTableLoading}
-        error={error}
-        onRetry={loadProposals}
-        onClearFilters={handleClearFilters}
-      />
+        {/* Proposals Table with Horizontal Overflow and Pagination */}
+        <ProposalsTable
+          proposals={proposals}
+          totalCount={totalCount}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          sortOption={sortOption}
+          onSortChange={setSortOption}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setCurrentPage(1);
+          }}
+          onExport={handleExport}
+          onViewDetails={handleViewDetails}
+          onEditProposal={handleEditProposal}
+          onDeleteProposal={handleDeleteProposal}
+          onUpdateStatus={handleUpdateStatus}
+          isLoading={isTableLoading}
+          error={error}
+          onRetry={loadProposals}
+          onClearFilters={handleClearFilters}
+        />
+      </div>
 
       {/* 5. Create / Edit Proposal Modal */}
       <CreateProposalModal

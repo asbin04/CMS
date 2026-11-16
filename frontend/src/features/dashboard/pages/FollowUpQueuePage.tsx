@@ -100,6 +100,7 @@ export const FollowUpQueuePage: React.FC<FollowUpQueuePageProps> = (props) => {
   const [activeModalItem, setActiveModalItem] = useState<FollowUpItemData | null>(null);
   const [actionNote, setActionNote] = useState<string>('');
   const [isSubmittingAction, setIsSubmittingAction] = useState<boolean>(false);
+  const [lastRefreshed, setLastRefreshed] = useState<string>('Just now');
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -123,6 +124,7 @@ export const FollowUpQueuePage: React.FC<FollowUpQueuePageProps> = (props) => {
 
       setItems(fetchedItems);
       setSummary(fetchedSummary);
+      setLastRefreshed(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
 
       if (isRefreshAction) {
         showToast('Queue data refreshed successfully from database');

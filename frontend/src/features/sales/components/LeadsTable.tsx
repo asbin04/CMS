@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { Lead, LeadSortOption, ServiceInterest, LeadStage, LeadStatus } from '../types/leads';
 import { formatRupee } from '../../collections/utils';
+import { TableActionMenu } from '@/components/ui/TableActionMenu';
 
 interface LeadsTableProps {
   leads: Lead[];
@@ -18,7 +19,8 @@ interface LeadsTableProps {
   onPageSizeChange: (size: number) => void;
   onSortChange: (sort: LeadSortOption) => void;
   onViewLead: (lead: Lead) => void;
-  onDeleteLead: (id: string) => void;
+  onEditLead?: (lead: Lead) => void;
+  onDeleteLead?: (lead: Lead) => void;
   onExport: () => void;
 }
 
@@ -32,6 +34,8 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
   onPageSizeChange,
   onSortChange,
   onViewLead,
+  onEditLead,
+  onDeleteLead,
   onExport,
 }) => {
   // Service interest badge styling dictionary matching Figma screenshot
@@ -145,9 +149,9 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col w-full overflow-hidden">
+    <div className="flex flex-col w-full">
       {/* Top Header Row of Table Card */}
-      <div className="px-5 py-4 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white">
+      <div className="px-4 sm:px-5 pt-4 sm:pt-5 pb-3 sm:pb-4 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white">
         <div className="flex items-center gap-3">
           <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
             Leads ({totalCount})
@@ -193,9 +197,9 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
       <div className="w-full overflow-x-auto horizontal-table-scroll">
         <table className="w-full text-left border-collapse min-w-[2450px]">
           <thead>
-            <tr className="border-b border-slate-200 bg-[#E9EEF5] text-[11px] font-bold text-slate-600 tracking-wider uppercase select-none">
+            <tr className="border-b border-slate-200 bg-white text-[11px] font-bold text-slate-600 tracking-wider uppercase select-none">
               {/* 1. LEAD ID (Sticky Left) */}
-              <th className="py-3.5 pl-6 pr-4 sticky left-0 z-20 bg-[#E9EEF5] shadow-[2px_0_4px_-1px_rgba(0,0,0,0.06)] min-w-[120px]">
+              <th className="py-3.5 pl-6 pr-4 sticky left-0 z-20 bg-white shadow-[2px_0_4px_-1px_rgba(0,0,0,0.06)] min-w-[120px]">
                 LEAD ID
               </th>
               {/* 2. LEAD DATE */}
@@ -235,7 +239,7 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
               {/* 19. NOTES */}
               <th className="py-3.5 px-4 min-w-[160px]">NOTES</th>
               {/* 20. ACTION (Sticky Right) */}
-              <th className="py-3.5 pr-6 pl-4 text-center sticky right-0 z-20 bg-[#E9EEF5] shadow-[-2px_0_4px_-1px_rgba(0,0,0,0.06)] min-w-[125px]">
+              <th className="py-3.5 pr-6 pl-4 text-center sticky right-0 z-20 bg-white shadow-[-2px_0_4px_-1px_rgba(0,0,0,0.06)] min-w-[125px]">
                 ACTION
               </th>
             </tr>
@@ -402,18 +406,19 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
                       {notesSnippet}
                     </td>
 
-                    {/* 20. ACTION (Sticky Right) */}
+                    {/* 20. ACTION (Sticky Right with Three-Dot Action Menu) */}
                     <td className="py-3.5 pr-6 pl-4 whitespace-nowrap text-center sticky right-0 z-10 bg-white group-hover:bg-[#F8FAFC] shadow-[-2px_0_4px_-1px_rgba(0,0,0,0.06)] transition-colors">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onViewLead(lead);
-                        }}
-                        className="px-3.5 py-1 rounded-md border border-[#4F46E5] text-[#4F46E5] hover:bg-[#4F46E5] hover:text-white transition-all text-xs font-semibold whitespace-nowrap cursor-pointer shadow-2xs active:scale-98"
-                      >
-                        View Details
-                      </button>
+                      <div className="flex items-center justify-center">
+                        <TableActionMenu
+                          onViewDetails={() => onViewLead(lead)}
+                          onEdit={onEditLead ? () => onEditLead(lead) : undefined}
+                          onDelete={onDeleteLead ? () => onDeleteLead(lead) : undefined}
+                          viewLabel="View Details"
+                          editLabel="Edit"
+                          deleteLabel="Delete"
+                          ariaLabel={`Actions for ${lead.company}`}
+                        />
+                      </div>
                     </td>
                   </tr>
                 );
@@ -424,7 +429,7 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
       </div>
 
       {/* Pagination Footer matching Figma */}
-      <div className="px-5 py-3.5 border-t border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+      <div className="px-4 sm:px-5 py-3.5 border-t border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 rounded-b-xl">
         <div>
           Showing <span className="font-semibold text-slate-800">{startRange} – {endRange}</span> of{' '}
           <span className="font-semibold text-slate-800">{totalCount}</span> leads

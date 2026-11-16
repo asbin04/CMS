@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 public class UpdateLeadRequest {
 
     private LocalDate leadDate;
@@ -18,12 +18,22 @@ public class UpdateLeadRequest {
     private String company;
 
     @Size(max = 255)
+    @Pattern(
+        regexp = "^(?=[^0-9]*$)(?=[\\s.'-]*\\p{L})[\\p{L}\\s.'-]+$",
+        message = "Name must contain letters only. Numbers and special characters are not allowed."
+    )
     private String contactName;
 
-    @Email(message = "Valid email is required")
+    @Pattern(
+        regexp = "^(?!.*\\.\\.)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)*\\.[a-zA-Z]{2,}$",
+        message = "Enter a valid email address."
+    )
     private String email;
 
-    @Pattern(regexp = "^[0-9+()\\s-]{7,25}$", message = "Valid phone number is required")
+    @Pattern(
+        regexp = "^[6-9]\\d{9}$",
+        message = "Enter a valid 10-digit Indian mobile number."
+    )
     private String phone;
 
     private String source;
