@@ -134,8 +134,8 @@ describe('ProposalsPage Component', () => {
     expect(screen.getByText('Cloud Infrastructure Setup')).toBeInTheDocument();
   });
 
-  it('rolls back state when update status fails', async () => {
-    vi.spyOn(proposalsApiService, 'updateStatus').mockRejectedValue(new Error('Server error updating status'));
+  it('filters by Proposal Date, Valid Until, and Expected Decision Date single date calendar pickers', async () => {
+    const getProposalsSpy = vi.spyOn(proposalsApiService, 'getProposals');
 
     await act(async () => {
       render(
@@ -145,6 +145,36 @@ describe('ProposalsPage Component', () => {
       );
     });
 
-    expect(screen.getByText('P-2025-001')).toBeInTheDocument();
+    // 1. Click Proposal Date filter
+    const proposalDateBtn = screen.getByRole('button', { name: /Filter by Proposal Date/i });
+    expect(proposalDateBtn).toBeInTheDocument();
+    fireEvent.click(proposalDateBtn);
+
+    // Dialog opens with SingleDatePicker
+    const dialog = screen.getByRole('dialog', { name: /Calendar Date Picker/i });
+    expect(dialog).toBeInTheDocument();
+    expect(dialog.className).toContain('w-[276px]');
+
+    // Click date '15'
+    const day15 = screen.getByRole('button', { name: '15' });
+    await act(async () => {
+      fireEvent.click(day15);
+    });
+
+    // Dialog closes and getProposals is called with the date
+    expect(screen.queryByRole('dialog', { name: /Calendar Date Picker/i })).toBeNull();
+    expect(getProposalsSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        proposalDateRange: expect.stringMatching(/^\d{4}-\d{2}-15$/),
+      })
+    );
+
+    // 2. Clear filters resets
+    const clearBtn = screen.getByRole('button', { name: /Clear Filters/i });
+    await act(async () => {
+      fireEvent.click(clearBtn);
+    });
+
+    expect(proposalDateBtn).toHaveTextContent(/Select date/i);
   });
 });

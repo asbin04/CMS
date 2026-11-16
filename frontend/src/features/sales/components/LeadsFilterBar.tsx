@@ -5,9 +5,11 @@ import {
   RotateCcw,
   Calendar,
   ChevronDown,
+  X,
 } from 'lucide-react';
 import { LeadsFilterState } from '../types/leads';
 import { CalendarDateRangePicker } from '../../../components/ui/CalendarDateRangePicker';
+import { SingleDatePicker } from '../../../components/ui/SingleDatePicker';
 
 interface LeadsFilterBarProps {
   filterState: LeadsFilterState;
@@ -102,7 +104,7 @@ export const LeadsFilterBar: React.FC<LeadsFilterBarProps> = ({
   ];
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-sm flex flex-col gap-4 w-full">
+    <div className="p-4 sm:p-5 pb-0 flex flex-col gap-4 w-full">
       {/* Top Search & Actions Row */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
         {/* Search Input */}
@@ -121,18 +123,18 @@ export const LeadsFilterBar: React.FC<LeadsFilterBarProps> = ({
         </div>
 
         {/* Buttons: Filters + Clear Filters */}
-        <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-auto">
+        <div className="flex items-center gap-4 shrink-0 self-end sm:self-auto">
           <button
             type="button"
             onClick={() => setShowFiltersPanel((prev) => !prev)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-50/50 rounded-lg text-xs font-semibold transition-colors shadow-2xs"
+            className="flex items-center gap-[8px] h-[34px] px-[14px] py-[8px] bg-white border border-[#4F46E5] hover:bg-indigo-50/40 text-[#4F46E5] rounded-[8px] text-[13px] font-medium transition-colors cursor-pointer select-none"
           >
-            <Filter size={15} className="text-indigo-600" />
+            <Filter size={15} className="text-[#4F46E5]" />
             <span>Filters</span>
             <ChevronDown
-              size={14}
-              className={`text-indigo-600 transition-transform ${
-                showFiltersPanel ? 'rotate-180' : ''
+              size={15}
+              className={`text-[#4F46E5] transition-transform duration-200 ${
+                showFiltersPanel ? '' : '-rotate-180'
               }`}
             />
           </button>
@@ -140,9 +142,9 @@ export const LeadsFilterBar: React.FC<LeadsFilterBarProps> = ({
           <button
             type="button"
             onClick={onClearFilters}
-            className="flex items-center gap-1.5 px-3 py-2.5 text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-1 py-2 text-[13px] font-medium text-[#4F46E5] hover:text-[#4338CA] transition-colors cursor-pointer"
           >
-            <RotateCcw size={14} />
+            <RotateCcw size={15} className="text-[#4F46E5]" />
             <span>Clear Filters</span>
           </button>
         </div>
@@ -150,7 +152,7 @@ export const LeadsFilterBar: React.FC<LeadsFilterBarProps> = ({
 
       {/* Filter Dropdowns Grid */}
       {showFiltersPanel && (
-        <div className="flex flex-col gap-3.5 pt-1 border-t border-slate-100">
+        <div className="flex flex-col gap-3.5">
           {/* Row 1: Lead Date, Source, Service Interest, Country, City */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
             {/* Lead Date */}
@@ -337,24 +339,41 @@ export const LeadsFilterBar: React.FC<LeadsFilterBarProps> = ({
             {/* Next Follow-up */}
             <div className="relative flex flex-col">
               <label className="text-xs font-medium text-slate-600 mb-1.5">Next Follow-up</label>
-              <button
-                type="button"
-                onClick={() => setIsFollowUpDatePickerOpen((prev) => !prev)}
-                className="w-full flex items-center justify-between px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 hover:border-slate-300 transition-colors text-left"
-              >
-                <div className="flex items-center gap-2 truncate">
-                  <Calendar size={14} className="text-slate-400 shrink-0" />
-                  <span className={filterState.nextFollowUpDateRange ? 'text-slate-900 font-medium' : 'text-slate-400'}>
-                    {filterState.nextFollowUpDateRange || 'Select date range'}
-                  </span>
-                </div>
-              </button>
+              <div className="relative flex items-center">
+                <button
+                  type="button"
+                  aria-label="Filter by Next Follow-up"
+                  onClick={() => setIsFollowUpDatePickerOpen((prev) => !prev)}
+                  className="w-full flex items-center justify-between px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 hover:border-slate-300 transition-colors text-left cursor-pointer"
+                >
+                  <div className="flex items-center gap-2 truncate">
+                    <Calendar size={14} className="text-slate-400 shrink-0" />
+                    <span className={filterState.nextFollowUpDateRange ? 'text-slate-900 font-medium' : 'text-slate-400'}>
+                      {filterState.nextFollowUpDateRange || 'Select date'}
+                    </span>
+                  </div>
+                </button>
+                {filterState.nextFollowUpDateRange && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onFilterChange({ nextFollowUpDateRange: '' });
+                    }}
+                    className="absolute right-2.5 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                    title="Clear date"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
 
-              <CalendarDateRangePicker
+              <SingleDatePicker
                 value={filterState.nextFollowUpDateRange}
-                onChange={(range) => onFilterChange({ nextFollowUpDateRange: range })}
+                onChange={(date) => onFilterChange({ nextFollowUpDateRange: date })}
                 isOpen={isFollowUpDatePickerOpen}
                 onClose={() => setIsFollowUpDatePickerOpen(false)}
+                align="right"
               />
             </div>
           </div>

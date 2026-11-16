@@ -93,7 +93,7 @@ class LeadServiceTest {
                 .company("Beta Tech")
                 .contactName("Jane Doe")
                 .email("jane@betatech.com")
-                .phone("+91 99999 88888")
+                .phone("9999988888")
                 .source("Referral")
                 .serviceInterest("AI Solutions")
                 .country("India")
