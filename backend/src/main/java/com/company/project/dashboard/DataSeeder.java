@@ -8,11 +8,16 @@ import com.company.project.dashboard.service.ApprovalService;
 import com.company.project.dashboard.service.ContractService;
 import com.company.project.dashboard.service.FollowUpService;
 import com.company.project.dashboard.service.OpportunityService;
+import com.company.project.proposals.repository.ProposalRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.stereotype.Component;
+
+import javax.sql.DataSource;
 
 @Component
 @Profile("dev")
@@ -28,6 +33,8 @@ public class DataSeeder implements CommandLineRunner {
     private final ApprovalService approvalService;
     private final ContractRepository contractRepository;
     private final ContractService contractService;
+    private final ProposalRepository proposalRepository;
+    private final DataSource dataSource;
 
     @Override
     public void run(String... args) {
@@ -65,6 +72,22 @@ public class DataSeeder implements CommandLineRunner {
             log.info("Contracts seed data initialized with {} items.", contractRepository.count());
         } else {
             log.info("Contracts already contains {} items. Skipping seeding.", contractCount);
+        }
+
+        long proposalCount = proposalRepository.count();
+        if (proposalCount == 0) {
+            log.info("Initializing Proposals seed data in database...");
+            try {
+                ResourceDatabasePopulator populator = new ResourceDatabasePopulator(
+                        new ClassPathResource("db/dev-migration/V5__seed_proposals_data.sql")
+                );
+                populator.execute(dataSource);
+                log.info("Proposals seed data initialized with {} items.", proposalRepository.count());
+            } catch (Exception e) {
+                log.error("Failed to seed proposals: {}", e.getMessage(), e);
+            }
+        } else {
+            log.info("Proposals already contains {} items. Skipping seeding.", proposalCount);
         }
     }
 }
