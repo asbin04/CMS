@@ -7,6 +7,7 @@ export interface CalendarDateRangePickerProps {
   isOpen: boolean;
   onClose: () => void;
   showPresets?: boolean;
+  align?: 'left' | 'right' | 'auto';
 }
 
 export const CalendarDateRangePicker: React.FC<CalendarDateRangePickerProps> = ({
@@ -16,6 +17,27 @@ export const CalendarDateRangePicker: React.FC<CalendarDateRangePickerProps> = (
   onClose,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [computedAlign, setComputedAlign] = useState<'left' | 'right'>(
+    align === 'right' ? 'right' : 'left'
+  );
+
+  useEffect(() => {
+    if (!isOpen) return;
+    if (align === 'left' || align === 'right') {
+      setComputedAlign(align);
+      return;
+    }
+
+    if (containerRef.current?.parentElement) {
+      const parentRect = containerRef.current.parentElement.getBoundingClientRect();
+      const spaceOnRight = window.innerWidth - parentRect.left;
+      if (spaceOnRight < 510 && parentRect.right > 510) {
+        setComputedAlign('right');
+      } else {
+        setComputedAlign('left');
+      }
+    }
+  }, [isOpen, align]);
 
   const initialRange = useMemo(() => {
     const currentYear = new Date().getFullYear();
@@ -31,6 +53,58 @@ export const CalendarDateRangePicker: React.FC<CalendarDateRangePickerProps> = (
 
   // Month navigation (defaults to today / current month)
   const [viewDate, setViewDate] = useState<Date>(new Date());
+
+  // Synchronize internal selection and viewDate with incoming value prop on open/change
+  useEffect(() => {
+    if (!isOpen) return;
+
+    if (!value || value === '—' || value === 'All Period' || value === 'All') {
+      setStartDate(null);
+      setEndDate(null);
+      return;
+    }
+
+    // Try parsing 'dd MMM yyyy - dd MMM yyyy'
+    const dayRangeMatch = value.match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})\s*-\s*(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})$/);
+    if (dayRangeMatch) {
+      const s = new Date(`${dayRangeMatch[1]} ${dayRangeMatch[2]} ${dayRangeMatch[3]}`);
+      const e = new Date(`${dayRangeMatch[4]} ${dayRangeMatch[5]} ${dayRangeMatch[6]}`);
+      if (!isNaN(s.getTime()) && !isNaN(e.getTime())) {
+        setStartDate(s);
+        setEndDate(e);
+        setViewDate(new Date(s.getFullYear(), s.getMonth(), 1));
+        return;
+      }
+    }
+
+    // Try parsing 'MMM yyyy - MMM yyyy'
+    const monthRangeMatch = value.match(/^([A-Za-z]{3})\s+(\d{4})\s*-\s*([A-Za-z]{3})\s+(\d{4})$/);
+    if (monthRangeMatch) {
+      const s = new Date(`1 ${monthRangeMatch[1]} ${monthRangeMatch[2]}`);
+      const eY = parseInt(monthRangeMatch[4], 10);
+      const eMonthName = monthRangeMatch[3];
+      const eTestDate = new Date(`1 ${eMonthName} ${eY}`);
+      const e = new Date(eY, eTestDate.getMonth() + 1, 0);
+      if (!isNaN(s.getTime()) && !isNaN(e.getTime())) {
+        setStartDate(s);
+        setEndDate(e);
+        setViewDate(new Date(s.getFullYear(), s.getMonth(), 1));
+        return;
+      }
+    }
+
+    // Try parsing single date 'dd MMM yyyy'
+    const singleMatch = value.match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})$/);
+    if (singleMatch) {
+      const d = new Date(`${singleMatch[1]} ${singleMatch[2]} ${singleMatch[3]}`);
+      if (!isNaN(d.getTime())) {
+        setStartDate(d);
+        setEndDate(d);
+        setViewDate(new Date(d.getFullYear(), d.getMonth(), 1));
+        return;
+      }
+    }
+  }, [isOpen, value]);
 
   // Close on outside click or window scroll
   useEffect(() => {
@@ -138,9 +212,19 @@ export const CalendarDateRangePicker: React.FC<CalendarDateRangePickerProps> = (
 
   const handleApply = () => {
     if (startDate && endDate) {
-      const startStr = formatDateShort(startDate);
-      const endStr = formatDateShort(endDate);
-      onChange(`${startStr} - ${endStr}`);
+      if (
+        startDate.getDate() === 1 &&
+        startDate.getMonth() === 3 &&
+        endDate.getDate() === 31 &&
+        endDate.getMonth() === 2 &&
+        endDate.getFullYear() === startDate.getFullYear() + 1
+      ) {
+        onChange(`Apr ${startDate.getFullYear()} - Mar ${endDate.getFullYear()}`);
+      } else {
+        const startStr = formatDateShort(startDate);
+        const endStr = formatDateShort(endDate);
+        onChange(`${startStr} - ${endStr}`);
+      }
     } else if (startDate && !endDate) {
       const startStr = formatDateShort(startDate);
       onChange(startStr);

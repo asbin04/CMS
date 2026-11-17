@@ -63,6 +63,53 @@ const renderStatusBadge = (status: string) => {
   );
 };
 
+const normalizeDateToYMD = (val: string | null | undefined): string | null => {
+  if (!val) return null;
+  const str = String(val).trim();
+  const ymdMatch = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (ymdMatch) {
+    const y = ymdMatch[1];
+    const m = ymdMatch[2].padStart(2, '0');
+    const d = ymdMatch[3].padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+  const parsed = new Date(str);
+  if (!isNaN(parsed.getTime())) {
+    const y = parsed.getFullYear();
+    const m = String(parsed.getMonth() + 1).padStart(2, '0');
+    const d = String(parsed.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+  return null;
+};
+
+const isDateMatching = (dateStr: string | undefined | null, filterStr: string): boolean => {
+  if (!filterStr || !filterStr.trim()) return true;
+  if (!dateStr || dateStr === '-') return false;
+
+  const trimmed = filterStr.trim();
+  if (trimmed.includes(' - ')) {
+    const [startPart, endPart] = trimmed.split(' - ');
+    const itemTime = new Date(dateStr).getTime();
+    if (isNaN(itemTime)) return dateStr.toLowerCase().includes(trimmed.toLowerCase());
+
+    const startTime = startPart ? new Date(startPart).getTime() : NaN;
+    const endTime = endPart ? new Date(endPart).getTime() : NaN;
+
+    if (!isNaN(startTime) && itemTime < startTime) return false;
+    if (!isNaN(endTime) && itemTime > endTime + 86400000 - 1) return false;
+    return true;
+  }
+
+  const filterYMD = normalizeDateToYMD(trimmed);
+  const itemYMD = normalizeDateToYMD(dateStr);
+  if (filterYMD && itemYMD) {
+    return filterYMD === itemYMD;
+  }
+
+  return dateStr.toLowerCase().includes(trimmed.toLowerCase());
+};
+
 export const ContractsPage: React.FC = () => {
   const [contracts, setContracts] = useState<ContractData[]>([]);
   const [summary, setSummary] = useState<ContractSummaryData | null>(null);
@@ -175,13 +222,13 @@ export const ContractsPage: React.FC = () => {
         if (selectedStatus !== 'All' && item.status.toLowerCase() !== selectedStatus.toLowerCase()) return false;
 
         if (startDateFilter.trim()) {
-          if (!item.startDate.toLowerCase().includes(startDateFilter.toLowerCase())) return false;
+          if (!isDateMatching(item.startDate, startDateFilter)) return false;
         }
         if (endDateFilter.trim()) {
-          if (!item.endDate.toLowerCase().includes(endDateFilter.toLowerCase())) return false;
+          if (!isDateMatching(item.endDate, endDateFilter)) return false;
         }
         if (renewalDateFilter.trim()) {
-          if (!item.renewalDate.toLowerCase().includes(renewalDateFilter.toLowerCase())) return false;
+          if (!isDateMatching(item.renewalDate, renewalDateFilter)) return false;
         }
 
         return true;
@@ -504,49 +551,51 @@ export const ContractsPage: React.FC = () => {
       {/* Metric Cards */}
       <ContractsMetricCards summary={summary} isLoading={isLoading} />
 
-      {/* Filters Bar */}
-      <ContractsFilterBar
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        selectedClient={selectedClient}
-        setSelectedClient={setSelectedClient}
-        selectedProposal={selectedProposal}
-        setSelectedProposal={setSelectedProposal}
-        selectedContractType={selectedContractType}
-        setSelectedContractType={setSelectedContractType}
-        selectedStatus={selectedStatus}
-        setSelectedStatus={setSelectedStatus}
-        startDateFilter={startDateFilter}
-        setStartDateFilter={setStartDateFilter}
-        endDateFilter={endDateFilter}
-        setEndDateFilter={setEndDateFilter}
-        renewalDateFilter={renewalDateFilter}
-        setRenewalDateFilter={setRenewalDateFilter}
-        isFiltersOpen={isFiltersOpen}
-        setIsFiltersOpen={setIsFiltersOpen}
-        onClearFilters={handleClearFilters}
-        clients={clients}
-        proposalOptions={proposalOptions}
-        contractTypeOptions={contractTypeOptions}
-      />
+      {/* Main Unified Contracts Container: Filters + Header + Table */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col w-full">
+        <ContractsFilterBar
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          selectedClient={selectedClient}
+          setSelectedClient={setSelectedClient}
+          selectedProposal={selectedProposal}
+          setSelectedProposal={setSelectedProposal}
+          selectedContractType={selectedContractType}
+          setSelectedContractType={setSelectedContractType}
+          selectedStatus={selectedStatus}
+          setSelectedStatus={setSelectedStatus}
+          startDateFilter={startDateFilter}
+          setStartDateFilter={setStartDateFilter}
+          endDateFilter={endDateFilter}
+          setEndDateFilter={setEndDateFilter}
+          renewalDateFilter={renewalDateFilter}
+          setRenewalDateFilter={setRenewalDateFilter}
+          isFiltersOpen={isFiltersOpen}
+          setIsFiltersOpen={setIsFiltersOpen}
+          onClearFilters={handleClearFilters}
+          clients={clients}
+          proposalOptions={proposalOptions}
+          contractTypeOptions={contractTypeOptions}
+        />
 
-      {/* Contracts Table */}
-      <ContractsTable
-        contracts={paginatedContracts}
-        totalCount={filteredContracts.length}
-        isLoading={isLoading}
-        startIndex={startIndex}
-        pageSize={pageSize}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        sortBy={sortBy}
-        onSortChange={setSortBy}
-        onPageChange={setCurrentPage}
-        onExport={handleExport}
-        onViewDetails={handleViewDetails}
-        formatCurrency={formatCurrency}
-        renderStatusBadge={renderStatusBadge}
-      />
+        {/* Contracts Table */}
+        <ContractsTable
+          contracts={paginatedContracts}
+          totalCount={filteredContracts.length}
+          isLoading={isLoading}
+          startIndex={startIndex}
+          pageSize={pageSize}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+          onPageChange={setCurrentPage}
+          onExport={handleExport}
+          onViewDetails={handleViewDetails}
+          formatCurrency={formatCurrency}
+          renderStatusBadge={renderStatusBadge}
+        />
+      </div>
 
       {/* Modals */}
       {isAddModalOpen && (

@@ -17,6 +17,7 @@ interface EmployeeDetailModalProps {
   onClose: () => void;
   onUpdate: (id: number, data: Partial<EmployeeData>) => Promise<void>;
   onDelete: (id: number) => Promise<void>;
+  initialIsEditing?: boolean;
 }
 
 export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
@@ -25,17 +26,18 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
   onClose,
   onUpdate,
   onDelete,
+  initialIsEditing = false,
 }) => {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(initialIsEditing);
   const [formData, setFormData] = useState<Partial<EmployeeData>>({});
   const [isSaving, setIsSaving] = useState(false);
 
   React.useEffect(() => {
     if (employee) {
       setFormData({ ...employee });
-      setIsEditing(false);
+      setIsEditing(initialIsEditing);
     }
-  }, [employee]);
+  }, [employee, initialIsEditing]);
 
   if (!isOpen || !employee) return null;
 
@@ -123,6 +125,7 @@ export const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
             </button>
             <button
               onClick={onClose}
+              aria-label="Close modal"
               className="h-8 w-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-colors"
             >
               <X className="w-4 h-4" />

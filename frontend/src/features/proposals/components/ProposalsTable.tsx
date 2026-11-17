@@ -79,33 +79,35 @@ const PROPOSAL_STATUS_CONFIGS: StatusItemConfig[] = [
 ];
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden mb-8 shadow-xs">
+    <div className="flex flex-col w-full">
       {/* Table Header Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-6 py-4 border-b border-slate-200">
-        <h2 className="text-[15px] font-bold leading-5 text-slate-900 tracking-tight">
+      <div className="px-4 sm:px-5 pt-4 sm:pt-5 pb-3 sm:pb-4 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white">
+        <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
           Proposals ({totalCount})
         </h2>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
           {/* Sort By Dropdown */}
-          <div className="flex items-center">
-            <span className="text-xs font-medium leading-4 text-slate-500 mr-2 whitespace-nowrap">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-500 font-medium whitespace-nowrap">
               Sort by
             </span>
             <div className="relative">
               <select
                 value={sortOption}
                 onChange={(e) => onSortChange(e.target.value as ProposalSortOption)}
-                style={{ border: '1px solid #E2E8F0', borderRadius: '8px', backgroundColor: '#FFFFFF', boxSizing: 'border-box' }}
-                className="bg-white border border-[#E2E8F0] hover:border-slate-300 rounded-lg px-3 py-1.5 text-xs leading-4 text-slate-700 font-medium appearance-none pr-8 cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500/20 focus:border-[#CBD5E1] transition-colors"
+                className="appearance-none pl-3 pr-8 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-2xs"
               >
-                <option value="date-newest">Proposal date (newest)</option>
-                <option value="date-oldest">Proposal date (oldest)</option>
-                <option value="value-highest">Total value (high to low)</option>
-                <option value="value-lowest">Total value (low to high)</option>
-                <option value="valid-until-soonest">Valid until (soonest)</option>
+                <option value="date-newest">Proposal Date (Newest)</option>
+                <option value="date-oldest">Proposal Date (Oldest)</option>
+                <option value="value-highest">Total Value (High to Low)</option>
+                <option value="value-lowest">Total Value (Low to High)</option>
+                <option value="valid-until-soonest">Valid Until (Soonest)</option>
               </select>
-              <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+              <ChevronDown
+                size={14}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+              />
             </div>
           </div>
 
@@ -115,7 +117,7 @@ const PROPOSAL_STATUS_CONFIGS: StatusItemConfig[] = [
       </div>
 
       {/* Horizontal Scrollable Table Wrapper */}
-      <div className="overflow-x-auto w-full custom-scrollbar" style={{ WebkitOverflowScrolling: 'touch' }}>
+      <div className="w-full overflow-x-auto horizontal-table-scroll custom-scrollbar" style={{ WebkitOverflowScrolling: 'touch' }}>
         <table
           className="w-full text-left border-collapse whitespace-nowrap"
           style={{
@@ -363,7 +365,7 @@ const PROPOSAL_STATUS_CONFIGS: StatusItemConfig[] = [
       </div>
 
       {/* Table Pagination Footer */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 border-t border-slate-200 bg-white">
+      <div className="px-4 sm:px-5 py-3.5 border-t border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 rounded-b-xl">
         {/* Record count info */}
         <div className="text-xs font-normal text-slate-500 leading-4">
           Showing {startRecord} – {endRecord} of {totalCount} proposals

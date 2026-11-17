@@ -379,6 +379,15 @@ public class ProposalService {
                                jakarta.persistence.criteria.Path<LocalDate> datePath, String filter) {
         String f = filter.toLowerCase().trim();
 
+        // 0. Single-date match (e.g. "2026-11-15", "15 Mar 2025")
+        if (filter.matches("^\\d{4}-\\d{2}-\\d{2}$") || filter.matches("^\\d{1,2}\\s+[A-Za-z]{3,}\\s+\\d{4}$")) {
+            try {
+                LocalDate exact = calculationService.parseDate(filter.trim());
+                predicates.add(cb.equal(datePath, exact));
+                return;
+            } catch (Exception ignored) {}
+        }
+
         // 1. Month-Year string (e.g. "Mar 2025", "Feb 2025", "Apr 2025")
         if (f.matches("^(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\\s+\\d{4}$")) {
             try {

@@ -484,7 +484,7 @@ export const TopNav: React.FC<TopNavProps> = ({
             }}
             isOpen={isDateOpen}
             onClose={() => setIsDateOpen(false)}
-            showPresets={false}
+            showPresets={true}
           />
         </div>
 

@@ -199,12 +199,31 @@ export const ClientsPage: React.FC = () => {
       }
 
       // 8. Onboarding Date
-      if (
-        filterState.onboardingDateRange.trim() &&
-        client.onboardingDate &&
-        !client.onboardingDate.toLowerCase().includes(filterState.onboardingDateRange.toLowerCase())
-      ) {
-        return false;
+      if (filterState.onboardingDateRange.trim() && client.onboardingDate) {
+        const q = filterState.onboardingDateRange.trim().toLowerCase();
+        const clientDate = client.onboardingDate.toLowerCase();
+        if (q.includes('-')) {
+          const parts = q.split('-').map((s) => s.trim());
+          if (parts.length === 2) {
+            const start = new Date(parts[0]);
+            const end = new Date(parts[1]);
+            const cDate = new Date(client.onboardingDate);
+            if (!isNaN(start.getTime()) && !isNaN(end.getTime()) && !isNaN(cDate.getTime())) {
+              end.setHours(23, 59, 59, 999);
+              if (cDate < start || cDate > end) return false;
+            } else if (!clientDate.includes(q)) {
+              return false;
+            }
+          }
+        } else {
+          const cTime = new Date(client.onboardingDate).getTime();
+          const qTime = new Date(q).getTime();
+          if (!isNaN(cTime) && !isNaN(qTime)) {
+            if (new Date(cTime).toDateString() !== new Date(qTime).toDateString()) return false;
+          } else if (!clientDate.includes(q)) {
+            return false;
+          }
+        }
       }
 
       return true;
@@ -352,9 +371,7 @@ export const ClientsPage: React.FC = () => {
   }
 
   return (
-    <div
-      className="p-4 sm:p-6 w-full box-border font-sans bg-[#F8FAFC] flex flex-col items-start gap-5"
-    >
+    <div className="p-4 sm:p-6 lg:p-7 flex flex-col gap-6 max-w-[1600px] mx-auto w-full font-sans bg-[#F8FAFC]">
       {/* Toast Notifications */}
       <ToastNotification toasts={toasts} onDismiss={removeToast} />
 
@@ -366,100 +383,39 @@ export const ClientsPage: React.FC = () => {
         />
       )}
 
-      {/* Section - Breadcrumb and Header */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          width: '100%',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
+      {/* Section - Page Header matching Leads / Employee Master layout */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full">
         {/* Left Title with Green Badge */}
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px' }}>
-          {/* Green Icon Badge: 40x40 rounded 12px bg #ECFDF5 border #D1FAE5 */}
-          <div
-            style={{
-              width: '40px',
-              height: '40px',
-              backgroundColor: '#ECFDF5',
-              border: '1px solid #D1FAE5',
-              borderRadius: '12px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-            }}
-          >
-            <Handshake size={20} color="#059669" strokeWidth={2} />
+        <div className="flex items-center gap-3">
+          {/* Green Icon Badge: 40x40 rounded-xl bg #ECFDF5 border #D1FAE5 */}
+          <div className="w-12 h-12 rounded-[12px] bg-[#ECFDF5] border border-[#D1FAE5] flex items-center justify-center text-[#059669] shrink-0 shadow-2xs">
+            <Handshake size={24} className="text-[#059669]" strokeWidth={2} />
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-            <h1
-              style={{
-                fontFamily: "'Inter', sans-serif",
-                fontSize: '24px',
-                fontWeight: 700,
-                lineHeight: '30px',
-                color: '#0F172A',
-                letterSpacing: '-0.6px',
-                margin: 0,
-              }}
-            >
+          <div className="flex flex-col items-start">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#0F172A] leading-7">
               Clients
             </h1>
-            <p
-              style={{
-                fontFamily: "'Inter', sans-serif",
-                fontSize: '12px',
-                fontWeight: 400,
-                lineHeight: '16px',
-                color: '#64748B',
-                margin: 0,
-              }}
-            >
+            <p className="text-xs text-[#64748B] leading-4 mt-0.5">
               Manage client profiles, company information, account ownership, and payment details.
             </p>
           </div>
         </div>
 
-        {/* Right Header Actions */}
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px' }}>
-          {/* Timestamp text */}
-          {/* Refresh Button */}
+        {/* Right Header Actions: Refresh + Add Client Button */}
+        <div className="flex items-center gap-3 sm:gap-4 shrink-0">
           <ReloadButton
             onClick={handleRefresh}
             isRefreshing={isRefreshing}
             title="Refresh database records"
           />
 
-          {/* + Add Client Button */}
           <button
             type="button"
             onClick={() => setIsAddModalOpen(true)}
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              padding: '8px 14px',
-              gap: '6px',
-              height: '32px',
-              backgroundColor: '#4F46E5',
-              boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
-              borderRadius: '8px',
-              border: 'none',
-              cursor: 'pointer',
-              fontFamily: "'Inter', sans-serif",
-              fontSize: '12px',
-              fontWeight: 600,
-              color: '#FFFFFF',
-              whiteSpace: 'nowrap',
-            }}
+            className="flex items-center gap-1.5 h-[34px] px-3.5 py-2 bg-[#4F46E5] hover:bg-[#4338CA] text-white rounded-[8px] text-xs sm:text-sm font-semibold transition-all shadow-sm hover:shadow-md cursor-pointer active:scale-98"
           >
-            <Plus size={16} color="#FFFFFF" strokeWidth={2.5} />
+            <Plus size={16} strokeWidth={2.4} />
             <span>Add Client</span>
           </button>
         </div>
@@ -472,31 +428,34 @@ export const ClientsPage: React.FC = () => {
         onSelectFilter={handleMetricCardClick}
       />
 
-      {/* Section - Search & Filters Bar */}
-      <ClientsFilterBar
-        filterState={filterState}
-        onFilterChange={handleFilterChange}
-        onClearFilters={handleClearFilters}
-      />
+      {/* Main Unified Clients Container: Filters + Header + Table */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col w-full overflow-hidden">
+        {/* Section - Search & Filters Bar */}
+        <ClientsFilterBar
+          filterState={filterState}
+          onFilterChange={handleFilterChange}
+          onClearFilters={handleClearFilters}
+        />
 
-      {/* Section - Table & Pagination */}
-      <ClientsTable
-        clients={paginatedClients}
-        totalCount={filteredClients.length}
-        currentPage={currentPage}
-        pageSize={pageSize}
-        sortBy={sortBy}
-        onPageChange={setCurrentPage}
-        onPageSizeChange={(size) => {
-          setPageSize(size);
-          setCurrentPage(1);
-        }}
-        onSortChange={setSortBy}
-        onViewClient={setSelectedClient}
-        onEditClient={setSelectedClient}
-        onDeleteClient={handleDeleteClient}
-        onExport={handleExport}
-      />
+        {/* Section - Table & Pagination */}
+        <ClientsTable
+          clients={paginatedClients}
+          totalCount={filteredClients.length}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          sortBy={sortBy}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setCurrentPage(1);
+          }}
+          onSortChange={setSortBy}
+          onViewClient={setSelectedClient}
+          onEditClient={setSelectedClient}
+          onDeleteClient={handleDeleteClient}
+          onExport={handleExport}
+        />
+      </div>
 
       {/* Add Client Modal */}
       <AddClientModal

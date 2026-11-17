@@ -41,91 +41,24 @@ export const OpportunitiesTable: React.FC<OpportunitiesTableProps> = ({
   renderStatusBadge,
 }) => {
   return (
-    <div
-      style={{
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        padding: 0,
-        width: '100%',
-        backgroundColor: '#FFFFFF',
-        border: '1px solid #E2E8F0',
-        boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
-        borderRadius: '12px',
-        overflow: 'hidden',
-      }}
-    >
+    <div className="flex flex-col w-full">
       {/* Table Header Bar */}
-      <div
-        style={{
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '16px',
-          width: '100%',
-          height: '63px',
-          borderBottom: '1px solid #F1F5F9',
-        }}
-      >
-        <h2
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            fontWeight: 700,
-            fontSize: '16px',
-            lineHeight: '24px',
-            color: '#0F172A',
-            margin: 0,
-          }}
-        >
+      <div className="px-4 sm:px-5 pt-4 sm:pt-5 pb-3 sm:pb-4 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white w-full">
+        <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight m-0">
           Opportunities ({totalCount})
         </h2>
 
         {/* Right Action: Sort by & Export */}
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px' }}>
-          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
-            <span
-              style={{
-                fontFamily: "'Inter', sans-serif",
-                fontWeight: 400,
-                fontSize: '12px',
-                lineHeight: '16px',
-                color: '#64748B',
-              }}
-            >
+        <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-500 font-medium whitespace-nowrap">
               Sort by
             </span>
-            <div
-              style={{
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-                boxSizing: 'border-box',
-                height: '30px',
-                backgroundColor: '#F8FAFC',
-                border: '1px solid #E2E8F0',
-                borderRadius: '8px',
-                padding: '6px 28px 6px 12px',
-                cursor: 'pointer',
-              }}
-            >
+            <div className="relative">
               <select
                 value={sortBy}
                 onChange={(e) => onSortChange(e.target.value)}
-                style={{
-                  border: 'none',
-                  backgroundColor: 'transparent',
-                  outline: 'none',
-                  fontFamily: "'Inter', sans-serif",
-                  fontWeight: 400,
-                  fontSize: '12px',
-                  lineHeight: '16px',
-                  color: '#334155',
-                  appearance: 'none',
-                  cursor: 'pointer',
-                }}
+                className="appearance-none pl-3 pr-8 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-2xs"
               >
                 <option value="Expected Close Date (Nearest)">Expected Close Date (Nearest)</option>
                 <option value="Probability (High to Low)">Probability (High to Low)</option>
@@ -133,14 +66,8 @@ export const OpportunitiesTable: React.FC<OpportunitiesTableProps> = ({
                 <option value="Recently Updated">Recently Updated</option>
               </select>
               <ChevronDown
-                style={{
-                  position: 'absolute',
-                  right: '8px',
-                  width: '12px',
-                  height: '12px',
-                  color: '#94A3B8',
-                  pointerEvents: 'none',
-                }}
+                size={14}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
               />
             </div>
           </div>
@@ -150,7 +77,7 @@ export const OpportunitiesTable: React.FC<OpportunitiesTableProps> = ({
       </div>
 
       {/* Horizontal Data Table */}
-      <div style={{ width: '100%', overflowX: 'auto' }}>
+      <div className="w-full overflow-x-auto horizontal-table-scroll">
         {isLoading ? (
           <div className="p-6 space-y-4">
             {Array.from({ length: 5 }).map((_, idx) => (
@@ -189,7 +116,7 @@ export const OpportunitiesTable: React.FC<OpportunitiesTableProps> = ({
               <tr
                 style={{
                   height: '41px',
-                  backgroundColor: 'rgba(248, 250, 252, 0.75)',
+                  backgroundColor: '#FFFFFF',
                   borderBottom: '1px solid #E2E8F0',
                 }}
               >

@@ -11,6 +11,26 @@ import { AddOpportunityModal } from '../components/AddOpportunityModal';
 import { OpportunityDetailModal } from '../components/OpportunityDetailModal';
 import { ErrorBanner } from '@/components/ui/ErrorBanner';
 
+const normalizeDateToYMD = (val: string | null | undefined): string | null => {
+  if (!val) return null;
+  const str = String(val).trim();
+  const ymdMatch = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (ymdMatch) {
+    const y = ymdMatch[1];
+    const m = ymdMatch[2].padStart(2, '0');
+    const d = ymdMatch[3].padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+  const parsed = new Date(str);
+  if (!isNaN(parsed.getTime())) {
+    const y = parsed.getFullYear();
+    const m = String(parsed.getMonth() + 1).padStart(2, '0');
+    const d = String(parsed.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+  return null;
+};
+
 const formatCurrency = (val: number | string | undefined | null): string => {
   if (val === undefined || val === null || val === '') return '₹ 0';
   if (typeof val === 'string' && val.includes('₹')) return val;
@@ -227,16 +247,34 @@ export const OpportunitiesPage: React.FC = () => {
       if (selectedService !== 'All' && item.serviceId?.toLowerCase() !== selectedService.toLowerCase()) return false;
 
       if (expectedCloseDateFilter.trim()) {
-        const q = expectedCloseDateFilter.toLowerCase().trim();
-        if (!item.expectedCloseDate || !item.expectedCloseDate.toLowerCase().includes(q)) return false;
+        if (!item.expectedCloseDate || item.expectedCloseDate === '-') return false;
+        const filterYMD = normalizeDateToYMD(expectedCloseDateFilter);
+        const itemYMD = normalizeDateToYMD(item.expectedCloseDate);
+        if (filterYMD && itemYMD) {
+          if (filterYMD !== itemYMD) return false;
+        } else {
+          if (!item.expectedCloseDate.toLowerCase().includes(expectedCloseDateFilter.toLowerCase().trim())) return false;
+        }
       }
       if (lastContactFilter.trim()) {
-        const q = lastContactFilter.toLowerCase().trim();
-        if (!item.lastContact || !item.lastContact.toLowerCase().includes(q)) return false;
+        if (!item.lastContact || item.lastContact === '-') return false;
+        const filterYMD = normalizeDateToYMD(lastContactFilter);
+        const itemYMD = normalizeDateToYMD(item.lastContact);
+        if (filterYMD && itemYMD) {
+          if (filterYMD !== itemYMD) return false;
+        } else {
+          if (!item.lastContact.toLowerCase().includes(lastContactFilter.toLowerCase().trim())) return false;
+        }
       }
       if (nextFollowUpFilter.trim()) {
-        const q = nextFollowUpFilter.toLowerCase().trim();
-        if (!item.nextFollowUp || !item.nextFollowUp.toLowerCase().includes(q)) return false;
+        if (!item.nextFollowUp || item.nextFollowUp === '-') return false;
+        const filterYMD = normalizeDateToYMD(nextFollowUpFilter);
+        const itemYMD = normalizeDateToYMD(item.nextFollowUp);
+        if (filterYMD && itemYMD) {
+          if (filterYMD !== itemYMD) return false;
+        } else {
+          if (!item.nextFollowUp.toLowerCase().includes(nextFollowUpFilter.toLowerCase().trim())) return false;
+        }
       }
       return true;
     });
@@ -585,52 +623,54 @@ export const OpportunitiesPage: React.FC = () => {
       {/* KPI Cards */}
       <OpportunitiesMetricCards summary={summary} isLoading={isLoading} />
 
-      {/* Filters Bar */}
-      <OpportunitiesFilterBar
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        selectedStage={selectedStage}
-        setSelectedStage={setSelectedStage}
-        selectedStatus={selectedStatus}
-        setSelectedStatus={setSelectedStatus}
-        selectedOwner={selectedOwner}
-        setSelectedOwner={setSelectedOwner}
-        selectedClient={selectedClient}
-        setSelectedClient={setSelectedClient}
-        selectedService={selectedService}
-        setSelectedService={setSelectedService}
-        expectedCloseDateFilter={expectedCloseDateFilter}
-        setExpectedCloseDateFilter={setExpectedCloseDateFilter}
-        lastContactFilter={lastContactFilter}
-        setLastContactFilter={setLastContactFilter}
-        nextFollowUpFilter={nextFollowUpFilter}
-        setNextFollowUpFilter={setNextFollowUpFilter}
-        isFiltersOpen={isFiltersOpen}
-        setIsFiltersOpen={setIsFiltersOpen}
-        onClearFilters={handleClearFilters}
-        employees={employees}
-        clients={clients}
-        services={services}
-      />
+      {/* Main Unified Opportunities Container: Filters + Header + Table */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col w-full">
+        <OpportunitiesFilterBar
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          selectedStage={selectedStage}
+          setSelectedStage={setSelectedStage}
+          selectedStatus={selectedStatus}
+          setSelectedStatus={setSelectedStatus}
+          selectedOwner={selectedOwner}
+          setSelectedOwner={setSelectedOwner}
+          selectedClient={selectedClient}
+          setSelectedClient={setSelectedClient}
+          selectedService={selectedService}
+          setSelectedService={setSelectedService}
+          expectedCloseDateFilter={expectedCloseDateFilter}
+          setExpectedCloseDateFilter={setExpectedCloseDateFilter}
+          lastContactFilter={lastContactFilter}
+          setLastContactFilter={setLastContactFilter}
+          nextFollowUpFilter={nextFollowUpFilter}
+          setNextFollowUpFilter={setNextFollowUpFilter}
+          isFiltersOpen={isFiltersOpen}
+          setIsFiltersOpen={setIsFiltersOpen}
+          onClearFilters={handleClearFilters}
+          employees={employees}
+          clients={clients}
+          services={services}
+        />
 
-      {/* Opportunities Data Table */}
-      <OpportunitiesTable
-        opportunities={paginatedOpportunities}
-        totalCount={filteredOpportunities.length}
-        isLoading={isLoading}
-        startIndex={startIndex}
-        pageSize={pageSize}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        sortBy={sortBy}
-        onSortChange={setSortBy}
-        onPageChange={setCurrentPage}
-        onExport={handleExport}
-        onViewDetails={handleViewDetails}
-        formatCurrency={formatCurrency}
-        renderStageBadge={renderStageBadge}
-        renderStatusBadge={renderStatusBadge}
-      />
+        {/* Opportunities Data Table */}
+        <OpportunitiesTable
+          opportunities={paginatedOpportunities}
+          totalCount={filteredOpportunities.length}
+          isLoading={isLoading}
+          startIndex={startIndex}
+          pageSize={pageSize}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+          onPageChange={setCurrentPage}
+          onExport={handleExport}
+          onViewDetails={handleViewDetails}
+          formatCurrency={formatCurrency}
+          renderStageBadge={renderStageBadge}
+          renderStatusBadge={renderStatusBadge}
+        />
+      </div>
 
       {/* Modals */}
       {isAddModalOpen && (

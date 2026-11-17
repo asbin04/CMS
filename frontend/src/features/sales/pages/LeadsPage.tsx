@@ -8,10 +8,31 @@ import { LeadsFilterBar } from '../components/LeadsFilterBar';
 import { LeadsTable } from '../components/LeadsTable';
 import { AddLeadModal } from '../components/AddLeadModal';
 import { LeadDetailModal } from '../components/LeadDetailModal';
+import { DeleteLeadModal } from '../components/DeleteLeadModal';
 import { ToastNotification, ToastItem } from '../../../components/ui/ToastNotification';
 import { ErrorBanner } from '../../../components/ui/ErrorBanner';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { Skeleton } from '../../../components/ui/Skeleton';
+
+const normalizeDateToYMD = (val: string | null | undefined): string | null => {
+  if (!val) return null;
+  const str = String(val).trim();
+  const ymdMatch = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (ymdMatch) {
+    const y = ymdMatch[1];
+    const m = ymdMatch[2].padStart(2, '0');
+    const d = ymdMatch[3].padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+  const parsed = new Date(str);
+  if (!isNaN(parsed.getTime())) {
+    const y = parsed.getFullYear();
+    const m = String(parsed.getMonth() + 1).padStart(2, '0');
+    const d = String(parsed.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+  return null;
+};
 
 export const LeadsPage: React.FC = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -23,7 +44,9 @@ export const LeadsPage: React.FC = () => {
 
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [viewingLead, setViewingLead] = useState<Lead | null>(null);
+  const [editingLead, setEditingLead] = useState<Lead | null>(null);
+  const [deletingLead, setDeletingLead] = useState<Lead | null>(null);
 
   // Quick Metric Filter (total, new, followups, converted)
   const [metricFilter, setMetricFilter] = useState<string | null>(null);
@@ -179,6 +202,37 @@ export const LeadsPage: React.FC = () => {
         if (filterState.stage !== 'All' && lead.stage !== filterState.stage) return false;
         if (filterState.status !== 'All' && lead.status !== filterState.status) return false;
 
+        // Lead Date Range filter
+        if (filterState.leadDateRange && filterState.leadDateRange.trim()) {
+          const range = filterState.leadDateRange.trim();
+          if (range.includes(' - ')) {
+            const [startStr, endStr] = range.split(' - ');
+            const leadTime = new Date(lead.leadDate).getTime();
+            if (!isNaN(leadTime)) {
+              const startTime = startStr ? new Date(startStr).getTime() : NaN;
+              const endTime = endStr ? new Date(endStr).getTime() : NaN;
+              if (!isNaN(startTime) && leadTime < startTime) return false;
+              if (!isNaN(endTime) && leadTime > endTime + 86400000 - 1) return false;
+            }
+          } else {
+            if (!lead.leadDate || !lead.leadDate.toLowerCase().includes(range.toLowerCase())) return false;
+          }
+        }
+
+        // Next Follow-up Date filter (Single date match)
+        if (filterState.nextFollowUpDateRange && filterState.nextFollowUpDateRange.trim()) {
+          if (!lead.nextFollowUp) return false;
+          const filterYMD = normalizeDateToYMD(filterState.nextFollowUpDateRange);
+          const leadYMD = normalizeDateToYMD(lead.nextFollowUp);
+          if (filterYMD && leadYMD) {
+            if (filterYMD !== leadYMD) return false;
+          } else {
+            if (!lead.nextFollowUp.toLowerCase().includes(filterState.nextFollowUpDateRange.toLowerCase())) {
+              return false;
+            }
+          }
+        }
+
         return true;
       })
       .sort((a, b) => {
@@ -223,6 +277,7 @@ export const LeadsPage: React.FC = () => {
     } catch (err: unknown) {
       const errMsg = err instanceof Error ? err.message : 'Could not insert new lead into database.';
       addToast('error', 'Creation Failed', errMsg);
+      throw err;
     }
   };
 
@@ -242,7 +297,18 @@ export const LeadsPage: React.FC = () => {
       setLeads(previousLeads);
       const errMsg = err instanceof Error ? err.message : 'Could not update lead in database.';
       addToast('error', 'Update Failed', errMsg);
+      throw err;
     }
+  };
+
+  const handleSaveEdit = async (leadData: Omit<Lead, 'id' | 'leadDate'>) => {
+    if (!editingLead) return;
+    const updatedLead: Lead = {
+      ...editingLead,
+      ...leadData,
+    };
+    await handleUpdateLead(updatedLead);
+    setEditingLead(null);
   };
 
   const handleDeleteLead = async (id: string) => {
@@ -263,6 +329,7 @@ export const LeadsPage: React.FC = () => {
       setLeads(previousLeads);
       const errMsg = err instanceof Error ? err.message : 'Could not remove lead from database.';
       addToast('error', 'Delete Failed', errMsg);
+      throw err;
     }
   };
 
@@ -335,69 +402,82 @@ export const LeadsPage: React.FC = () => {
         onSelectFilter={setMetricFilter}
       />
 
-      {/* Search & Filter Bar */}
-      <LeadsFilterBar
-        filterState={filterState}
-        onFilterChange={handleFilterChange}
-        onClearFilters={handleClearFilters}
-      />
+      {/* Main Unified Leads Container: Filters + Header + Table */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col w-full">
+        {/* Search & Filter Bar */}
+        <LeadsFilterBar
+          filterState={filterState}
+          onFilterChange={handleFilterChange}
+          onClearFilters={handleClearFilters}
+        />
 
-      {/* Leads Table or Loading or Empty State */}
-      {isLoading ? (
-        <div className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col gap-4 shadow-sm">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-            <Skeleton variant="text" className="w-48 h-5" />
-            <Skeleton variant="text" className="w-32 h-8 rounded-lg" />
-          </div>
-          {[1, 2, 3, 4, 5].map((idx) => (
-            <div key={idx} className="flex items-center gap-4 py-3 border-b border-slate-50 last:border-0">
-              <Skeleton variant="text" className="w-24 h-4" />
-              <Skeleton variant="text" className="w-36 h-4" />
-              <Skeleton variant="text" className="w-28 h-4" />
-              <Skeleton variant="text" className="w-32 h-4" />
-              <Skeleton variant="text" className="w-20 h-5 rounded-full" />
-              <Skeleton variant="text" className="w-24 h-4" />
-              <Skeleton variant="text" className="w-16 h-5 rounded-full" />
+        {/* Leads Table or Loading or Empty State */}
+        {isLoading ? (
+          <div className="p-6 border-t border-slate-100 flex flex-col gap-4">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <Skeleton variant="text" className="w-48 h-5" />
+              <Skeleton variant="text" className="w-32 h-8 rounded-lg" />
             </div>
-          ))}
-        </div>
-      ) : filteredAndSortedLeads.length === 0 ? (
-        <EmptyState
-          title="No Leads Found"
-          description={
-            filterState.searchQuery || filterState.stage !== 'All' || filterState.status !== 'All'
-              ? 'No leads matched your filter criteria. Try adjusting or clearing your filters.'
-              : 'No leads available in the database yet. Click below to add your first lead.'
-          }
-          actionLabel={
-            filterState.searchQuery || filterState.stage !== 'All' || filterState.status !== 'All'
-              ? 'Clear Filters'
-              : 'Add Lead'
-          }
-          onAction={
-            filterState.searchQuery || filterState.stage !== 'All' || filterState.status !== 'All'
-              ? handleClearFilters
-              : () => setIsAddModalOpen(true)
-          }
-        />
-      ) : (
-        <LeadsTable
-          leads={paginatedLeads}
-          totalCount={filteredAndSortedLeads.length}
-          currentPage={currentPage}
-          pageSize={pageSize}
-          sortBy={sortBy}
-          onPageChange={setCurrentPage}
-          onPageSizeChange={(size) => {
-            setPageSize(size);
-            setCurrentPage(1);
-          }}
-          onSortChange={setSortBy}
-          onViewLead={(lead) => setSelectedLead(lead)}
-          onDeleteLead={handleDeleteLead}
-          onExport={handleExport}
-        />
-      )}
+            {[1, 2, 3, 4, 5].map((idx) => (
+              <div key={idx} className="flex items-center gap-4 py-3 border-b border-slate-50 last:border-0">
+                <Skeleton variant="text" className="w-24 h-4" />
+                <Skeleton variant="text" className="w-36 h-4" />
+                <Skeleton variant="text" className="w-28 h-4" />
+                <Skeleton variant="text" className="w-32 h-4" />
+                <Skeleton variant="text" className="w-20 h-5 rounded-full" />
+                <Skeleton variant="text" className="w-24 h-4" />
+                <Skeleton variant="text" className="w-16 h-5 rounded-full" />
+              </div>
+            ))}
+          </div>
+        ) : filteredAndSortedLeads.length === 0 ? (
+          <div className="flex flex-col w-full">
+            <div className="px-4 sm:px-5 pt-4 sm:pt-5 pb-3 sm:pb-4 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white">
+              <h2 className="text-sm font-bold text-slate-900">
+                Leads (0)
+              </h2>
+            </div>
+            <div className="p-6 sm:p-8">
+              <EmptyState
+                title="No Leads Found"
+                description={
+                  filterState.searchQuery || filterState.stage !== 'All' || filterState.status !== 'All'
+                    ? 'No leads matched your filter criteria. Try adjusting or clearing your filters.'
+                    : 'No leads available in the database yet. Click below to add your first lead.'
+                }
+                actionLabel={
+                  filterState.searchQuery || filterState.stage !== 'All' || filterState.status !== 'All'
+                    ? 'Clear Filters'
+                    : 'Add Lead'
+                }
+                onAction={
+                  filterState.searchQuery || filterState.stage !== 'All' || filterState.status !== 'All'
+                    ? handleClearFilters
+                    : () => setIsAddModalOpen(true)
+                }
+              />
+            </div>
+          </div>
+        ) : (
+          <LeadsTable
+            leads={paginatedLeads}
+            totalCount={filteredAndSortedLeads.length}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            sortBy={sortBy}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            }}
+            onSortChange={setSortBy}
+            onViewLead={(lead) => setViewingLead(lead)}
+            onEditLead={(lead) => setEditingLead(lead)}
+            onDeleteLead={(lead) => setDeletingLead(lead)}
+            onExport={handleExport}
+          />
+        )}
+      </div>
 
       {/* Add Lead Modal */}
       <AddLeadModal
@@ -406,13 +486,27 @@ export const LeadsPage: React.FC = () => {
         onSubmit={handleAddLead}
       />
 
-      {/* Lead Detail Modal */}
+      {/* Edit Lead Modal */}
+      <AddLeadModal
+        isOpen={editingLead !== null}
+        onClose={() => setEditingLead(null)}
+        onSubmit={handleSaveEdit}
+        initialData={editingLead}
+      />
+
+      {/* Lead Detail Modal (matching screenshot) */}
       <LeadDetailModal
-        lead={selectedLead}
-        isOpen={selectedLead !== null}
-        onClose={() => setSelectedLead(null)}
-        onUpdateLead={handleUpdateLead}
-        onDeleteLead={handleDeleteLead}
+        lead={viewingLead}
+        isOpen={viewingLead !== null}
+        onClose={() => setViewingLead(null)}
+      />
+
+      {/* Delete Lead Confirmation Modal */}
+      <DeleteLeadModal
+        isOpen={deletingLead !== null}
+        onClose={() => setDeletingLead(null)}
+        lead={deletingLead}
+        onConfirm={handleDeleteLead}
       />
 
       {/* Toast Notification Container */}

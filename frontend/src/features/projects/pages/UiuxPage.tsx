@@ -41,7 +41,16 @@ export const UiuxPage: React.FC = () => {
   const [selectedDesignType, setSelectedDesignType] = useState('All');
   const [selectedApprovalStatus, setSelectedApprovalStatus] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
-  const [isMoreFiltersOpen, setIsMoreFiltersOpen] = useState(false);
+  const [isMoreFiltersOpen, setIsMoreFiltersOpen] = useState(true);
+
+  // Clear all filters handler
+  const handleClearFilters = () => {
+    setSearchQuery('');
+    setSelectedProject('All');
+    setSelectedDesignType('All');
+    setSelectedApprovalStatus('All');
+    setSelectedStatus('All');
+  };
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -190,118 +199,114 @@ export const UiuxPage: React.FC = () => {
         background: '#F8FAFC',
       }}
     >
-      {/* Section - Breadcrumb and Page Header */}
+      {/* Section - Page Header with Actions */}
       <div
         style={{
           display: 'flex',
           flexDirection: 'row',
+          justifyContent: 'space-between',
           alignItems: 'center',
           width: '100%',
-          height: '48px',
           boxSizing: 'border-box',
-          gap: '12px',
         }}
       >
-        {/* Green Badge Icon (48x48px, #ECFDF5, border #D1FAE5, radius 12px) */}
+        {/* Left Side: Icon & Title/Subtitle */}
         <div
-          style={{
-            boxSizing: 'border-box',
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '48px',
-            height: '48px',
-            background: '#ECFDF5',
-            border: '1px solid #D1FAE5',
-            borderRadius: '12px',
-            flexShrink: 0,
-          }}
-        >
-          <Monitor size={24} color="#059669" strokeWidth={1.8} />
-        </div>
-
-        {/* Heading and Description */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            gap: '2px',
-          }}
-        >
-          <h1
-            style={{
-              margin: 0,
-              fontFamily: 'Inter',
-              fontStyle: 'normal',
-              fontWeight: 700,
-              fontSize: '20px',
-              lineHeight: '28px',
-              letterSpacing: '-0.5px',
-              color: '#0F172A',
-            }}
-          >
-            UI/UX
-          </h1>
-          <p
-            style={{
-              margin: 0,
-              fontFamily: 'Inter',
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '12px',
-              lineHeight: '16px',
-              color: '#64748B',
-            }}
-          >
-            Manage design deliverables, versions, client feedback, approvals and change requests.
-          </p>
-        </div>
-      </div>
-
-      {error && (
-        <div
-          role="alert"
           style={{
             display: 'flex',
             flexDirection: 'row',
-            justifyContent: 'space-between',
             alignItems: 'center',
-            width: '100%',
-            padding: '10px 16px',
-            background: '#FEF2F2',
-            border: '1px solid #FECACA',
-            borderRadius: '8px',
-            fontFamily: 'Inter',
-            fontSize: '13px',
-            color: '#991B1B',
-            boxSizing: 'border-box',
+            gap: '12px',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <AlertCircle size={16} color="#DC2626" />
-            <span>{error}</span>
+          {/* Green Badge Icon (48x48px, #ECFDF5, border #D1FAE5, radius 12px) */}
+          <div
+            style={{
+              boxSizing: 'border-box',
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '48px',
+              height: '48px',
+              background: '#ECFDF5',
+              border: '1px solid #D1FAE5',
+              borderRadius: '12px',
+              flexShrink: 0,
+            }}
+          >
+            <Monitor size={24} color="#059669" strokeWidth={1.8} />
           </div>
-          <button
-            type="button"
-            onClick={() => loadData()}
+
+          {/* Heading and Description */}
+          <div
             style={{
               display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              background: '#DC2626',
-              color: '#FFFFFF',
-              border: 'none',
-              borderRadius: '6px',
-              padding: '6px 12px',
-              fontSize: '12px',
-              fontWeight: 500,
-              cursor: 'pointer',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              gap: '2px',
             }}
           >
-            <RefreshCw size={13} color="#FFFFFF" />
-            <span>Retry</span>
+            <h1
+              style={{
+                margin: 0,
+                fontFamily: 'Inter',
+                fontStyle: 'normal',
+                fontWeight: 700,
+                fontSize: '20px',
+                lineHeight: '28px',
+                letterSpacing: '-0.5px',
+                color: '#0F172A',
+              }}
+            >
+              UI/UX
+            </h1>
+            <p
+              style={{
+                margin: 0,
+                fontFamily: 'Inter',
+                fontStyle: 'normal',
+                fontWeight: 400,
+                fontSize: '12px',
+                lineHeight: '16px',
+                color: '#64748B',
+              }}
+            >
+              Manage design deliverables, versions, client feedback, approvals and change requests.
+            </p>
+          </div>
+        </div>
+
+        {/* Right Side: Action Buttons (Refresh, Export, Add Design) */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: '12px',
+          }}
+        >
+          {/* Refresh Button */}
+          <button
+            type="button"
+            onClick={loadData}
+            title="Refresh"
+            aria-label="Refresh"
+            style={{
+              boxSizing: 'border-box',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '32px',
+              height: '32px',
+              background: 'transparent',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+            }}
+            className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
+          >
+            <RefreshCw size={15} color="#64748B" className={isLoading ? 'animate-spin' : ''} />
           </button>
         </div>
       )}
@@ -351,8 +356,7 @@ export const UiuxPage: React.FC = () => {
               alignItems: 'center',
               padding: '8px 16px',
               gap: '6px',
-              width: '120.89px',
-              height: '32px',
+              height: '36px',
               background: '#4F46E5',
               border: 'none',
               borderRadius: '8px',
@@ -362,6 +366,7 @@ export const UiuxPage: React.FC = () => {
               fontSize: '12px',
               lineHeight: '16px',
               color: '#FFFFFF',
+              boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
             }}
             className="hover:bg-indigo-700 transition-colors"
           >
@@ -371,22 +376,51 @@ export const UiuxPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Filter Controls Bar */}
-      <UiuxFilterBar
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        selectedProject={selectedProject}
-        onProjectChange={setSelectedProject}
-        selectedDesignType={selectedDesignType}
-        onDesignTypeChange={setSelectedDesignType}
-        selectedApprovalStatus={selectedApprovalStatus}
-        onApprovalStatusChange={setSelectedApprovalStatus}
-        selectedStatus={selectedStatus}
-        onStatusChange={setSelectedStatus}
-        filterOptions={filterOptions}
-        onToggleMoreFilters={() => setIsMoreFiltersOpen(!isMoreFiltersOpen)}
-        isMoreFiltersOpen={isMoreFiltersOpen}
-      />
+      {error && (
+        <div
+          role="alert"
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+            padding: '10px 16px',
+            background: '#FEF2F2',
+            border: '1px solid #FECACA',
+            borderRadius: '8px',
+            fontFamily: 'Inter',
+            fontSize: '13px',
+            color: '#991B1B',
+            boxSizing: 'border-box',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <AlertCircle size={16} color="#DC2626" />
+            <span>{error}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => loadData()}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              background: '#DC2626',
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: '6px',
+              padding: '6px 12px',
+              fontSize: '12px',
+              fontWeight: 500,
+              cursor: 'pointer',
+            }}
+          >
+            <RefreshCw size={13} color="#FFFFFF" />
+            <span>Retry</span>
+          </button>
+        </div>
+      )}
 
       {/* 17 Columns Data Table & Pagination */}
       <UiuxTable

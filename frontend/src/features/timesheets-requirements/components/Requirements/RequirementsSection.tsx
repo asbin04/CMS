@@ -111,7 +111,7 @@ export const RequirementsSection: React.FC = () => {
       <ToastNotification toasts={toasts} onDismiss={removeToast} position="top-right" />
 
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold text-slate-900 tracking-tight">Requirements</h2>
         <div className="flex items-center gap-2.5 self-end sm:self-auto">
           {/* Export Button */}

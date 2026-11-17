@@ -1,6 +1,7 @@
 import { apiClient } from '../../../services/api/apiClient';
 import { API_ENDPOINTS } from '../../../services/api/apiEndpoints';
 import { triggerNotificationRefresh } from '../../../services/notificationService';
+import { triggerSalesDataRefresh } from './salesEventBus';
 import { Lead, LeadsMetrics, LeadSummaryDto } from '../types/leads';
 
 export interface PageResponse<T> {
@@ -77,6 +78,7 @@ export const leadsService = {
   async addLead(newLeadData: Omit<Lead, 'id'>): Promise<Lead> {
     const res = await apiClient.post<Lead>(API_ENDPOINTS.LEADS.BASE, newLeadData);
     triggerNotificationRefresh();
+    triggerSalesDataRefresh('lead');
     return res.data;
   },
 
@@ -87,6 +89,7 @@ export const leadsService = {
       updatedLead
     );
     triggerNotificationRefresh();
+    triggerSalesDataRefresh('lead');
     return res.data;
   },
 
@@ -94,6 +97,7 @@ export const leadsService = {
   async deleteLead(id: string): Promise<void> {
     await apiClient.delete<void>(API_ENDPOINTS.LEADS.BY_ID(id));
     triggerNotificationRefresh();
+    triggerSalesDataRefresh('lead');
   },
 
   // Export current list to CSV

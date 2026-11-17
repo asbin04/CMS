@@ -1,6 +1,7 @@
 import { apiClient } from './api/apiClient';
 import { API_ENDPOINTS } from './api/apiEndpoints';
 import { triggerNotificationRefresh } from './notificationService';
+import { triggerSalesDataRefresh } from '../features/sales/services/salesEventBus';
 import {
   OpportunityData,
   OpportunitySummaryData,
@@ -48,6 +49,7 @@ export const opportunityService = {
       payload
     );
     triggerNotificationRefresh();
+    triggerSalesDataRefresh('opportunity');
     return res.data;
   },
 
@@ -60,12 +62,14 @@ export const opportunityService = {
       payload
     );
     triggerNotificationRefresh();
+    triggerSalesDataRefresh('opportunity');
     return res.data;
   },
 
   deleteOpportunity: async (id: string | number): Promise<void> => {
     await apiClient.delete<void>(API_ENDPOINTS.OPPORTUNITIES.BY_ID(id));
     triggerNotificationRefresh();
+    triggerSalesDataRefresh('opportunity');
   },
 
   resetData: async (): Promise<string> => {

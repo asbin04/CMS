@@ -130,7 +130,7 @@ class LeadControllerTest {
                 .company("Global Corp")
                 .contactName("Alice Smith")
                 .email("alice@global.com")
-                .phone("+91 91234 56789")
+                .phone("9123456789")
                 .source("Website")
                 .serviceInterest("Cloud & DevOps")
                 .country("India")
@@ -179,6 +179,175 @@ class LeadControllerTest {
                         .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false));
+    }
+
+    @Test
+    @DisplayName("POST /api/v1/leads rejects name with numbers (23fvghbj / Rajesh123)")
+    void testCreateLeadRejectsInvalidNames() throws Exception {
+        CreateLeadRequest req1 = CreateLeadRequest.builder()
+                .company("Test Corp")
+                .contactName("23fvghbj")
+                .email("user@gmail.com")
+                .phone("9876543210")
+                .source("Website")
+                .serviceInterest("Cloud")
+                .country("India")
+                .city("Mumbai")
+                .ownerId("EMP-001")
+                .stage("New")
+                .status("Open")
+                .build();
+
+        mockMvc.perform(post("/api/v1/leads")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req1)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.contactName").value("Enter a valid contact person name."));
+
+        CreateLeadRequest req2 = req1.toBuilder().contactName("Rajesh123").build();
+        mockMvc.perform(post("/api/v1/leads")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req2)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.contactName").value("Enter a valid contact person name."));
+    }
+
+    @Test
+    @DisplayName("POST /api/v1/leads rejects company without letters (123456 / !@#$)")
+    void testCreateLeadRejectsInvalidCompany() throws Exception {
+        CreateLeadRequest req1 = CreateLeadRequest.builder()
+                .company("123456")
+                .contactName("Rajesh Kumar")
+                .email("user@gmail.com")
+                .phone("9876543210")
+                .source("Website")
+                .serviceInterest("Cloud")
+                .country("India")
+                .city("Mumbai")
+                .ownerId("EMP-001")
+                .stage("New")
+                .status("Open")
+                .build();
+
+        mockMvc.perform(post("/api/v1/leads")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req1)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.company").value("Enter a valid company name containing letters."));
+    }
+
+    @Test
+    @DisplayName("POST /api/v1/leads accepts valid names with hyphens and apostrophes (Mary-Jane / O'Connor)")
+    void testCreateLeadAcceptsValidNames() throws Exception {
+        LeadResponse created = LeadResponse.builder().id("L-2025-099").company("Test Corp").build();
+        when(service.createLead(any(CreateLeadRequest.class))).thenReturn(created);
+
+        CreateLeadRequest req1 = CreateLeadRequest.builder()
+                .company("Test Corp")
+                .contactName("Mary-Jane")
+                .email("user@gmail.com")
+                .phone("9876543210")
+                .source("Website")
+                .serviceInterest("Cloud")
+                .country("India")
+                .city("Mumbai")
+                .ownerId("EMP-001")
+                .stage("New")
+                .status("Open")
+                .build();
+
+        mockMvc.perform(post("/api/v1/leads")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req1)))
+                .andExpect(status().isCreated());
+
+        CreateLeadRequest req2 = req1.toBuilder().contactName("O'Connor").build();
+        mockMvc.perform(post("/api/v1/leads")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req2)))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("POST /api/v1/leads rejects invalid emails (user@gmail / user@@gmail.com / shruti gmail.com / typo domains)")
+    void testCreateLeadRejectsInvalidEmails() throws Exception {
+        CreateLeadRequest req = CreateLeadRequest.builder()
+                .company("Test Corp")
+                .contactName("Rajesh Kumar")
+                .email("user@gmail")
+                .phone("9876543210")
+                .source("Website")
+                .serviceInterest("Cloud")
+                .country("India")
+                .city("Mumbai")
+                .ownerId("EMP-001")
+                .stage("New")
+                .status("Open")
+                .build();
+
+        mockMvc.perform(post("/api/v1/leads")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.email").value("Enter a valid email address."));
+
+        mockMvc.perform(post("/api/v1/leads")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req.toBuilder().email("shruti@@gmail.com").build())))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.email").value("Enter a valid email address."));
+
+        mockMvc.perform(post("/api/v1/leads")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req.toBuilder().email("shruti gmail.com").build())))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.email").value("Enter a valid email address."));
+
+        mockMvc.perform(post("/api/v1/leads")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req.toBuilder().email("user..name@gmail.com").build())))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.email").value("Enter a valid email address."));
+
+        // When service throws BusinessValidationException for typo/non-existent domain
+        when(service.createLead(any(CreateLeadRequest.class)))
+                .thenThrow(new com.company.project.common.exception.BusinessValidationException("Did you mean gmail.com?"));
+
+        mockMvc.perform(post("/api/v1/leads")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req.toBuilder().email("shruti@gmil.com").build())))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.email").value("Did you mean gmail.com?"));
+    }
+
+    @Test
+    @DisplayName("POST /api/v1/leads rejects invalid phone numbers (987654321 / 98765432101)")
+    void testCreateLeadRejectsInvalidPhone() throws Exception {
+        CreateLeadRequest req = CreateLeadRequest.builder()
+                .company("Test Corp")
+                .contactName("Rajesh Kumar")
+                .email("user@gmail.com")
+                .phone("987654321")
+                .source("Website")
+                .serviceInterest("Cloud")
+                .country("India")
+                .city("Mumbai")
+                .ownerId("EMP-001")
+                .stage("New")
+                .status("Open")
+                .build();
+
+        mockMvc.perform(post("/api/v1/leads")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.phone").value("Enter a valid 10-digit Indian mobile number."));
+
+        mockMvc.perform(post("/api/v1/leads")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req.toBuilder().phone("98765432101").build())))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.phone").value("Enter a valid 10-digit Indian mobile number."));
     }
 
     @Test

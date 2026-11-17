@@ -162,47 +162,164 @@ export function computeSalesDashboard(raw: PeriodRawDataset): SalesDashboardData
   };
 }
 
+function toIsoDate(d: Date): string {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+const MONTH_MAP: Record<string, number> = {
+  jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+  jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11,
+};
+
+function parseDateComponents(dayStr: string, monStr: string, yearStr: string): Date | null {
+  const mon = MONTH_MAP[monStr.toLowerCase().slice(0, 3)];
+  if (mon === undefined) return null;
+  const day = parseInt(dayStr, 10);
+  const year = parseInt(yearStr, 10);
+  return new Date(year, mon, day);
+}
+
 /**
  * Normalizes query arguments into a structured query parameter map.
  */
-function normalizeQueryParams(
+export function normalizeQueryParams(
   params?: string | SalesDashboardQueryParams
 ): Record<string, string | undefined> {
+  const currentYear = new Date().getFullYear();
+  const defaultFiscal = `Apr ${currentYear} - Mar ${currentYear + 1}`;
+
   if (!params) {
-    return { period: 'Apr 2024 - Mar 2025' };
+    return { period: defaultFiscal };
   }
-  if (typeof params === 'string') {
-    return { period: params.trim() };
+
+  if (typeof params === 'object') {
+    const result: Record<string, string | undefined> = {};
+    if (params.period?.trim()) result.period = params.period.trim();
+    if (params.startDate?.trim()) result.startDate = params.startDate.trim();
+    if (params.endDate?.trim()) result.endDate = params.endDate.trim();
+    return result;
   }
-  const result: Record<string, string | undefined> = {};
-  if (params.period && params.period.trim()) {
-    result.period = params.period.trim();
+
+  const raw = params.trim();
+  if (!raw || raw === '—') {
+    return { period: defaultFiscal };
   }
-  if (params.startDate && params.startDate.trim()) {
-    result.startDate = params.startDate.trim();
+
+  // 1. Presets directly supported by backend
+  if (
+    raw === 'All Period' ||
+    raw === 'All' ||
+    raw === 'Last 30 Days' ||
+    raw === 'This Quarter'
+  ) {
+    return { period: raw === 'All' ? 'All Period' : raw };
   }
-  if (params.endDate && params.endDate.trim()) {
-    result.endDate = params.endDate.trim();
+
+  // 2. Month-range fiscal / calendar e.g. "Apr 2026 - Mar 2027"
+  const fiscalMatch = raw.match(/^([A-Za-z]{3})\s+(\d{4})\s*-\s*([A-Za-z]{3})\s+(\d{4})$/);
+  if (fiscalMatch) {
+    return { period: raw };
   }
-  return result;
+
+  // 3. Day-range e.g. "01 Apr 2026 - 31 Mar 2027" or "10 Nov 2026 - 25 Nov 2026"
+  const dayRangeMatch = raw.match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})\s*-\s*(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})$/);
+  if (dayRangeMatch) {
+    const start = parseDateComponents(dayRangeMatch[1], dayRangeMatch[2], dayRangeMatch[3]);
+    const end = parseDateComponents(dayRangeMatch[4], dayRangeMatch[5], dayRangeMatch[6]);
+    if (start && end && !isNaN(start.getTime()) && !isNaN(end.getTime())) {
+      // Check if it corresponds exactly to a whole fiscal year: 1 Apr to 31 Mar next year
+      if (
+        start.getDate() === 1 &&
+        start.getMonth() === 3 &&
+        end.getMonth() === 2 &&
+        end.getDate() === 31 &&
+        end.getFullYear() === start.getFullYear() + 1
+      ) {
+        return {
+          period: `Apr ${start.getFullYear()} - Mar ${end.getFullYear()}`,
+        };
+      }
+      return {
+        startDate: toIsoDate(start),
+        endDate: toIsoDate(end),
+        period: raw,
+      };
+    }
+  }
+
+  // 4. Single day e.g. "16 Nov 2026"
+  const singleDayMatch = raw.match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})$/);
+  if (singleDayMatch) {
+    const d = parseDateComponents(singleDayMatch[1], singleDayMatch[2], singleDayMatch[3]);
+    if (d && !isNaN(d.getTime())) {
+      const iso = toIsoDate(d);
+      return {
+        startDate: iso,
+        endDate: iso,
+        period: raw,
+      };
+    }
+  }
+
+  return { period: raw };
+}
+
+const dashboardMemoryCache = new Map<string, { data: SalesDashboardData; timestamp: number }>();
+const DASHBOARD_CACHE_TTL_MS = 30_000;
+
+export function clearSalesDashboardMemoryCache(): void {
+  dashboardMemoryCache.clear();
 }
 
 export class SalesDashboardService {
   /**
+   * Returns cached dashboard data if available and fresh.
+   */
+  getCachedDashboard(params?: string | SalesDashboardQueryParams): SalesDashboardData | null {
+    const key = JSON.stringify(normalizeQueryParams(params));
+    const entry = dashboardMemoryCache.get(key);
+    if (entry && Date.now() - entry.timestamp < DASHBOARD_CACHE_TTL_MS) {
+      return entry.data;
+    }
+    return null;
+  }
+
+  /**
    * Fetches complete sales dashboard payload from backend via GET /api/v1/reports/sales-dashboard.
    */
   async getDashboardData(
-    params?: string | SalesDashboardQueryParams
+    params?: string | SalesDashboardQueryParams,
+    options?: { skipCache?: boolean }
   ): Promise<SalesDashboardData> {
     const queryParams = normalizeQueryParams(params);
     const isTestEnv = typeof process !== 'undefined' && process.env?.NODE_ENV === 'test';
+    const cacheKey = JSON.stringify(queryParams);
+
+    if (options?.skipCache) {
+      dashboardMemoryCache.delete(cacheKey);
+    } else {
+      const cached = this.getCachedDashboard(params);
+      if (cached) {
+        return cached;
+      }
+    }
 
     try {
-      const res = await apiClient.get<SalesDashboardData>(
-        API_ENDPOINTS.REPORTS.SALES_DASHBOARD,
-        queryParams
-      );
+      const res = options
+        ? await apiClient.get<SalesDashboardData>(
+            API_ENDPOINTS.REPORTS.SALES_DASHBOARD,
+            queryParams,
+            options
+          )
+        : await apiClient.get<SalesDashboardData>(
+            API_ENDPOINTS.REPORTS.SALES_DASHBOARD,
+            queryParams
+          );
       if (res && res.data) {
+        dashboardMemoryCache.set(cacheKey, { data: res.data, timestamp: Date.now() });
         return res.data;
       }
       throw new Error(res?.message || 'Empty response received from server');
@@ -219,12 +336,21 @@ export class SalesDashboardService {
   /**
    * Fetches top 4 KPI cards via GET /api/v1/reports/sales-dashboard/kpis.
    */
-  async getKpis(params?: string | SalesDashboardQueryParams): Promise<SalesKpiData> {
+  async getKpis(
+    params?: string | SalesDashboardQueryParams,
+    options?: { skipCache?: boolean }
+  ): Promise<SalesKpiData> {
     const queryParams = normalizeQueryParams(params);
-    const res = await apiClient.get<SalesKpiData>(
-      API_ENDPOINTS.REPORTS.SALES_DASHBOARD_KPIS,
-      queryParams
-    );
+    const res = options
+      ? await apiClient.get<SalesKpiData>(
+          API_ENDPOINTS.REPORTS.SALES_DASHBOARD_KPIS,
+          queryParams,
+          options
+        )
+      : await apiClient.get<SalesKpiData>(
+          API_ENDPOINTS.REPORTS.SALES_DASHBOARD_KPIS,
+          queryParams
+        );
     return res.data;
   }
 
@@ -232,13 +358,20 @@ export class SalesDashboardService {
    * Fetches performance metrics via GET /api/v1/reports/sales-dashboard/performance.
    */
   async getPerformance(
-    params?: string | SalesDashboardQueryParams
+    params?: string | SalesDashboardQueryParams,
+    options?: { skipCache?: boolean }
   ): Promise<SalesPerformanceData> {
     const queryParams = normalizeQueryParams(params);
-    const res = await apiClient.get<SalesPerformanceData>(
-      API_ENDPOINTS.REPORTS.SALES_DASHBOARD_PERFORMANCE,
-      queryParams
-    );
+    const res = options
+      ? await apiClient.get<SalesPerformanceData>(
+          API_ENDPOINTS.REPORTS.SALES_DASHBOARD_PERFORMANCE,
+          queryParams,
+          options
+        )
+      : await apiClient.get<SalesPerformanceData>(
+          API_ENDPOINTS.REPORTS.SALES_DASHBOARD_PERFORMANCE,
+          queryParams
+        );
     return res.data;
   }
 
@@ -246,13 +379,19 @@ export class SalesDashboardService {
    * Fetches funnel stages & conversion rates via GET /api/v1/reports/sales-dashboard/funnel.
    */
   async getFunnel(
-    params?: string | SalesDashboardQueryParams
+    params?: string | SalesDashboardQueryParams,
+    options?: { skipCache?: boolean }
   ): Promise<{ stages: FunnelStageData[]; conversion: ConversionOverviewData }> {
     const queryParams = normalizeQueryParams(params);
-    const res = await apiClient.get<{
-      stages: FunnelStageData[];
-      conversion: ConversionOverviewData;
-    }>(API_ENDPOINTS.REPORTS.SALES_DASHBOARD_FUNNEL, queryParams);
+    const res = options
+      ? await apiClient.get<{
+          stages: FunnelStageData[];
+          conversion: ConversionOverviewData;
+        }>(API_ENDPOINTS.REPORTS.SALES_DASHBOARD_FUNNEL, queryParams, options)
+      : await apiClient.get<{
+          stages: FunnelStageData[];
+          conversion: ConversionOverviewData;
+        }>(API_ENDPOINTS.REPORTS.SALES_DASHBOARD_FUNNEL, queryParams);
     return res.data;
   }
 

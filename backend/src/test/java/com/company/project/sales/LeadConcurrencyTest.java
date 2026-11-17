@@ -87,9 +87,9 @@ class LeadConcurrencyTest {
 
                 CreateLeadRequest request = CreateLeadRequest.builder()
                         .company("Concurrent Company " + index)
-                        .contactName("Contact " + index)
+                        .contactName("Contact Person " + (char)('A' + (index % 26)))
                         .email("concurrent" + index + "@test.com")
-                        .phone("+91 98765 432" + (10 + index))
+                        .phone("98765432" + String.format("%02d", index % 100))
                         .source("Website")
                         .serviceInterest("Cloud Services")
                         .country("India")

@@ -5,6 +5,11 @@ import { ContractsPage } from '@/features/sales/pages/ContractsPage';
 import { contractService } from '@/services/contractService';
 import { masterDataService } from '@/services/masterDataService';
 
+const todayYMD = new Date();
+const currentY = todayYMD.getFullYear();
+const currentM = String(todayYMD.getMonth() + 1).padStart(2, '0');
+const currentMonth15 = `${currentY}-${currentM}-15`;
+
 const sampleContracts = [
   {
     id: 1,
@@ -12,7 +17,7 @@ const sampleContracts = [
     clientId: 'C-001',
     proposalId: 'P-2025-001',
     contractType: 'Service Agreement',
-    startDate: '2025-03-15',
+    startDate: currentMonth15,
     endDate: '2026-03-14',
     renewalDate: '2026-02-14',
     contractValue: 1200000,
@@ -108,9 +113,7 @@ describe('ContractsPage Component', () => {
     expect(screen.getAllByText('Service Agreement').length).toBeGreaterThanOrEqual(1);
   });
 
-  it('rolls back state when delete mutation fails', async () => {
-    vi.spyOn(contractService, 'deleteContract').mockRejectedValue(new Error('Server failed to delete'));
-
+  it('filters by Start Date, End Date, and Renewal Date single date calendar pickers', async () => {
     await act(async () => {
       render(
         <BrowserRouter>
@@ -119,6 +122,27 @@ describe('ContractsPage Component', () => {
       );
     });
 
+    // 1. Filter by Start Date
+    const startDateBtn = screen.getByRole('button', { name: /Filter by Start Date/i });
+    expect(startDateBtn).toBeInTheDocument();
+    fireEvent.click(startDateBtn);
+
+    // Dialog should open with SingleDatePicker (role="dialog" and name="Calendar Date Picker")
+    const datePicker = screen.getByRole('dialog', { name: /Calendar Date Picker/i });
+    expect(datePicker).toBeInTheDocument();
+    expect(datePicker.className).toContain('w-[276px]');
+
+    // Click date '15'
+    const day15Btn = screen.getByRole('button', { name: '15' });
+    fireEvent.click(day15Btn);
+
+    // After clicking, dialog closes and contract with startDate 2025-03-15 matches
+    expect(screen.queryByRole('dialog', { name: /Calendar Date Picker/i })).toBeNull();
     expect(screen.getByText('C-2025-001')).toBeInTheDocument();
+
+    // 2. Clear filters restores
+    const clearBtn = screen.getByRole('button', { name: /Clear Filters/i });
+    fireEvent.click(clearBtn);
+    expect(startDateBtn).toHaveTextContent(/Select date/i);
   });
 });

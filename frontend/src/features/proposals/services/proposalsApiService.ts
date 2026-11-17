@@ -1,6 +1,7 @@
 import { apiRequest } from '@/services/api/apiClient';
 import { API_ENDPOINTS } from '@/services/api/apiEndpoints';
 import { triggerNotificationRefresh } from '@/services/notificationService';
+import { triggerSalesDataRefresh } from '@/features/sales/services/salesEventBus';
 import {
   Proposal,
   ProposalStatus,
@@ -58,6 +59,7 @@ export const proposalsApiService = {
       body: JSON.stringify(payload),
     });
     triggerNotificationRefresh();
+    triggerSalesDataRefresh('proposal');
     return res;
   },
 
@@ -70,6 +72,7 @@ export const proposalsApiService = {
       body: JSON.stringify({ status }),
     });
     triggerNotificationRefresh();
+    triggerSalesDataRefresh('proposal');
     return res;
   },
 
@@ -82,6 +85,7 @@ export const proposalsApiService = {
       body: JSON.stringify(payload),
     });
     triggerNotificationRefresh();
+    triggerSalesDataRefresh('proposal');
     return res;
   },
 
@@ -93,6 +97,7 @@ export const proposalsApiService = {
       method: 'DELETE',
     });
     triggerNotificationRefresh();
+    triggerSalesDataRefresh('proposal');
   },
 
   /**

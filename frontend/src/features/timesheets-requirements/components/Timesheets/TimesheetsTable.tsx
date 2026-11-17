@@ -87,7 +87,7 @@ export const TimesheetsTable: React.FC<TimesheetsTableProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-[16px] border border-[#E2E8F0] shadow-xs overflow-hidden">
+    <div className="w-full border-t border-slate-200 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse min-w-[1700px] whitespace-nowrap">
           <thead>

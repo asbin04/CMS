@@ -300,7 +300,7 @@ class ControllerRbacSecurityTest {
                     "company": "Acme Corp",
                     "contactName": "John Doe",
                     "email": "john@acme.com",
-                    "phone": "+919876543210",
+                    "phone": "9876543210",
                     "source": "Website",
                     "serviceInterest": "Consulting",
                     "country": "India",
