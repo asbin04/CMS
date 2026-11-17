@@ -156,6 +156,11 @@ async function executeRequest<T>(
     throw new ApiError(errorMsg, response.status, responseData, fieldErrors);
   }
 
+  // Mutating requests automatically clear GET response cache to ensure fresh data across views
+  if (options.method && options.method.toUpperCase() !== 'GET') {
+    clearApiCache();
+  }
+
   // Normalize ApiResponse envelope
   if (responseData && typeof responseData === 'object' && 'data' in responseData && 'success' in responseData) {
     return responseData as ApiResponse<T>;
@@ -194,7 +199,9 @@ export const apiClient = {
     const fullEndpoint = `${endpoint}${query}`;
     const shouldUseCacheAndDedup = !isTestEnvironment() && !options?.skipCache;
 
-    if (shouldUseCacheAndDedup) {
+    if (!shouldUseCacheAndDedup) {
+      getResponseCache.delete(fullEndpoint);
+    } else {
       const cached = getResponseCache.get(fullEndpoint);
       if (cached) {
         if (cached.expiresAt > Date.now()) {
@@ -236,28 +243,36 @@ export const apiClient = {
     return requestPromise;
   },
 
-  post: <T>(endpoint: string, body?: unknown) =>
-    executeRequest<T>(endpoint, {
+  post: <T>(endpoint: string, body?: unknown) => {
+    clearApiCache();
+    return executeRequest<T>(endpoint, {
       method: 'POST',
       body: body !== undefined ? JSON.stringify(body) : undefined,
-    }),
+    });
+  },
 
-  put: <T>(endpoint: string, body?: unknown) =>
-    executeRequest<T>(endpoint, {
+  put: <T>(endpoint: string, body?: unknown) => {
+    clearApiCache();
+    return executeRequest<T>(endpoint, {
       method: 'PUT',
       body: body !== undefined ? JSON.stringify(body) : undefined,
-    }),
+    });
+  },
 
-  patch: <T>(endpoint: string, body?: unknown) =>
-    executeRequest<T>(endpoint, {
+  patch: <T>(endpoint: string, body?: unknown) => {
+    clearApiCache();
+    return executeRequest<T>(endpoint, {
       method: 'PATCH',
       body: body !== undefined ? JSON.stringify(body) : undefined,
-    }),
+    });
+  },
 
-  delete: <T>(endpoint: string) =>
-    executeRequest<T>(endpoint, {
+  delete: <T>(endpoint: string) => {
+    clearApiCache();
+    return executeRequest<T>(endpoint, {
       method: 'DELETE',
-    }),
+    });
+  },
 };
 
 // Adapter for any legacy or third-party call site expecting direct data return

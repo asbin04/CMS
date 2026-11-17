@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { salesDashboardService } from '../features/sales-dashboard/services/salesDashboardService';
+import { salesDashboardService, normalizeQueryParams } from '../features/sales-dashboard/services/salesDashboardService';
 import { apiClient } from '@/services/api/apiClient';
 import { API_ENDPOINTS } from '@/services/api/apiEndpoints';
 
@@ -176,6 +176,35 @@ describe('SalesDashboardService Frontend-to-Backend Integration', () => {
     expect(linkClickSpy).toHaveBeenCalled();
 
     localStorage.removeItem('auth_token');
+  });
+
+  it('5. normalizeQueryParams correctly converts presets and custom calendar selections', () => {
+    // Presets
+    expect(normalizeQueryParams('All Period')).toEqual({ period: 'All Period' });
+    expect(normalizeQueryParams('Last 30 Days')).toEqual({ period: 'Last 30 Days' });
+    expect(normalizeQueryParams('This Quarter')).toEqual({ period: 'This Quarter' });
+
+    // Standard fiscal
+    expect(normalizeQueryParams('Apr 2026 - Mar 2027')).toEqual({ period: 'Apr 2026 - Mar 2027' });
+
+    // Whole fiscal year selected from calendar grid
+    expect(normalizeQueryParams('01 Apr 2026 - 31 Mar 2027')).toEqual({
+      period: 'Apr 2026 - Mar 2027',
+    });
+
+    // Custom date range from calendar grid
+    expect(normalizeQueryParams('01 Oct 2026 - 31 Oct 2026')).toEqual({
+      startDate: '2026-10-01',
+      endDate: '2026-10-31',
+      period: '01 Oct 2026 - 31 Oct 2026',
+    });
+
+    // Single date from calendar grid
+    expect(normalizeQueryParams('16 Nov 2026')).toEqual({
+      startDate: '2026-11-16',
+      endDate: '2026-11-16',
+      period: '16 Nov 2026',
+    });
   });
 });
 

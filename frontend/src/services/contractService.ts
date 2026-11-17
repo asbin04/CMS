@@ -1,6 +1,7 @@
 import { apiClient } from './api/apiClient';
 import { API_ENDPOINTS } from './api/apiEndpoints';
 import { triggerNotificationRefresh } from './notificationService';
+import { triggerSalesDataRefresh } from '../features/sales/services/salesEventBus';
 import {
   ContractData,
   ContractSummaryData,
@@ -54,6 +55,7 @@ export const contractService = {
       payload
     );
     triggerNotificationRefresh();
+    triggerSalesDataRefresh('contract');
     return res.data;
   },
 
@@ -66,12 +68,14 @@ export const contractService = {
       payload
     );
     triggerNotificationRefresh();
+    triggerSalesDataRefresh('contract');
     return res.data;
   },
 
   deleteContract: async (id: string | number): Promise<void> => {
     await apiClient.delete(API_ENDPOINTS.CONTRACTS.BY_ID(id));
     triggerNotificationRefresh();
+    triggerSalesDataRefresh('contract');
   },
 
   resetSeedData: async (): Promise<void> => {

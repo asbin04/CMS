@@ -20,6 +20,19 @@ interface AddLeadModalProps {
   initialData?: Lead | null;
 }
 
+export const validateCompanyName = (rawCompany: string): string => {
+  const trimmed = rawCompany.trim();
+  if (!trimmed) {
+    return 'Company name is required';
+  }
+  // Must contain letters, allows numbers, spaces, and common business symbols
+  const companyRegex = /^(?=.*[\p{L}])[\p{L}0-9\s.'&/()#,-]+$/u;
+  if (!companyRegex.test(trimmed)) {
+    return 'Enter a valid company name containing letters.';
+  }
+  return '';
+};
+
 export const validateContactPersonName = (rawName: string): string => {
   const trimmed = rawName.trim();
   if (!trimmed) {
@@ -29,7 +42,49 @@ export const validateContactPersonName = (rawName: string): string => {
   // Allowed: Letters (Unicode), spaces, periods, apostrophes, hyphens
   const nameRegex = /^(?=.*[\p{L}])[\p{L}\s.'-]+$/u;
   if (!nameRegex.test(trimmed) || /\d/.test(trimmed)) {
-    return 'Name must contain letters only. Numbers and special characters are not allowed.';
+    return 'Enter a valid contact person name.';
+  }
+  return '';
+};
+
+export const validateCountry = (rawCountry: string): string => {
+  const trimmed = rawCountry.trim();
+  if (!trimmed) {
+    return 'Country is required';
+  }
+  return '';
+};
+
+export const validateCity = (rawCity: string): string => {
+  const trimmed = rawCity.trim();
+  if (!trimmed) {
+    return 'City is required';
+  }
+  return '';
+};
+
+export const validateEstimatedValue = (rawValue: string): string => {
+  const trimmed = rawValue.trim();
+  if (!trimmed) return '';
+  if (!/^\d+(\.\d+)?$/.test(trimmed)) {
+    return 'Enter a valid non-negative number.';
+  }
+  const num = Number(trimmed);
+  if (isNaN(num) || num < 0) {
+    return 'Enter a valid non-negative number.';
+  }
+  return '';
+};
+
+export const validateNextFollowUp = (rawDate: string): string => {
+  const trimmed = rawDate.trim();
+  if (!trimmed) return '';
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+    return 'Enter a valid date.';
+  }
+  const d = new Date(trimmed);
+  if (isNaN(d.getTime())) {
+    return 'Enter a valid date.';
   }
   return '';
 };
@@ -46,6 +101,89 @@ export const validatePhoneNumber = (rawPhone: string): string => {
   }
   return '';
 };
+
+export const EMAIL_DOMAIN_TYPOS: Record<string, string> = {
+  // Gmail typos
+  'gmil.com': 'gmail.com',
+  'gmial.com': 'gmail.com',
+  'gmai.com': 'gmail.com',
+  'gamil.com': 'gmail.com',
+  'gmaill.com': 'gmail.com',
+  'gmal.com': 'gmail.com',
+  'gmaik.com': 'gmail.com',
+  'gemail.com': 'gmail.com',
+  'gil.com': 'gmail.com',
+  'gmail.con': 'gmail.com',
+  'gmail.co': 'gmail.com',
+  'gmail.cm': 'gmail.com',
+  'gmaio.com': 'gmail.com',
+  'gmaol.com': 'gmail.com',
+  'gmeil.com': 'gmail.com',
+  'gmsil.com': 'gmail.com',
+  'gml.com': 'gmail.com',
+  'gml.co': 'gmail.com',
+  'gmaill.con': 'gmail.com',
+  'gmai.con': 'gmail.com',
+  'gmil.con': 'gmail.com',
+
+  // Yahoo typos
+  'yaho.com': 'yahoo.com',
+  'yahooo.com': 'yahoo.com',
+  'yaho.co': 'yahoo.com',
+  'yaho.in': 'yahoo.in',
+  'yahoo.con': 'yahoo.com',
+  'yaho.con': 'yahoo.com',
+  'yahoou.com': 'yahoo.com',
+
+  // Hotmail / Outlook typos
+  'hotmial.com': 'hotmail.com',
+  'hotmai.com': 'hotmail.com',
+  'hotamail.com': 'hotmail.com',
+  'hotmail.con': 'hotmail.com',
+  'outlok.com': 'outlook.com',
+  'outloo.com': 'outlook.com',
+  'ootlook.com': 'outlook.com',
+  'outlook.con': 'outlook.com',
+
+  // iCloud typos
+  'iclud.com': 'icloud.com',
+  'iclou.com': 'icloud.com',
+  'icloud.con': 'icloud.com',
+};
+
+export const calculateLevenshteinDistance = (a: string, b: string): number => {
+  const dp: number[][] = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+  for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+    }
+  }
+  return dp[a.length][b.length];
+};
+
+export const getEmailDomainSuggestion = (domain: string): string | null => {
+  if (!domain) return null;
+  const clean = domain.trim().toLowerCase();
+  if (EMAIL_DOMAIN_TYPOS[clean]) {
+    return EMAIL_DOMAIN_TYPOS[clean];
+  }
+  const majorDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'icloud.com'];
+  for (const major of majorDomains) {
+    if (clean === major) return null;
+    if (clean === major.replace('.com', '.con')) {
+      return major;
+    }
+    if (calculateLevenshteinDistance(clean, major) === 1) {
+      return major;
+    }
+  }
+  return null;
+};
+
+export const COMMON_TYPO_DOMAINS = new Set(Object.keys(EMAIL_DOMAIN_TYPOS));
 
 export const validateEmailAddress = (rawEmail: string): string => {
   const trimmed = rawEmail.trim();
@@ -104,6 +242,12 @@ export const validateEmailAddress = (rawEmail: string): string => {
     return 'Enter a valid email address.';
   }
 
+  // Suggest correction if domain is a known or close typo of popular providers
+  const suggestion = getEmailDomainSuggestion(domain);
+  if (suggestion) {
+    return `Did you mean ${suggestion}?`;
+  }
+
   return '';
 };
 
@@ -127,10 +271,12 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({
   const [estimatedValue, setEstimatedValue] = useState('');
   const [nextFollowUp, setNextFollowUp] = useState('');
   const [notes, setNotes] = useState('');
+  const [confirmedTypoEmail, setConfirmedTypoEmail] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (isOpen) {
+      setConfirmedTypoEmail(null);
       if (initialData) {
         setCompany(initialData.company || '');
         setContactName(initialData.contactName || '');
@@ -178,16 +324,35 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({
     e.preventDefault();
     const newErrors: Record<string, string> = {};
 
-    if (!company.trim()) newErrors.company = 'Company name is required';
+    const companyErr = validateCompanyName(company);
+    if (companyErr) newErrors.company = companyErr;
 
     const contactNameErr = validateContactPersonName(contactName);
     if (contactNameErr) newErrors.contactName = contactNameErr;
 
     const emailErr = validateEmailAddress(email);
-    if (emailErr) newErrors.email = emailErr;
+    if (emailErr) {
+      if (emailErr.startsWith('Did you mean ') && confirmedTypoEmail === email.trim().toLowerCase()) {
+        // User explicitly confirmed typo domain
+      } else {
+        newErrors.email = emailErr;
+      }
+    }
 
     const phoneErr = validatePhoneNumber(phone);
     if (phoneErr) newErrors.phone = phoneErr;
+
+    const countryErr = validateCountry(country);
+    if (countryErr) newErrors.country = countryErr;
+
+    const cityErr = validateCity(city);
+    if (cityErr) newErrors.city = cityErr;
+
+    const estValErr = validateEstimatedValue(estimatedValue);
+    if (estValErr) newErrors.estimatedValue = estValErr;
+
+    const nextFollowUpErr = validateNextFollowUp(nextFollowUp);
+    if (nextFollowUpErr) newErrors.nextFollowUp = nextFollowUpErr;
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -195,6 +360,7 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({
     }
 
     try {
+      const numVal = estimatedValue.trim() ? Number(estimatedValue.trim()) : null;
       await onSubmit({
         company: company.trim(),
         contactName: contactName.trim(),
@@ -202,14 +368,16 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({
         phone: phone.trim(),
         source,
         serviceInterest,
-        country,
+        country: country.trim(),
         city: city.trim(),
         ownerId,
         stage,
         status,
-        estimatedValue,
-        nextFollowUp,
-        notes,
+        estimatedValue: numVal,
+        expectedValue: numVal,
+        nextFollowUp: nextFollowUp.trim() || null,
+        notes: notes.trim() || null,
+        confirmTypoDomain: confirmedTypoEmail === email.trim().toLowerCase(),
       });
 
       // Reset fields
@@ -217,11 +385,19 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({
       setContactName('');
       setEmail('');
       setPhone('');
+      setCity('');
+      setEstimatedValue('');
+      setNextFollowUp('');
       setNotes('');
       setErrors({});
       onClose();
-    } catch {
-      // Keep modal open and preserve values on submission error
+    } catch (err: unknown) {
+      if (err && typeof err === 'object' && 'fieldErrors' in err) {
+        const backendFieldErrors = (err as { fieldErrors?: Record<string, string> }).fieldErrors;
+        if (backendFieldErrors && typeof backendFieldErrors === 'object') {
+          setErrors((prev) => ({ ...prev, ...backendFieldErrors }));
+        }
+      }
     }
   };
 
@@ -269,8 +445,16 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({
                   placeholder="Enter company name"
                   value={company}
                   onChange={(e) => {
-                    setCompany(e.target.value);
-                    if (errors.company) setErrors((prev) => ({ ...prev, company: '' }));
+                    const val = e.target.value;
+                    setCompany(val);
+                    if (errors.company) {
+                      const err = validateCompanyName(val);
+                      setErrors((prev) => ({ ...prev, company: err }));
+                    }
+                  }}
+                  onBlur={() => {
+                    const err = validateCompanyName(company);
+                    setErrors((prev) => ({ ...prev, company: err }));
                   }}
                   className={`w-full pl-9 pr-3 h-[34px] bg-white border rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
                     errors.company ? 'border-rose-400 ring-1 ring-rose-200' : 'border-slate-200'
@@ -295,11 +479,7 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({
                     setContactName(val);
                     if (errors.contactName) {
                       const err = validateContactPersonName(val);
-                      if (!err) {
-                        setErrors((prev) => ({ ...prev, contactName: '' }));
-                      } else {
-                        setErrors((prev) => ({ ...prev, contactName: err }));
-                      }
+                      setErrors((prev) => ({ ...prev, contactName: err }));
                     } else if (val.trim()) {
                       const err = validateContactPersonName(val);
                       if (err) {
@@ -308,14 +488,8 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({
                     }
                   }}
                   onBlur={() => {
-                    if (contactName.trim()) {
-                      const err = validateContactPersonName(contactName);
-                      if (err) {
-                        setErrors((prev) => ({ ...prev, contactName: err }));
-                      } else {
-                        setErrors((prev) => ({ ...prev, contactName: '' }));
-                      }
-                    }
+                    const err = validateContactPersonName(contactName);
+                    setErrors((prev) => ({ ...prev, contactName: err }));
                   }}
                   className={`w-full pl-9 pr-3 h-[34px] bg-white border rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
                     errors.contactName ? 'border-rose-400 ring-1 ring-rose-200' : 'border-slate-200'
@@ -341,10 +515,17 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({
                   onChange={(e) => {
                     const val = e.target.value;
                     setEmail(val);
+                    if (confirmedTypoEmail && val.trim().toLowerCase() !== confirmedTypoEmail) {
+                      setConfirmedTypoEmail(null);
+                    }
                     if (errors.email) {
                       const err = validateEmailAddress(val);
                       if (!err) {
                         setErrors((prev) => ({ ...prev, email: '' }));
+                      } else if (err.startsWith('Did you mean ') && confirmedTypoEmail === val.trim().toLowerCase()) {
+                        setErrors((prev) => ({ ...prev, email: '' }));
+                      } else {
+                        setErrors((prev) => ({ ...prev, email: err }));
                       }
                     }
                   }}
@@ -352,18 +533,63 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({
                     if (email.trim()) {
                       const err = validateEmailAddress(email);
                       if (err) {
-                        setErrors((prev) => ({ ...prev, email: err }));
+                        if (err.startsWith('Did you mean ') && confirmedTypoEmail === email.trim().toLowerCase()) {
+                          setErrors((prev) => ({ ...prev, email: '' }));
+                        } else {
+                          setErrors((prev) => ({ ...prev, email: err }));
+                        }
                       } else {
                         setErrors((prev) => ({ ...prev, email: '' }));
                       }
                     }
                   }}
                   className={`w-full pl-9 pr-3 h-[34px] bg-white border rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                    errors.email ? 'border-rose-400 ring-1 ring-rose-200' : 'border-slate-200'
+                    errors.email
+                      ? errors.email.startsWith('Did you mean ')
+                        ? 'border-amber-400 ring-1 ring-amber-200'
+                        : 'border-rose-400 ring-1 ring-rose-200'
+                      : 'border-slate-200'
                   }`}
                 />
               </div>
-              {errors.email && <p className="text-[10px] text-rose-500 mt-0.5">{errors.email}</p>}
+              {errors.email && (
+                <div className="mt-1">
+                  {errors.email.startsWith('Did you mean ') ? (
+                    <div className="flex flex-wrap items-center gap-1.5 bg-amber-50 border border-amber-200 rounded-md px-2 py-1 text-[11px] leading-tight">
+                      <span className="text-amber-800 font-medium">{errors.email}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const parts = email.split('@');
+                          const suggestion = getEmailDomainSuggestion(parts[1] || '');
+                          if (parts.length === 2 && suggestion) {
+                            const corrected = `${parts[0]}@${suggestion}`;
+                            setEmail(corrected);
+                            setConfirmedTypoEmail(null);
+                            setErrors((prev) => ({ ...prev, email: '' }));
+                          }
+                        }}
+                        className="text-indigo-600 hover:text-indigo-800 font-semibold underline cursor-pointer"
+                      >
+                        Yes, use {email.split('@')[0]}@{getEmailDomainSuggestion(email.split('@')[1] || '') || 'gmail.com'}
+                      </button>
+                      <span className="text-slate-300">|</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setConfirmedTypoEmail(email.trim().toLowerCase());
+                          setErrors((prev) => ({ ...prev, email: '' }));
+                        }}
+                        className="text-slate-500 hover:text-slate-700 underline cursor-pointer text-[10px]"
+                      >
+                        Keep as entered
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="text-[10px] text-rose-500">{errors.email}</p>
+                  )}
+                </div>
+              )}
             </div>
 
             <div>
@@ -507,26 +733,60 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({
           {/* Row 4: Country & City */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label className="block text-[11px] font-semibold text-slate-700 mb-1">Country</label>
+              <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                Country <span className="text-rose-500">*</span>
+              </label>
               <div className="relative">
                 <MapPin size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 <input
                   type="text"
+                  placeholder="Enter country"
                   value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  className="w-full pl-9 pr-3 h-[34px] bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setCountry(val);
+                    if (errors.country) {
+                      const err = validateCountry(val);
+                      setErrors((prev) => ({ ...prev, country: err }));
+                    }
+                  }}
+                  onBlur={() => {
+                    const err = validateCountry(country);
+                    setErrors((prev) => ({ ...prev, country: err }));
+                  }}
+                  className={`w-full pl-9 pr-3 h-[34px] bg-white border rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                    errors.country ? 'border-rose-400 ring-1 ring-rose-200' : 'border-slate-200'
+                  }`}
                 />
               </div>
+              {errors.country && <p className="text-[10px] text-rose-500 mt-0.5">{errors.country}</p>}
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-slate-700 mb-1">City</label>
+              <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                City <span className="text-rose-500">*</span>
+              </label>
               <input
                 type="text"
+                placeholder="Enter city"
                 value={city}
-                onChange={(e) => setCity(e.target.value)}
-                className="w-full px-3 h-[34px] bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setCity(val);
+                  if (errors.city) {
+                    const err = validateCity(val);
+                    setErrors((prev) => ({ ...prev, city: err }));
+                  }
+                }}
+                onBlur={() => {
+                  const err = validateCity(city);
+                  setErrors((prev) => ({ ...prev, city: err }));
+                }}
+                className={`w-full px-3 h-[34px] bg-white border rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                  errors.city ? 'border-rose-400 ring-1 ring-rose-200' : 'border-slate-200'
+                }`}
               />
+              {errors.city && <p className="text-[10px] text-rose-500 mt-0.5">{errors.city}</p>}
             </div>
           </div>
 
@@ -599,10 +859,44 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({
                   type="text"
                   placeholder="Enter estimated value"
                   value={estimatedValue}
-                  onChange={(e) => setEstimatedValue(e.target.value)}
-                  className="w-full pl-9 pr-3 h-[34px] bg-white border border-slate-200 rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  onKeyDown={(e) => {
+                    if (
+                      e.key === 'Backspace' ||
+                      e.key === 'Delete' ||
+                      e.key === 'Tab' ||
+                      e.key === 'ArrowLeft' ||
+                      e.key === 'ArrowRight' ||
+                      e.key === 'Home' ||
+                      e.key === 'End' ||
+                      e.key === 'Enter' ||
+                      e.key === 'Escape' ||
+                      e.ctrlKey ||
+                      e.metaKey
+                    ) {
+                      return;
+                    }
+                    if (!/[\d.]/.test(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setEstimatedValue(val);
+                    if (errors.estimatedValue) {
+                      const err = validateEstimatedValue(val);
+                      setErrors((prev) => ({ ...prev, estimatedValue: err }));
+                    }
+                  }}
+                  onBlur={() => {
+                    const err = validateEstimatedValue(estimatedValue);
+                    setErrors((prev) => ({ ...prev, estimatedValue: err }));
+                  }}
+                  className={`w-full pl-9 pr-3 h-[34px] bg-white border rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                    errors.estimatedValue ? 'border-rose-400 ring-1 ring-rose-200' : 'border-slate-200'
+                  }`}
                 />
               </div>
+              {errors.estimatedValue && <p className="text-[10px] text-rose-500 mt-0.5">{errors.estimatedValue}</p>}
             </div>
 
             <div>
@@ -613,10 +907,24 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({
                   type="date"
                   placeholder="dd-mm-yyyy"
                   value={nextFollowUp}
-                  onChange={(e) => setNextFollowUp(e.target.value)}
-                  className="w-full pl-9 pr-3 h-[34px] bg-white border border-slate-200 rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setNextFollowUp(val);
+                    if (errors.nextFollowUp) {
+                      const err = validateNextFollowUp(val);
+                      setErrors((prev) => ({ ...prev, nextFollowUp: err }));
+                    }
+                  }}
+                  onBlur={() => {
+                    const err = validateNextFollowUp(nextFollowUp);
+                    setErrors((prev) => ({ ...prev, nextFollowUp: err }));
+                  }}
+                  className={`w-full pl-9 pr-3 h-[34px] bg-white border rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer ${
+                    errors.nextFollowUp ? 'border-rose-400 ring-1 ring-rose-200' : 'border-slate-200'
+                  }`}
                 />
               </div>
+              {errors.nextFollowUp && <p className="text-[10px] text-rose-500 mt-0.5">{errors.nextFollowUp}</p>}
             </div>
           </div>
 

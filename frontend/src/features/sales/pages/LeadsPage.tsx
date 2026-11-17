@@ -433,7 +433,7 @@ export const LeadsPage: React.FC = () => {
         ) : filteredAndSortedLeads.length === 0 ? (
           <div className="flex flex-col w-full">
             <div className="px-4 sm:px-5 pt-4 sm:pt-5 pb-3 sm:pb-4 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white">
-              <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+              <h2 className="text-sm font-bold text-slate-900">
                 Leads (0)
               </h2>
             </div>

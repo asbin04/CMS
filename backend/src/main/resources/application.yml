@@ -87,14 +87,14 @@ app:
     allowed-origins: ${CORS_ALLOWED_ORIGINS}
   auth:
     admin:
-      allowed-emails: ${ADMIN_EMAILS:}
+      allowed-emails: ${ADMIN_EMAILS:asbin.t.s@kalpanaaa.in,founder@kalpanaaasoftwaresolutions.in,akshit.ujjain@kalpanaaasoftwaresolutions.in}
       username: ${ADMIN_USERNAME:}
       email: ${ADMIN_EMAIL:}
       password: ${ADMIN_PASSWORD:}
       password-hash: ${ADMIN_PASSWORD_HASH:}
       display-name: ${ADMIN_DISPLAY_NAME:}
     otp:
-      hmac-secret: ${OTP_HMAC_SECRET:}
+      hmac-secret: ${OTP_HMAC_SECRET:c83e742df87b92a543ec64a51e6b840e6878b66826bc361a9b1c7d247853b0e1}
       expiration-minutes: ${OTP_EXPIRATION_MINUTES:5}
       cooldown-seconds: ${OTP_COOLDOWN_SECONDS:60}
       hourly-limit: ${OTP_HOURLY_LIMIT:5}

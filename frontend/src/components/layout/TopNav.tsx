@@ -209,6 +209,7 @@ export const TopNav: React.FC<TopNavProps> = ({
     list.push(`Jan ${currentYear} - Dec ${currentYear}`);
     list.push('Last 30 Days');
     list.push('This Quarter');
+    list.push('All Period');
     return Array.from(new Set(list));
   }, [selectedDateRange]);
 
@@ -390,7 +391,7 @@ export const TopNav: React.FC<TopNavProps> = ({
               style={{
                 boxSizing: 'border-box',
                 padding: '0px',
-                width: '121.31px',
+                maxWidth: '175px',
                 height: '16px',
                 flex: 'none',
                 order: 1,
@@ -400,7 +401,7 @@ export const TopNav: React.FC<TopNavProps> = ({
             >
               <span
                 style={{
-                  width: '121.31px',
+                  maxWidth: '175px',
                   height: '16px',
                   fontFamily: "'Inter', sans-serif",
                   fontStyle: 'normal',
@@ -416,7 +417,9 @@ export const TopNav: React.FC<TopNavProps> = ({
                   textAlign: 'left',
                 }}
               >
-                {selectedDateRange}
+                {selectedDateRange && selectedDateRange !== '—'
+                  ? selectedDateRange
+                  : `Apr ${new Date().getFullYear()} - Mar ${new Date().getFullYear() + 1}`}
               </span>
             </div>
 
@@ -456,7 +459,7 @@ export const TopNav: React.FC<TopNavProps> = ({
             }}
             isOpen={isDateOpen}
             onClose={() => setIsDateOpen(false)}
-            showPresets={false}
+            showPresets={true}
           />
         </div>
 

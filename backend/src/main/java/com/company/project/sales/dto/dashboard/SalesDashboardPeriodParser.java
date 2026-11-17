@@ -18,7 +18,16 @@ public final class SalesDashboardPeriodParser {
             "^([A-Za-z]{3})\\s+(\\d{4})\\s*-\\s*([A-Za-z]{3})\\s+(\\d{4})$"
     );
 
+    private static final Pattern DAY_MONTH_YEAR_RANGE_PATTERN = Pattern.compile(
+            "^(\\d{1,2})\\s+([A-Za-z]{3})\\s+(\\d{4})\\s*-\\s*(\\d{1,2})\\s+([A-Za-z]{3})\\s+(\\d{4})$"
+    );
+
+    private static final Pattern SINGLE_DAY_PATTERN = Pattern.compile(
+            "^(\\d{1,2})\\s+([A-Za-z]{3})\\s+(\\d{4})$"
+    );
+
     private static final DateTimeFormatter MONTH_YEAR_FORMATTER = DateTimeFormatter.ofPattern("MMM yyyy", Locale.ENGLISH);
+    private static final DateTimeFormatter DAY_MONTH_YEAR_FORMATTER = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.ENGLISH);
 
     private SalesDashboardPeriodParser() {}
 
@@ -103,6 +112,35 @@ public final class SalesDashboardPeriodParser {
                 return new DateRange(start, end, rawPeriod);
             } catch (DateTimeParseException e) {
                 throw new BusinessValidationException("Invalid period month-year format: " + rawPeriod);
+            }
+        }
+
+        Matcher dayRangeMatcher = DAY_MONTH_YEAR_RANGE_PATTERN.matcher(rawPeriod);
+        if (dayRangeMatcher.matches()) {
+            try {
+                String startPart = dayRangeMatcher.group(1) + " " + dayRangeMatcher.group(2) + " " + dayRangeMatcher.group(3);
+                String endPart = dayRangeMatcher.group(4) + " " + dayRangeMatcher.group(5) + " " + dayRangeMatcher.group(6);
+
+                LocalDate start = LocalDate.parse(startPart, DAY_MONTH_YEAR_FORMATTER);
+                LocalDate end = LocalDate.parse(endPart, DAY_MONTH_YEAR_FORMATTER);
+
+                if (start.isAfter(end)) {
+                    throw new BusinessValidationException("Period start cannot be after period end");
+                }
+
+                return new DateRange(start, end, rawPeriod);
+            } catch (DateTimeParseException e) {
+                throw new BusinessValidationException("Invalid period day-month-year range format: " + rawPeriod);
+            }
+        }
+
+        Matcher singleDayMatcher = SINGLE_DAY_PATTERN.matcher(rawPeriod);
+        if (singleDayMatcher.matches()) {
+            try {
+                LocalDate day = LocalDate.parse(rawPeriod, DAY_MONTH_YEAR_FORMATTER);
+                return new DateRange(day, day, rawPeriod);
+            } catch (DateTimeParseException e) {
+                throw new BusinessValidationException("Invalid single date format: " + rawPeriod);
             }
         }
 

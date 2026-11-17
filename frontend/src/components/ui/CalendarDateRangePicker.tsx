@@ -56,6 +56,58 @@ export const CalendarDateRangePicker: React.FC<CalendarDateRangePickerProps> = (
   // Month navigation (defaults to today / current month)
   const [viewDate, setViewDate] = useState<Date>(new Date());
 
+  // Synchronize internal selection and viewDate with incoming value prop on open/change
+  useEffect(() => {
+    if (!isOpen) return;
+
+    if (!value || value === '—' || value === 'All Period' || value === 'All') {
+      setStartDate(null);
+      setEndDate(null);
+      return;
+    }
+
+    // Try parsing 'dd MMM yyyy - dd MMM yyyy'
+    const dayRangeMatch = value.match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})\s*-\s*(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})$/);
+    if (dayRangeMatch) {
+      const s = new Date(`${dayRangeMatch[1]} ${dayRangeMatch[2]} ${dayRangeMatch[3]}`);
+      const e = new Date(`${dayRangeMatch[4]} ${dayRangeMatch[5]} ${dayRangeMatch[6]}`);
+      if (!isNaN(s.getTime()) && !isNaN(e.getTime())) {
+        setStartDate(s);
+        setEndDate(e);
+        setViewDate(new Date(s.getFullYear(), s.getMonth(), 1));
+        return;
+      }
+    }
+
+    // Try parsing 'MMM yyyy - MMM yyyy'
+    const monthRangeMatch = value.match(/^([A-Za-z]{3})\s+(\d{4})\s*-\s*([A-Za-z]{3})\s+(\d{4})$/);
+    if (monthRangeMatch) {
+      const s = new Date(`1 ${monthRangeMatch[1]} ${monthRangeMatch[2]}`);
+      const eY = parseInt(monthRangeMatch[4], 10);
+      const eMonthName = monthRangeMatch[3];
+      const eTestDate = new Date(`1 ${eMonthName} ${eY}`);
+      const e = new Date(eY, eTestDate.getMonth() + 1, 0);
+      if (!isNaN(s.getTime()) && !isNaN(e.getTime())) {
+        setStartDate(s);
+        setEndDate(e);
+        setViewDate(new Date(s.getFullYear(), s.getMonth(), 1));
+        return;
+      }
+    }
+
+    // Try parsing single date 'dd MMM yyyy'
+    const singleMatch = value.match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})$/);
+    if (singleMatch) {
+      const d = new Date(`${singleMatch[1]} ${singleMatch[2]} ${singleMatch[3]}`);
+      if (!isNaN(d.getTime())) {
+        setStartDate(d);
+        setEndDate(d);
+        setViewDate(new Date(d.getFullYear(), d.getMonth(), 1));
+        return;
+      }
+    }
+  }, [isOpen, value]);
+
   // Close on outside click or window scroll
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -101,10 +153,10 @@ export const CalendarDateRangePicker: React.FC<CalendarDateRangePickerProps> = (
 
   // Presets list
   const currentYear = new Date().getFullYear();
-  const presets = [
-    { label: `Apr ${currentYear - 2} - Mar ${currentYear - 1}`, start: new Date(currentYear - 2, 3, 1), end: new Date(currentYear - 1, 2, 31) },
-    { label: `Apr ${currentYear - 1} - Mar ${currentYear}`, start: new Date(currentYear - 1, 3, 1), end: new Date(currentYear, 2, 31) },
+  const presets: { label: string; start: Date | null; end: Date | null }[] = [
+    { label: 'All Period', start: null, end: null },
     { label: `Apr ${currentYear} - Mar ${currentYear + 1}`, start: new Date(currentYear, 3, 1), end: new Date(currentYear + 1, 2, 31) },
+    { label: `Apr ${currentYear - 1} - Mar ${currentYear}`, start: new Date(currentYear - 1, 3, 1), end: new Date(currentYear, 2, 31) },
     { label: `Jan ${currentYear} - Dec ${currentYear}`, start: new Date(currentYear, 0, 1), end: new Date(currentYear, 11, 31) },
     {
       label: 'Last 30 Days',
@@ -181,9 +233,19 @@ export const CalendarDateRangePicker: React.FC<CalendarDateRangePickerProps> = (
 
   const handleApply = () => {
     if (startDate && endDate) {
-      const startStr = formatDateShort(startDate);
-      const endStr = formatDateShort(endDate);
-      onChange(`${startStr} - ${endStr}`);
+      if (
+        startDate.getDate() === 1 &&
+        startDate.getMonth() === 3 &&
+        endDate.getDate() === 31 &&
+        endDate.getMonth() === 2 &&
+        endDate.getFullYear() === startDate.getFullYear() + 1
+      ) {
+        onChange(`Apr ${startDate.getFullYear()} - Mar ${endDate.getFullYear()}`);
+      } else {
+        const startStr = formatDateShort(startDate);
+        const endStr = formatDateShort(endDate);
+        onChange(`${startStr} - ${endStr}`);
+      }
     } else if (startDate && !endDate) {
       const startStr = formatDateShort(startDate);
       onChange(startStr);
@@ -194,7 +256,9 @@ export const CalendarDateRangePicker: React.FC<CalendarDateRangePickerProps> = (
   const handlePresetSelect = (preset: typeof presets[0]) => {
     setStartDate(preset.start);
     setEndDate(preset.end);
-    setViewDate(new Date(preset.start.getFullYear(), preset.start.getMonth(), 1));
+    if (preset.start) {
+      setViewDate(new Date(preset.start.getFullYear(), preset.start.getMonth(), 1));
+    }
     onChange(preset.label);
     onClose();
   };

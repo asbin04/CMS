@@ -9,6 +9,33 @@ import { Lead, LeadSortOption, ServiceInterest, LeadStage, LeadStatus } from '..
 import { formatRupee } from '../../collections/utils';
 import { TableActionMenu } from '@/components/ui/TableActionMenu';
 
+export const formatDisplayDate = (val?: string | null): string => {
+  if (!val || val === '-' || val === '—' || val === 'null' || !val.trim()) return '—';
+  const trimmed = val.trim();
+  if (/^\d{1,2}\s+[A-Za-z]{3}\s+\d{4}$/.test(trimmed)) return trimmed;
+  const [datePart] = trimmed.split('T');
+  const parts = datePart.split('-');
+  if (parts.length === 3 && parts[0].length === 4) {
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    const day = parseInt(parts[2], 10);
+    const date = new Date(year, month, day);
+    if (!isNaN(date.getTime())) {
+      const dayStr = String(day).padStart(2, '0');
+      const monthStr = date.toLocaleString('en-US', { month: 'short' });
+      return `${dayStr} ${monthStr} ${year}`;
+    }
+  }
+  const date = new Date(trimmed);
+  if (!isNaN(date.getTime())) {
+    const dayStr = String(date.getDate()).padStart(2, '0');
+    const monthStr = date.toLocaleString('en-US', { month: 'short' });
+    const year = date.getFullYear();
+    return `${dayStr} ${monthStr} ${year}`;
+  }
+  return trimmed;
+};
+
 interface LeadsTableProps {
   leads: Lead[];
   totalCount: number;
@@ -153,7 +180,7 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
       {/* Top Header Row of Table Card */}
       <div className="px-4 sm:px-5 pt-4 sm:pt-5 pb-3 sm:pb-4 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white">
         <div className="flex items-center gap-3">
-          <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+          <h2 className="text-sm font-bold text-slate-900">
             Leads ({totalCount})
           </h2>
         </div>
@@ -292,47 +319,55 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
 
                     {/* 2. LEAD DATE */}
                     <td className="py-3.5 px-4 whitespace-nowrap text-slate-600 font-normal">
-                      {lead.leadDate}
+                      {formatDisplayDate(lead.leadDate)}
                     </td>
 
                     {/* 3. COMPANY / PERSON */}
                     <td className="py-3.5 px-4 whitespace-nowrap font-semibold text-slate-900">
-                      {lead.company}
+                      {lead.company || '—'}
                     </td>
 
                     {/* 4. CONTACT NAME */}
                     <td className="py-3.5 px-4 whitespace-nowrap text-slate-700">
-                      {lead.contactName}
+                      {lead.contactName || '—'}
                     </td>
 
                     {/* 5. EMAIL */}
                     <td className="py-3.5 px-4 whitespace-nowrap">
-                      <a
-                        href={`mailto:${lead.email}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="text-[#2563EB] hover:text-[#1D4ED8] hover:underline"
-                      >
-                        {lead.email}
-                      </a>
+                      {lead.email ? (
+                        <a
+                          href={`mailto:${lead.email}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-[#2563EB] hover:text-[#1D4ED8] hover:underline"
+                        >
+                          {lead.email}
+                        </a>
+                      ) : (
+                        '—'
+                      )}
                     </td>
 
                     {/* 6. PHONE */}
                     <td className="py-3.5 px-4 whitespace-nowrap text-slate-700 font-mono text-[11.5px]">
-                      {lead.phone}
+                      {lead.phone || '—'}
                     </td>
 
                     {/* 7. SOURCE */}
                     <td className="py-3.5 px-4 whitespace-nowrap text-slate-700">
-                      {lead.source}
+                      {lead.source || '—'}
                     </td>
 
                     {/* 8. SERVICE INTEREST */}
                     <td className="py-3.5 px-4 whitespace-nowrap">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium border ${serviceBadge}`}
-                      >
-                        {lead.serviceInterest}
-                      </span>
+                      {lead.serviceInterest ? (
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium border ${serviceBadge}`}
+                        >
+                          {lead.serviceInterest}
+                        </span>
+                      ) : (
+                        '—'
+                      )}
                     </td>
 
                     {/* 9. COUNTRY */}
@@ -355,7 +390,7 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${stageBadge}`}
                       >
-                        {lead.stage}
+                        {lead.stage || 'New'}
                       </span>
                     </td>
 
@@ -367,21 +402,21 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
                     {/* 14. EXPECTED VALUE */}
                     <td className="py-3.5 px-4 whitespace-nowrap font-semibold font-mono text-slate-900 text-[12px]">
                       {(() => {
-                        const val = lead.expectedValue ?? lead.estimatedValue;
-                        if (val == null || val === '') return '—';
-                        if (typeof val === 'number') return formatRupee(val);
-                        return String(val);
+                        const rawVal = lead.expectedValue ?? lead.estimatedValue;
+                        if (rawVal == null || rawVal === '') return '—';
+                        const numVal = typeof rawVal === 'number' ? rawVal : Number(String(rawVal).replace(/[^\d.-]/g, ''));
+                        return !isNaN(numVal) && isFinite(numVal) ? formatRupee(numVal) : String(rawVal);
                       })()}
                     </td>
 
                     {/* 15. EXPECTED CLOSE DATE */}
                     <td className="py-3.5 px-4 whitespace-nowrap text-slate-600">
-                      {lead.expectedCloseDate || '—'}
+                      {formatDisplayDate(lead.expectedCloseDate)}
                     </td>
 
                     {/* 16. NEXT FOLLOW-UP */}
                     <td className={`py-3.5 px-4 whitespace-nowrap ${followUpColor}`}>
-                      {lead.nextFollowUp || '—'}
+                      {lead.nextFollowUp ? formatDisplayDate(lead.nextFollowUp) : '—'}
                     </td>
 
                     {/* 17. STATUS */}
@@ -389,13 +424,13 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${statusBadge}`}
                       >
-                        {lead.status}
+                        {lead.status || 'Active'}
                       </span>
                     </td>
 
                     {/* 18. LOST REASON */}
                     <td className="py-3.5 px-4 whitespace-nowrap text-slate-600">
-                      {lead.lostReason || '-'}
+                      {lead.lostReason || '—'}
                     </td>
 
                     {/* 19. NOTES */}
@@ -403,7 +438,7 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
                       className="py-3.5 px-4 whitespace-nowrap text-slate-600 max-w-[180px] truncate"
                       title={lead.notes ?? undefined}
                     >
-                      {notesSnippet}
+                      {notesSnippet || '—'}
                     </td>
 
                     {/* 20. ACTION (Sticky Right with Three-Dot Action Menu) */}

@@ -111,10 +111,9 @@ export const StatusDropdownMenu: React.FC<StatusDropdownMenuProps> = ({
           type="button"
           disabled={disabled}
           onClick={handleToggle}
-          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer select-none hover:opacity-90 active:scale-95 ${
-            getBadgeClass ? getBadgeClass(currentStatus) : 'bg-slate-100 text-slate-700'
-          }`}
-          title={disabled ? undefined : 'Click to change state'}
+          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer select-none hover:opacity-90 active:scale-95 ${getBadgeClass ? getBadgeClass(currentStatus) : 'bg-slate-100 text-slate-700'
+            }`}
+          title={disabled ? undefined : 'Click to change'}
         >
           <span>{activeOption.label || activeOption.value}</span>
           {!disabled && (
@@ -131,7 +130,7 @@ export const StatusDropdownMenu: React.FC<StatusDropdownMenuProps> = ({
           disabled={disabled}
           onClick={handleToggle}
           className="flex items-center gap-1.5 px-2 py-1 -ml-1 rounded-md hover:bg-slate-100 transition-colors group cursor-pointer border-none bg-transparent select-none"
-          title={disabled ? undefined : 'Click to change state'}
+          title={disabled ? undefined : 'Click to change'}
           style={{
             cursor: disabled ? 'default' : 'pointer',
             fontFamily: "'Inter', sans-serif",
@@ -150,9 +149,8 @@ export const StatusDropdownMenu: React.FC<StatusDropdownMenuProps> = ({
           {!disabled && (
             <ChevronDown
               size={11}
-              className={`text-slate-400 opacity-60 group-hover:opacity-100 transition-all ${
-                isOpen ? 'rotate-180 opacity-100' : ''
-              }`}
+              className={`text-slate-400 opacity-60 group-hover:opacity-100 transition-all ${isOpen ? 'rotate-180 opacity-100' : ''
+                }`}
             />
           )}
         </button>
@@ -200,11 +198,10 @@ export const StatusDropdownMenu: React.FC<StatusDropdownMenuProps> = ({
                   setIsOpen(false);
                   setMenuPos(null);
                 }}
-                className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs text-left transition-colors cursor-pointer select-none border-none ${
-                  isCurrent
-                    ? 'bg-indigo-50 font-bold text-indigo-700'
-                    : 'hover:bg-slate-50 text-slate-700'
-                }`}
+                className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs text-left transition-colors cursor-pointer select-none border-none ${isCurrent
+                  ? 'bg-indigo-50 font-bold text-indigo-700'
+                  : 'hover:bg-slate-50 text-slate-700'
+                  }`}
                 style={{ fontFamily: "'Inter', sans-serif" }}
               >
                 <span

@@ -61,6 +61,7 @@ export interface Lead {
   estimatedValue?: number | string | null;
   lostReason?: string | null;
   notes?: string | null;
+  confirmTypoDomain?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }

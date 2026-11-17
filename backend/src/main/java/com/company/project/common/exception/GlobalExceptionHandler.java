@@ -43,8 +43,28 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BusinessValidationException.class)
     public ResponseEntity<ApiResponse<Void>> handleBusinessValidation(BusinessValidationException ex) {
         log.warn("BusinessValidationException: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), "Bad Request", ex.getMessage()));
+        Map<String, String> fieldErrors = new HashMap<>();
+        String msg = ex.getMessage();
+        if (msg != null) {
+            String lower = msg.toLowerCase();
+            if (lower.contains("email") || lower.contains("did you mean")) {
+                fieldErrors.put("email", msg);
+            } else if (lower.contains("company")) {
+                fieldErrors.put("company", msg);
+            } else if (lower.contains("contact")) {
+                fieldErrors.put("contactName", msg);
+            } else if (lower.contains("phone") || lower.contains("mobile")) {
+                fieldErrors.put("phone", msg);
+            }
+        }
+        ApiResponse<Void> response = ApiResponse.<Void>builder()
+                .success(false)
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Bad Request")
+                .message(msg)
+                .fieldErrors(fieldErrors.isEmpty() ? null : fieldErrors)
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(ConflictException.class)

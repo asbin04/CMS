@@ -13,7 +13,6 @@ import {
   Calendar,
   Download,
   Upload,
-  Info,
   MoreVertical,
   Clock,
   IndianRupee,
@@ -24,6 +23,8 @@ import { employeeService } from '@/services/employeeService';
 import { AddEmployeeModal } from '../components/AddEmployeeModal';
 import { EmployeeDetailModal } from '../components/EmployeeDetailModal';
 import { StatusDropdownMenu, StatusItemConfig } from '@/components/ui/StatusDropdownMenu';
+import { TableActionMenu } from '@/components/ui/TableActionMenu';
+import { CalendarDateRangePicker } from '@/components/ui/CalendarDateRangePicker';
 
 const EMPLOYEE_STATUS_CONFIGS: StatusItemConfig[] = [
   { value: 'Active', label: 'Active', dotColor: '#059669', textColor: '#059669' },
@@ -53,6 +54,29 @@ export const EmployeeMasterPage: React.FC = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeData | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isDetailEditing, setIsDetailEditing] = useState(false);
+  const [activeActionMenuId, setActiveActionMenuId] = useState<number | null>(null);
+
+  const handleViewEmployee = (emp: EmployeeData) => {
+    setSelectedEmployee(emp);
+    setIsDetailEditing(false);
+    setIsDetailModalOpen(true);
+    setActiveActionMenuId(null);
+  };
+
+  const handleEditEmployee = (emp: EmployeeData) => {
+    setSelectedEmployee(emp);
+    setIsDetailEditing(true);
+    setIsDetailModalOpen(true);
+    setActiveActionMenuId(null);
+  };
+
+  const handleDeleteWithConfirm = async (emp: EmployeeData) => {
+    setActiveActionMenuId(null);
+    if (window.confirm(`Are you sure you want to delete ${emp.fullName} (${emp.employeeId})?`)) {
+      await handleDeleteEmployee(emp.id);
+    }
+  };
 
   // Filters & Search controls
   const [searchQuery, setSearchQuery] = useState('');
@@ -64,6 +88,7 @@ export const EmployeeMasterPage: React.FC = () => {
   const [selectedReportingManager, setSelectedReportingManager] = useState('All');
   const [selectedTenureStatus, setSelectedTenureStatus] = useState('All');
   const [joiningDateRange, setJoiningDateRange] = useState('');
+  const [isJoiningDatePickerOpen, setIsJoiningDatePickerOpen] = useState(false);
   const [sortBy, setSortBy] = useState('Joining Date (Newest)');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState('8 per page');
@@ -116,6 +141,7 @@ export const EmployeeMasterPage: React.FC = () => {
     setSelectedReportingManager('All');
     setSelectedTenureStatus('All');
     setJoiningDateRange('');
+    setIsJoiningDatePickerOpen(false);
     setCurrentPage(1);
   };
 
@@ -202,6 +228,32 @@ export const EmployeeMasterPage: React.FC = () => {
         if (selectedTenureStatus !== 'All' && e.tenureStatus?.toLowerCase() !== selectedTenureStatus.toLowerCase()) {
           return false;
         }
+        if (joiningDateRange.trim()) {
+          const q = joiningDateRange.trim().toLowerCase();
+          const empDate = (e.joiningDate || '').toLowerCase();
+          if (q.includes('-')) {
+            const parts = q.split('-').map((s) => s.trim());
+            if (parts.length === 2) {
+              const start = new Date(parts[0]);
+              const end = new Date(parts[1]);
+              const emp = new Date(e.joiningDate);
+              if (!isNaN(start.getTime()) && !isNaN(end.getTime()) && !isNaN(emp.getTime())) {
+                end.setHours(23, 59, 59, 999);
+                if (emp < start || emp > end) return false;
+              } else if (!empDate.includes(q)) {
+                return false;
+              }
+            }
+          } else {
+            const empTime = new Date(e.joiningDate).getTime();
+            const qTime = new Date(q).getTime();
+            if (!isNaN(empTime) && !isNaN(qTime)) {
+              if (new Date(empTime).toDateString() !== new Date(qTime).toDateString()) return false;
+            } else if (!empDate.includes(q)) {
+              return false;
+            }
+          }
+        }
         if (searchQuery.trim()) {
           const q = searchQuery.toLowerCase().trim();
           const matchId = e.employeeId?.toLowerCase().includes(q);
@@ -245,6 +297,7 @@ export const EmployeeMasterPage: React.FC = () => {
     selectedLocation,
     selectedReportingManager,
     selectedTenureStatus,
+    joiningDateRange,
     searchQuery,
     sortBy,
   ]);
@@ -544,231 +597,310 @@ export const EmployeeMasterPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Section - FilterContainer */}
-        <div className="bg-white border border-[#E2E8F0]/90 rounded-[12px] p-4 flex flex-col gap-3.5 shadow-[0px_1px_2px_rgba(0,0,0,0.02)]">
-          {/* Row 1: Search Input + Filter Toggle + Clear */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="relative flex-1 w-full max-w-[656.97px]">
-              <Search className="w-4 h-4 text-[#3B82F6] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setCurrentPage(1);
-                }}
-                placeholder="Search by Employee ID, name, employee code, email or phone..."
-                className="w-full h-[34px] pl-9 pr-3 text-[12px] bg-white border border-[#E2E8F0] rounded-[8px] text-[#334155] placeholder:text-[#94A3B8] focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
-              />
-            </div>
-            <div className="flex items-center gap-3 self-end sm:self-auto flex-shrink-0">
-              <button
-                onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-                className="h-[34px] px-3 rounded-[8px] bg-[#EFF6FF]/60 border border-[#BFDBFE] text-[#4F46E5] text-[12px] font-semibold flex items-center gap-1.5 hover:bg-blue-50 transition-colors"
-              >
-                <Filter className="w-3.5 h-3.5" />
-                <span>Filters{activeFiltersCount > 0 ? ` (${activeFiltersCount})` : ''}</span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isFiltersOpen ? 'rotate-180' : ''}`} />
-              </button>
-              <button
-                onClick={handleClearFilters}
-                className="flex items-center gap-1 text-[12px] font-semibold text-[#4F46E5] hover:underline transition-colors"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Clear Filters</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Filter Dropdowns */}
-          {isFiltersOpen && (
-            <div className="space-y-3 pt-1 border-t border-[#F1F5F9]">
-              {/* Filter Row 1 (6 columns) */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                <div>
-                  <label className="block text-[11px] font-medium text-[#64748B] mb-1 leading-4">Department</label>
-                  <select
-                    value={selectedDepartment}
-                    onChange={(e) => {
-                      setSelectedDepartment(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                    className="w-full h-[30px] px-2.5 text-[12px] bg-white border border-[#E2E8F0] rounded-[8px] text-[#334155] focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                  >
-                    <option value="All">All</option>
-                    {departments.map((d) => (
-                      <option key={d} value={d}>
-                        {d}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-medium text-[#64748B] mb-1 leading-4">Designation</label>
-                  <select
-                    value={selectedDesignation}
-                    onChange={(e) => {
-                      setSelectedDesignation(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                    className="w-full h-[30px] px-2.5 text-[12px] bg-white border border-[#E2E8F0] rounded-[8px] text-[#334155] focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                  >
-                    <option value="All">All</option>
-                    {designations.map((d) => (
-                      <option key={d} value={d}>
-                        {d}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-medium text-[#64748B] mb-1 leading-4">Employment Type</label>
-                  <select
-                    value={selectedEmploymentType}
-                    onChange={(e) => {
-                      setSelectedEmploymentType(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                    className="w-full h-[30px] px-2.5 text-[12px] bg-white border border-[#E2E8F0] rounded-[8px] text-[#334155] focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                  >
-                    <option value="All">All</option>
-                    <option value="Full Time">Full Time</option>
-                    <option value="Contract">Contract</option>
-                    <option value="Intern">Intern</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-medium text-[#64748B] mb-1 leading-4">Status</label>
-                  <select
-                    value={selectedStatus}
-                    onChange={(e) => {
-                      setSelectedStatus(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                    className="w-full h-[30px] px-2.5 text-[12px] bg-white border border-[#E2E8F0] rounded-[8px] text-[#334155] focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                  >
-                    <option value="All">All</option>
-                    <option value="Active">Active</option>
-                    <option value="On Notice">On Notice</option>
-                    <option value="Probation">Probation</option>
-                    <option value="Inactive">Inactive</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-medium text-[#64748B] mb-1 leading-4">Location</label>
-                  <select
-                    value={selectedLocation}
-                    onChange={(e) => {
-                      setSelectedLocation(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                    className="w-full h-[30px] px-2.5 text-[12px] bg-white border border-[#E2E8F0] rounded-[8px] text-[#334155] focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                  >
-                    <option value="All">All</option>
-                    {locations.map((loc) => (
-                      <option key={loc} value={loc}>
-                        {loc}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-medium text-[#64748B] mb-1 leading-4">Reporting Manager</label>
-                  <select
-                    value={selectedReportingManager}
-                    onChange={(e) => {
-                      setSelectedReportingManager(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                    className="w-full h-[30px] px-2.5 text-[12px] bg-white border border-[#E2E8F0] rounded-[8px] text-[#334155] focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                  >
-                    <option value="All">All</option>
-                    {reportingManagers.map((m) => (
-                      <option key={m} value={m}>
-                        {m}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+        {/* Section - Unified Filter & Table Container matching Leads Page */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col w-full overflow-hidden">
+          {/* Top Search & Filter Bar */}
+          <div className="p-4 sm:p-5 pb-0 flex flex-col gap-4 w-full">
+            {/* Top Search & Actions Row */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
+              {/* Search Input on the Left */}
+              <div className="relative flex-1">
+                <Search
+                  size={18}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#3B82F6] pointer-events-none"
+                />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  placeholder="Search by Employee ID, name, employee code, email or phone..."
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                />
               </div>
 
-              {/* Filter Row 2 (2 fields) */}
-              <div className="flex flex-col sm:flex-row items-center gap-3 pt-0.5">
-                <div className="w-full sm:w-[304.67px]">
-                  <label className="block text-[11px] font-medium text-[#64748B] mb-1 leading-4">Joining Date</label>
-                  <div className="relative">
-                    <Calendar className="w-3.5 h-3.5 text-[#64748B] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    <input
-                      type="text"
-                      value={joiningDateRange}
-                      onChange={(e) => {
-                        setJoiningDateRange(e.target.value);
-                        setCurrentPage(1);
-                      }}
-                      placeholder="Select date range"
-                      className="w-full h-[30px] pl-8 pr-3 text-[12px] bg-white border border-[#E2E8F0] rounded-[8px] text-[#334155] placeholder:text-[#94A3B8] focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    />
+              {/* Buttons on the Right: Filters + Clear Filters */}
+              <div className="flex items-center gap-4 shrink-0 self-end sm:self-auto">
+                <button
+                  type="button"
+                  onClick={() => setIsFiltersOpen((prev) => !prev)}
+                  className="flex items-center gap-[8px] h-[34px] px-[14px] py-[8px] bg-white border border-[#4F46E5] hover:bg-indigo-50/40 text-[#4F46E5] rounded-[8px] text-[13px] font-medium transition-colors cursor-pointer select-none"
+                >
+                  <Filter size={15} className="text-[#4F46E5]" />
+                  <span>Filters</span>
+                  <ChevronDown
+                    size={15}
+                    className={`text-[#4F46E5] transition-transform duration-200 ${
+                      isFiltersOpen ? '' : '-rotate-180'
+                    }`}
+                  />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleClearFilters}
+                  className="flex items-center gap-1.5 px-1 py-2 text-[13px] font-medium text-[#4F46E5] hover:text-[#4338CA] transition-colors cursor-pointer"
+                >
+                  <RotateCcw size={15} className="text-[#4F46E5]" />
+                  <span>Clear Filters</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Filter Section: Clean, Organized Grid matching Leads layout */}
+            {isFiltersOpen && (
+              <div className="flex flex-col gap-3.5 pb-1">
+                {/* Row 1: 6 columns: Department, Designation, Employment Type, Status, Location, Reporting Manager */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                  {/* Department */}
+                  <div className="flex flex-col">
+                    <label className="text-xs font-medium text-slate-600 mb-1.5">Department</label>
+                    <div className="relative">
+                      <select
+                        value={selectedDepartment}
+                        onChange={(e) => {
+                          setSelectedDepartment(e.target.value);
+                          setCurrentPage(1);
+                        }}
+                        className="w-full appearance-none px-3 py-2 pr-8 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer shadow-2xs"
+                      >
+                        <option value="All">All</option>
+                        {departments.map((d) => (
+                          <option key={d} value={d}>
+                            {d}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown
+                        size={14}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Designation */}
+                  <div className="flex flex-col">
+                    <label className="text-xs font-medium text-slate-600 mb-1.5">Designation</label>
+                    <div className="relative">
+                      <select
+                        value={selectedDesignation}
+                        onChange={(e) => {
+                          setSelectedDesignation(e.target.value);
+                          setCurrentPage(1);
+                        }}
+                        className="w-full appearance-none px-3 py-2 pr-8 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer shadow-2xs"
+                      >
+                        <option value="All">All</option>
+                        {designations.map((d) => (
+                          <option key={d} value={d}>
+                            {d}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown
+                        size={14}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Employment Type */}
+                  <div className="flex flex-col">
+                    <label className="text-xs font-medium text-slate-600 mb-1.5">Employment Type</label>
+                    <div className="relative">
+                      <select
+                        value={selectedEmploymentType}
+                        onChange={(e) => {
+                          setSelectedEmploymentType(e.target.value);
+                          setCurrentPage(1);
+                        }}
+                        className="w-full appearance-none px-3 py-2 pr-8 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer shadow-2xs"
+                      >
+                        <option value="All">All</option>
+                        <option value="Full Time">Full Time</option>
+                        <option value="Contract">Contract</option>
+                        <option value="Intern">Intern</option>
+                        <option value="Part Time">Part Time</option>
+                      </select>
+                      <ChevronDown
+                        size={14}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Status */}
+                  <div className="flex flex-col">
+                    <label className="text-xs font-medium text-slate-600 mb-1.5">Status</label>
+                    <div className="relative">
+                      <select
+                        value={selectedStatus}
+                        onChange={(e) => {
+                          setSelectedStatus(e.target.value);
+                          setCurrentPage(1);
+                        }}
+                        className="w-full appearance-none px-3 py-2 pr-8 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer shadow-2xs"
+                      >
+                        <option value="All">All</option>
+                        <option value="Active">Active</option>
+                        <option value="On Notice">On Notice</option>
+                        <option value="Probation">Probation</option>
+                        <option value="Inactive">Inactive</option>
+                      </select>
+                      <ChevronDown
+                        size={14}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Location */}
+                  <div className="flex flex-col">
+                    <label className="text-xs font-medium text-slate-600 mb-1.5">Location</label>
+                    <div className="relative">
+                      <select
+                        value={selectedLocation}
+                        onChange={(e) => {
+                          setSelectedLocation(e.target.value);
+                          setCurrentPage(1);
+                        }}
+                        className="w-full appearance-none px-3 py-2 pr-8 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer shadow-2xs"
+                      >
+                        <option value="All">All</option>
+                        {locations.map((loc) => (
+                          <option key={loc} value={loc}>
+                            {loc}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown
+                        size={14}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Reporting Manager */}
+                  <div className="flex flex-col">
+                    <label className="text-xs font-medium text-slate-600 mb-1.5">Reporting Manager</label>
+                    <div className="relative">
+                      <select
+                        value={selectedReportingManager}
+                        onChange={(e) => {
+                          setSelectedReportingManager(e.target.value);
+                          setCurrentPage(1);
+                        }}
+                        className="w-full appearance-none px-3 py-2 pr-8 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer shadow-2xs"
+                      >
+                        <option value="All">All</option>
+                        {reportingManagers.map((m) => (
+                          <option key={m} value={m}>
+                            {m}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown
+                        size={14}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <div className="w-full sm:w-[146.33px]">
-                  <label className="block text-[11px] font-medium text-[#64748B] mb-1 leading-4">
-                    Current Tenure Status
-                  </label>
-                  <select
-                    value={selectedTenureStatus}
-                    onChange={(e) => {
-                      setSelectedTenureStatus(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                    className="w-full h-[30px] px-2.5 text-[12px] bg-white border border-[#E2E8F0] rounded-[8px] text-[#334155] focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                  >
-                    <option value="All">All</option>
-                    <option value="< 1 Year">&lt; 1 Year</option>
-                    <option value="1-3 Years">1-3 Years</option>
-                    <option value="3+ Years">3+ Years</option>
-                  </select>
+                {/* Row 2: Joining Date (2 columns width) + Current Tenure Status (1 column width) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                  {/* Joining Date */}
+                  <div className="relative flex flex-col sm:col-span-2 lg:col-span-2">
+                    <label className="text-xs font-medium text-slate-600 mb-1.5">Joining Date</label>
+                    <button
+                      type="button"
+                      onClick={() => setIsJoiningDatePickerOpen((prev) => !prev)}
+                      className="w-full flex items-center justify-between px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 hover:border-slate-300 transition-colors text-left shadow-2xs cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        <Calendar size={14} className="text-slate-400 shrink-0" />
+                        <span className={joiningDateRange ? 'text-slate-900 font-medium' : 'text-slate-400'}>
+                          {joiningDateRange || 'Select date range'}
+                        </span>
+                      </div>
+                    </button>
+
+                    <CalendarDateRangePicker
+                      value={joiningDateRange}
+                      onChange={(range) => {
+                        setJoiningDateRange(range);
+                        setCurrentPage(1);
+                      }}
+                      isOpen={isJoiningDatePickerOpen}
+                      onClose={() => setIsJoiningDatePickerOpen(false)}
+                    />
+                  </div>
+
+                  {/* Current Tenure Status */}
+                  <div className="flex flex-col sm:col-span-1 lg:col-span-1">
+                    <label className="text-xs font-medium text-slate-600 mb-1.5">
+                      Current Tenure Status
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={selectedTenureStatus}
+                        onChange={(e) => {
+                          setSelectedTenureStatus(e.target.value);
+                          setCurrentPage(1);
+                        }}
+                        className="w-full appearance-none px-3 py-2 pr-8 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer shadow-2xs"
+                      >
+                        <option value="All">All</option>
+                        <option value="< 1 Year">&lt; 1 Year</option>
+                        <option value="1-3 Years">1-3 Years</option>
+                        <option value="3+ Years">3+ Years</option>
+                      </select>
+                      <ChevronDown
+                        size={14}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
 
-        {/* Section - TableContainer */}
-        <div className="bg-white border border-[#E2E8F0]/90 rounded-[12px] overflow-hidden shadow-[0px_1px_2px_rgba(0,0,0,0.02)]">
-          {/* Table Control Header */}
-          <div className="h-[55px] px-4 py-3 border-b border-[#E2E8F0] flex items-center justify-between gap-4 bg-white">
-            <div className="flex items-center gap-1.5">
-              <span className="text-[14px] font-bold text-[#0F172A] leading-5">
+          {/* Table Header Section: Employees count + Sort By dropdown */}
+          <div className="px-4 sm:px-5 pt-2 sm:pt-2.5 pb-3 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white">
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-bold text-slate-900">
                 Employees ({filteredEmployees.length})
-              </span>
-              <Info className="w-3.5 h-3.5 text-[#4F46E5] cursor-pointer" />
+              </h2>
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-[12px] font-medium text-[#64748B] leading-4">Sort by</span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="h-[30px] pl-2.5 pr-8 text-[12px] bg-white border border-[#E2E8F0] rounded-[8px] text-[#334155] focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              >
-                <option value="Joining Date (Newest)">Joining Date (Newest)</option>
-                <option value="Joining Date (Oldest)">Joining Date (Oldest)</option>
-                <option value="Employee ID (Asc)">Employee ID (Asc)</option>
-                <option value="Employee ID (Desc)">Employee ID (Desc)</option>
-                <option value="Name (A-Z)">Name (A-Z)</option>
-                <option value="CTC (High to Low)">CTC (High to Low)</option>
-              </select>
+              <span className="text-xs text-slate-500 font-medium whitespace-nowrap">Sort by</span>
+              <div className="relative">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="appearance-none pl-3 pr-8 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-2xs"
+                >
+                  <option value="Joining Date (Newest)">Joining Date (Newest)</option>
+                  <option value="Joining Date (Oldest)">Joining Date (Oldest)</option>
+                  <option value="Employee ID (Asc)">Employee ID (Asc)</option>
+                  <option value="Employee ID (Desc)">Employee ID (Desc)</option>
+                  <option value="Name (A-Z)">Name (A-Z)</option>
+                  <option value="CTC (High to Low)">CTC (High to Low)</option>
+                </select>
+                <ChevronDown
+                  size={14}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                />
+              </div>
             </div>
           </div>
 
-          {/* Horizontal Scrollable Table Wrapper: 26 Columns with Exact Figma Layout */}
-          <div className="overflow-x-auto horizontal-table-scroll">
+          {/* Horizontal Scrollable Table Wrapper: 26 Columns with Exact Layout */}
+          <div className="overflow-x-auto horizontal-table-scroll custom-scrollbar" style={{ WebkitOverflowScrolling: 'touch' }}>
             <table className="table-fixed border-collapse" style={{ width: '3430px', minWidth: '3430px' }}>
               <thead>
                 <tr className="h-[42px] bg-[#F8FAFC]/80 border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.55px] select-none">
@@ -939,8 +1071,11 @@ export const EmployeeMasterPage: React.FC = () => {
                     <span>NOTES</span>
                   </th>
 
-                  {/* 26. ACTIONS */}
-                  <th className="px-[14px] py-[12px] text-center" style={{ width: '82.23px' }}>
+                  {/* 26. ACTIONS (Sticky Right) */}
+                  <th
+                    className="px-[14px] py-[12px] text-center sticky right-0 z-20 bg-[#F8FAFC] shadow-[-2px_0_4px_-1px_rgba(0,0,0,0.06)] border-l border-[#E2E8F0]"
+                    style={{ width: '90px', minWidth: '90px' }}
+                  >
                     <span>ACTIONS</span>
                   </th>
                 </tr>
@@ -971,7 +1106,7 @@ export const EmployeeMasterPage: React.FC = () => {
                     return (
                       <tr
                         key={emp.id}
-                        className="h-[49px] border-b border-[#F1F5F9] hover:bg-[#F8FAFC] transition-colors text-[12px]"
+                        className="h-[49px] border-b border-[#F1F5F9] hover:bg-[#F8FAFC] transition-colors text-[12px] group"
                       >
                         {/* 1. EMPLOYEE ID */}
                         <td className="px-[14px] py-[16px] whitespace-nowrap" style={{ width: '119.78px' }}>
@@ -1134,18 +1269,24 @@ export const EmployeeMasterPage: React.FC = () => {
                           </span>
                         </td>
 
-                        {/* 26. ACTIONS */}
-                        <td className="px-[14px] py-[12.5px] whitespace-nowrap text-center" style={{ width: '82.23px' }}>
-                          <div className="flex justify-center">
-                            <button
-                              onClick={() => {
-                                setSelectedEmployee(emp);
-                                setIsDetailModalOpen(true);
-                              }}
-                              className="w-[11.02px] h-[24px] p-1 flex items-center justify-center text-[#94A3B8] hover:text-[#475569] transition-colors"
-                            >
-                              <MoreVertical className="w-3.5 h-3.5" />
-                            </button>
+                        {/* 26. ACTIONS (Sticky Right with TableActionMenu) */}
+                        <td
+                          className="px-[14px] py-[10px] whitespace-nowrap text-center sticky right-0 z-10 bg-white group-hover:bg-[#F8FAFC] shadow-[-2px_0_4px_-1px_rgba(0,0,0,0.06)] border-l border-[#E2E8F0] transition-colors"
+                          style={{ width: '90px', minWidth: '90px' }}
+                        >
+                          <div className="flex items-center justify-center">
+                            <TableActionMenu
+                              isOpen={activeActionMenuId === emp.id}
+                              onToggle={() => setActiveActionMenuId((prev) => (prev === emp.id ? null : emp.id))}
+                              onClose={() => setActiveActionMenuId((prev) => (prev === emp.id ? null : prev))}
+                              onViewDetails={() => handleViewEmployee(emp)}
+                              onEdit={() => handleEditEmployee(emp)}
+                              onDelete={() => handleDeleteWithConfirm(emp)}
+                              viewLabel="View Details"
+                              editLabel="Edit"
+                              deleteLabel="Delete"
+                              ariaLabel={`Actions for ${emp.fullName}`}
+                            />
                           </div>
                         </td>
                       </tr>
@@ -1240,9 +1381,13 @@ export const EmployeeMasterPage: React.FC = () => {
       <EmployeeDetailModal
         employee={selectedEmployee}
         isOpen={isDetailModalOpen}
-        onClose={() => setIsDetailModalOpen(false)}
+        onClose={() => {
+          setIsDetailModalOpen(false);
+          setIsDetailEditing(false);
+        }}
         onUpdate={handleUpdateEmployee}
         onDelete={handleDeleteEmployee}
+        initialIsEditing={isDetailEditing}
       />
     </div>
   );

@@ -1,5 +1,6 @@
 package com.company.project.sales;
 
+import com.company.project.common.exception.BusinessValidationException;
 import com.company.project.common.exception.ResourceNotFoundException;
 import com.company.project.common.response.PageResponse;
 import com.company.project.sales.dto.*;
@@ -114,6 +115,108 @@ class LeadServiceTest {
         assertThat(created.getCompany()).isEqualTo("Beta Tech");
         verify(leadIdGeneratorService, times(1)).generateAndAllocateNextLeadId(2025);
         verify(leadRepository, times(1)).save(any(LeadEntity.class));
+    }
+
+    @Test
+    @DisplayName("createLead rejects typo domain email like shruti@gmil.com with suggestion")
+    void testCreateLeadRejectsTypoEmail() {
+        CreateLeadRequest request = CreateLeadRequest.builder()
+                .leadDate(LocalDate.of(2025, 4, 1))
+                .company("Beta Tech")
+                .contactName("Shruti Sahoo")
+                .email("shruti@gmil.com")
+                .phone("9999988888")
+                .source("Referral")
+                .serviceInterest("AI Solutions")
+                .country("India")
+                .city("Hyderabad")
+                .ownerId("EMP-002")
+                .stage("New")
+                .status("Open")
+                .estimatedValue(BigDecimal.valueOf(500000.00))
+                .build();
+
+        assertThatThrownBy(() -> leadService.createLead(request))
+                .isInstanceOf(BusinessValidationException.class)
+                .hasMessage("Did you mean gmail.com?");
+
+        // Also test gmial.com and gmail.con
+        assertThatThrownBy(() -> leadService.createLead(request.toBuilder().email("shruti@gmial.com").build()))
+                .isInstanceOf(BusinessValidationException.class)
+                .hasMessage("Did you mean gmail.com?");
+
+        assertThatThrownBy(() -> leadService.createLead(request.toBuilder().email("shruti@gmail.con").build()))
+                .isInstanceOf(BusinessValidationException.class)
+                .hasMessage("Did you mean gmail.com?");
+    }
+
+    @Test
+    @DisplayName("updateLead rejects typo domain email like shruti@gmil.com with suggestion")
+    void testUpdateLeadRejectsTypoEmail() {
+        when(leadRepository.findById("L-2025-001")).thenReturn(Optional.of(sampleEntity));
+
+        UpdateLeadRequest request = UpdateLeadRequest.builder()
+                .email("shruti@gmil.com")
+                .build();
+
+        assertThatThrownBy(() -> leadService.updateLead("L-2025-001", request))
+                .isInstanceOf(BusinessValidationException.class)
+                .hasMessage("Did you mean gmail.com?");
+    }
+
+    @Test
+    @DisplayName("createLead accepts typo domain email when confirmTypoDomain is true")
+    void testCreateLeadAcceptsConfirmedTypoEmail() {
+        CreateLeadRequest request = CreateLeadRequest.builder()
+                .leadDate(LocalDate.of(2025, 4, 1))
+                .company("Beta Tech")
+                .contactName("Shruti Sahoo")
+                .email("shruti@gmil.com")
+                .confirmTypoDomain(true)
+                .phone("9999988888")
+                .source("Referral")
+                .serviceInterest("AI Solutions")
+                .country("India")
+                .city("Hyderabad")
+                .ownerId("EMP-002")
+                .stage("New")
+                .status("Open")
+                .estimatedValue(BigDecimal.valueOf(500000.00))
+                .build();
+
+        when(leadIdGeneratorService.generateAndAllocateNextLeadId(2025)).thenReturn("L-2025-003");
+        when(leadRepository.save(any(LeadEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        LeadResponse created = leadService.createLead(request);
+        assertThat(created).isNotNull();
+        assertThat(created.getEmail()).isEqualTo("shruti@gmil.com");
+    }
+
+    @Test
+    @DisplayName("createLead accepts valid corporate or custom domain emails")
+    void testCreateLeadAcceptsCustomDomainEmail() {
+        CreateLeadRequest request = CreateLeadRequest.builder()
+                .leadDate(LocalDate.of(2025, 4, 1))
+                .company("Beta Tech")
+                .contactName("Shruti Sahoo")
+                .email("shrutisahoo@gmail.com")
+                .phone("9999988888")
+                .source("Referral")
+                .serviceInterest("AI Solutions")
+                .country("India")
+                .city("Hyderabad")
+                .ownerId("EMP-002")
+                .stage("New")
+                .status("Open")
+                .estimatedValue(BigDecimal.valueOf(500000.00))
+                .build();
+
+        when(leadIdGeneratorService.generateAndAllocateNextLeadId(2025)).thenReturn("L-2025-003");
+        when(leadRepository.save(any(LeadEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        LeadResponse created = leadService.createLead(request);
+        assertThat(created).isNotNull();
+        assertThat(created.getEmail()).isEqualTo("shrutisahoo@gmail.com");
     }
 
     @Test

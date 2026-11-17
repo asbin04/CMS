@@ -2,12 +2,36 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import {
   AddLeadModal,
+  validateCompanyName,
   validateContactPersonName,
   validatePhoneNumber,
   validateEmailAddress,
+  validateCountry,
+  validateCity,
+  validateEstimatedValue,
+  validateNextFollowUp,
 } from '../features/sales/components/AddLeadModal';
 
 describe('AddLeadModal Validation Functions', () => {
+  describe('validateCompanyName', () => {
+    it('accepts valid company names containing letters', () => {
+      expect(validateCompanyName('Acme Pvt Ltd')).toBe('');
+      expect(validateCompanyName('3M Technologies')).toBe('');
+      expect(validateCompanyName('Kalpanaaa & Co.')).toBe('');
+      expect(validateCompanyName('AT&T')).toBe('');
+    });
+
+    it('rejects empty or whitespace-only company name', () => {
+      expect(validateCompanyName('')).toBe('Company name is required');
+      expect(validateCompanyName('   ')).toBe('Company name is required');
+    });
+
+    it('rejects purely numeric or special character company names without letters', () => {
+      expect(validateCompanyName('123456')).toBe('Enter a valid company name containing letters.');
+      expect(validateCompanyName('!@#$%')).toBe('Enter a valid company name containing letters.');
+    });
+  });
+
   describe('validateContactPersonName', () => {
     it('accepts valid names including unicode, spaces, hyphens, periods, apostrophes', () => {
       expect(validateContactPersonName('Rajesh Kumar')).toBe('');
@@ -23,13 +47,49 @@ describe('AddLeadModal Validation Functions', () => {
     });
 
     it('rejects names containing numbers or invalid characters', () => {
-      const expectedError = 'Name must contain letters only. Numbers and special characters are not allowed.';
+      const expectedError = 'Enter a valid contact person name.';
       expect(validateContactPersonName('23fvghbj')).toBe(expectedError);
       expect(validateContactPersonName('Rajesh123')).toBe(expectedError);
       expect(validateContactPersonName('123456')).toBe(expectedError);
       expect(validateContactPersonName('987 Kumar')).toBe(expectedError);
       expect(validateContactPersonName('@Rajesh')).toBe(expectedError);
       expect(validateContactPersonName('Kumar#123')).toBe(expectedError);
+    });
+  });
+
+  describe('validateCountry and validateCity', () => {
+    it('validates required text', () => {
+      expect(validateCountry('India')).toBe('');
+      expect(validateCountry('')).toBe('Country is required');
+      expect(validateCountry('   ')).toBe('Country is required');
+
+      expect(validateCity('Bangalore')).toBe('');
+      expect(validateCity('')).toBe('City is required');
+      expect(validateCity('   ')).toBe('City is required');
+    });
+  });
+
+  describe('validateEstimatedValue', () => {
+    it('accepts valid numeric values and empty string', () => {
+      expect(validateEstimatedValue('')).toBe('');
+      expect(validateEstimatedValue('1200000')).toBe('');
+      expect(validateEstimatedValue('500.50')).toBe('');
+    });
+
+    it('rejects non-numeric characters and negative numbers', () => {
+      expect(validateEstimatedValue('abc')).toBe('Enter a valid non-negative number.');
+      expect(validateEstimatedValue('-500')).toBe('Enter a valid non-negative number.');
+    });
+  });
+
+  describe('validateNextFollowUp', () => {
+    it('accepts valid YYYY-MM-DD date and empty string', () => {
+      expect(validateNextFollowUp('')).toBe('');
+      expect(validateNextFollowUp('2026-11-20')).toBe('');
+    });
+
+    it('rejects invalid date format', () => {
+      expect(validateNextFollowUp('invalid-date')).toBe('Enter a valid date.');
     });
   });
 
@@ -76,6 +136,9 @@ describe('AddLeadModal Validation Functions', () => {
 
   describe('validateEmailAddress', () => {
     it('accepts valid Gmail, Yahoo, professional, and unfamiliar valid domains like oo.in', () => {
+      expect(validateEmailAddress('shruti@gmail.com')).toBe('');
+      expect(validateEmailAddress('shruti@yahoo.com')).toBe('');
+      expect(validateEmailAddress('shrutisahoo@gmail.com')).toBe('');
       expect(validateEmailAddress('user@gmail.com')).toBe('');
       expect(validateEmailAddress('employee@company.in')).toBe('');
       expect(validateEmailAddress('contact@kalpanaaa.com')).toBe('');
@@ -84,16 +147,29 @@ describe('AddLeadModal Validation Functions', () => {
       expect(validateEmailAddress('dev.lead+test@startup.io')).toBe('');
     });
 
+    it('shows typo warning "Did you mean gmail.com?" for common Gmail domain typos', () => {
+      expect(validateEmailAddress('shruti@gmil.com')).toBe('Did you mean gmail.com?');
+      expect(validateEmailAddress('shruti@gmial.com')).toBe('Did you mean gmail.com?');
+      expect(validateEmailAddress('shruti@gmai.com')).toBe('Did you mean gmail.com?');
+      expect(validateEmailAddress('shruti@gmail.con')).toBe('Did you mean gmail.com?');
+      expect(validateEmailAddress('shrutisahoo@gil.com')).toBe('Did you mean gmail.com?');
+      expect(validateEmailAddress('user@hotmial.com')).toBe('Did you mean hotmail.com?');
+      expect(validateEmailAddress('user@yaho.com')).toBe('Did you mean yahoo.com?');
+    });
+
     it('rejects empty input with required message', () => {
       expect(validateEmailAddress('')).toBe('Email address is required');
       expect(validateEmailAddress('   ')).toBe('Email address is required');
     });
 
-    it('rejects emails without @ symbol', () => {
+    it('rejects emails without @ symbol or with spaces', () => {
       expect(validateEmailAddress('usergmail.com')).toBe('Enter a valid email address.');
+      expect(validateEmailAddress('shruti gmail.com')).toBe('Enter a valid email address.');
+      expect(validateEmailAddress('user name@gmail.com')).toBe('Enter a valid email address.');
     });
 
     it('rejects emails with multiple @ symbols', () => {
+      expect(validateEmailAddress('shruti@@gmail.com')).toBe('Enter a valid email address.');
       expect(validateEmailAddress('user@@gmail.com')).toBe('Enter a valid email address.');
     });
 
@@ -103,6 +179,7 @@ describe('AddLeadModal Validation Functions', () => {
     });
 
     it('rejects emails missing top-level domain extension', () => {
+      expect(validateEmailAddress('shruti@gmail')).toBe('Enter a valid email address.');
       expect(validateEmailAddress('user@gmail')).toBe('Enter a valid email address.');
     });
 
@@ -146,6 +223,7 @@ describe('AddLeadModal Component UI and Interaction', () => {
     expect(screen.getByText('Contact name is required')).toBeInTheDocument();
     expect(screen.getByText('Email address is required')).toBeInTheDocument();
     expect(screen.getByText('Phone number is required')).toBeInTheDocument();
+    expect(screen.getByText('City is required')).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
@@ -161,13 +239,14 @@ describe('AddLeadModal Component UI and Interaction', () => {
     });
 
     expect(
-      screen.getByText('Name must contain letters only. Numbers and special characters are not allowed.')
+      screen.getByText('Enter a valid contact person name.')
     ).toBeInTheDocument();
 
-    // Fill valid company, email, phone but keep invalid name
+    // Fill valid company, email, phone, city but keep invalid name
     fireEvent.change(screen.getByPlaceholderText('Enter company name'), { target: { value: 'Acme Corp' } });
     fireEvent.change(screen.getByPlaceholderText('Enter email address'), { target: { value: 'user@gmail.com' } });
     fireEvent.change(screen.getByPlaceholderText('Enter 10-digit mobile number'), { target: { value: '9876543210' } });
+    fireEvent.change(screen.getByPlaceholderText('Enter city'), { target: { value: 'Mumbai' } });
 
     const submitBtn = screen.getByRole('button', { name: /create lead/i });
     await act(async () => {
@@ -176,7 +255,7 @@ describe('AddLeadModal Component UI and Interaction', () => {
 
     expect(onSubmit).not.toHaveBeenCalled();
     expect(
-      screen.getByText('Name must contain letters only. Numbers and special characters are not allowed.')
+      screen.getByText('Enter a valid contact person name.')
     ).toBeInTheDocument();
 
     // Correct to valid name Rajesh Kumar
@@ -185,7 +264,7 @@ describe('AddLeadModal Component UI and Interaction', () => {
     });
 
     expect(
-      screen.queryByText('Name must contain letters only. Numbers and special characters are not allowed.')
+      screen.queryByText('Enter a valid contact person name.')
     ).not.toBeInTheDocument();
 
     // Submit now succeeds
@@ -276,6 +355,9 @@ describe('AddLeadModal Component UI and Interaction', () => {
     fireEvent.change(screen.getByPlaceholderText('Enter 10-digit mobile number'), {
       target: { value: '9876543210' },
     });
+    fireEvent.change(screen.getByPlaceholderText('Enter city'), {
+      target: { value: 'Bangalore' },
+    });
 
     const submitBtn = screen.getByRole('button', { name: /create lead/i });
     await act(async () => {
@@ -292,5 +374,52 @@ describe('AddLeadModal Component UI and Interaction', () => {
       })
     );
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows typo warning "Did you mean gmail.com?" for shruti@gmil.com and blocks save', async () => {
+    const onSubmit = vi.fn();
+    render(<AddLeadModal isOpen={true} onClose={vi.fn()} onSubmit={onSubmit} />);
+
+    fireEvent.change(screen.getByPlaceholderText('Enter company name'), { target: { value: 'Acme Corp' } });
+    fireEvent.change(screen.getByPlaceholderText('e.g. Rajesh Kumar'), { target: { value: 'Shruti Sahoo' } });
+    fireEvent.change(screen.getByPlaceholderText('Enter 10-digit mobile number'), { target: { value: '9876543210' } });
+    fireEvent.change(screen.getByPlaceholderText('Enter city'), { target: { value: 'Bhubaneswar' } });
+
+    const emailInput = screen.getByPlaceholderText('Enter email address');
+    await act(async () => {
+      fireEvent.change(emailInput, { target: { value: 'shruti@gmil.com' } });
+      fireEvent.blur(emailInput);
+    });
+
+    expect(screen.getByText('Did you mean gmail.com?')).toBeInTheDocument();
+    expect(screen.getByText(/Yes, use shruti@gmail.com/i)).toBeInTheDocument();
+
+    const submitBtn = screen.getByRole('button', { name: /create lead/i });
+    await act(async () => {
+      fireEvent.click(submitBtn);
+    });
+
+    // Blocked from submitting
+    expect(onSubmit).not.toHaveBeenCalled();
+
+    // Click suggestion
+    const suggestionBtn = screen.getByRole('button', { name: /Yes, use shruti@gmail.com/i });
+    await act(async () => {
+      fireEvent.click(suggestionBtn);
+    });
+
+    expect((emailInput as HTMLInputElement).value).toBe('shruti@gmail.com');
+    expect(screen.queryByText('Did you mean gmail.com?')).not.toBeInTheDocument();
+
+    // Now submit works
+    await act(async () => {
+      fireEvent.click(submitBtn);
+    });
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        email: 'shruti@gmail.com',
+      })
+    );
   });
 });

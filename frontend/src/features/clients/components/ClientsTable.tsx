@@ -4,12 +4,9 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  MoreVertical,
-  Eye,
-  Edit,
-  Trash2,
 } from 'lucide-react';
 import { Client, ClientSortOption } from '../types/clients';
+import { TableActionMenu } from '../../../components/ui/TableActionMenu';
 
 interface ClientsTableProps {
   clients: Client[];
@@ -98,77 +95,41 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
   };
 
   return (
-    <div
-      style={{
-        backgroundColor: '#FFFFFF',
-        borderRadius: '12px',
-        border: '1px solid #E2E8F0',
-        display: 'flex',
-        flexDirection: 'column',
-        width: '100%',
-        boxSizing: 'border-box',
-        overflow: 'visible',
-      }}
-    >
+    <div className="flex flex-col w-full">
       {/* Table Action Header: Title and Controls */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '20px 20px 16px',
-          width: '100%',
-          boxSizing: 'border-box',
-        }}
-      >
+      <div className="px-4 sm:px-5 pt-2 sm:pt-2.5 pb-3 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white">
         {/* Left Heading */}
-        <h2
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: '16px',
-            fontWeight: 700,
-            lineHeight: '24px',
-            letterSpacing: '-0.4px',
-            color: '#0F172A',
-            margin: 0,
-          }}
-        >
-          Clients ({totalCount})
-        </h2>
+        <div className="flex items-center gap-3">
+          <h2
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontStyle: 'normal',
+              fontWeight: 700,
+              fontSize: '16px',
+              lineHeight: '24px',
+              display: 'flex',
+              alignItems: 'center',
+              letterSpacing: '-0.4px',
+              color: '#0F172A',
+              margin: 0,
+            }}
+          >
+            Clients ({totalCount})
+          </h2>
+        </div>
 
         {/* Right Controls: Sort by and Export */}
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px' }}>
+        <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
           {/* Sort By Dropdown */}
-          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
-            <span
-              style={{
-                fontFamily: "'Inter', sans-serif",
-                fontSize: '12px',
-                color: '#64748B',
-                whiteSpace: 'nowrap',
-              }}
-            >
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-500 font-medium whitespace-nowrap">
               Sort by
             </span>
-            <div style={{ position: 'relative' }}>
+            <div className="relative">
               <select
                 value={sortBy}
                 onChange={(e) => onSortChange(e.target.value as ClientSortOption)}
-                style={{
-                  height: '30px',
-                  backgroundColor: '#FFFFFF',
-                  border: '1px solid #E2E8F0',
-                  borderRadius: '8px',
-                  padding: '4px 28px 4px 12px',
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: '12px',
-                  fontWeight: 500,
-                  color: '#1E293B',
-                  outline: 'none',
-                  appearance: 'none',
-                  cursor: 'pointer',
-                }}
+                className="appearance-none pl-3 pr-8 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-2xs"
               >
                 <option value="onboarding-desc">Onboarding Date (Newest)</option>
                 <option value="onboarding-asc">Onboarding Date (Oldest)</option>
@@ -178,17 +139,10 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
                 <option value="id-asc">Client ID (Ascending)</option>
                 <option value="id-desc">Client ID (Descending)</option>
               </select>
-              <div
-                style={{
-                  position: 'absolute',
-                  right: '8px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  pointerEvents: 'none',
-                }}
-              >
-                <ChevronDown size={14} color="#94A3B8" />
-              </div>
+              <ChevronDown
+                size={14}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+              />
             </div>
           </div>
 
@@ -196,24 +150,9 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
           <button
             type="button"
             onClick={onExport}
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              padding: '6px 12px',
-              gap: '6px',
-              height: '30px',
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontFamily: "'Inter', sans-serif",
-              fontSize: '12px',
-              fontWeight: 500,
-              color: '#64748B',
-            }}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold transition-colors shadow-2xs cursor-pointer active:scale-98"
           >
-            <Download size={14} color="#64748B" />
+            <Download size={14} className="text-slate-500" />
             <span>Export</span>
           </button>
         </div>
@@ -221,13 +160,8 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
 
       {/* Table Container with Horizontal Scrolling */}
       <div
-        style={{
-          width: '100%',
-          overflowX: 'auto',
-          borderTop: '1px solid #E2E8F0',
-          borderBottom: '1px solid #E2E8F0',
-          position: 'relative',
-        }}
+        className="w-full overflow-x-auto relative horizontal-table-scroll custom-scrollbar"
+        style={{ WebkitOverflowScrolling: 'touch' }}
       >
         <table
           style={{
@@ -286,7 +220,11 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
               <th style={{ width: '97.03px', padding: '12px 16px', fontSize: '11px', fontWeight: 700, color: '#94A3B8', letterSpacing: '0.55px', textTransform: 'uppercase', textAlign: 'center' }}>
                 STATUS
               </th>
-              <th style={{ width: '86.23px', padding: '12px 16px', fontSize: '11px', fontWeight: 700, color: '#94A3B8', letterSpacing: '0.55px', textTransform: 'uppercase', textAlign: 'center' }}>
+              {/* Sticky Right Actions Column Header */}
+              <th
+                className="sticky right-0 z-20 bg-[#F8FAFC] shadow-[-2px_0_4px_-1px_rgba(0,0,0,0.06)] border-l border-[#E2E8F0]"
+                style={{ width: '90px', minWidth: '90px', padding: '12px 16px', fontSize: '11px', fontWeight: 700, color: '#94A3B8', letterSpacing: '0.55px', textTransform: 'uppercase', textAlign: 'center' }}
+              >
                 ACTIONS
               </th>
             </tr>
@@ -303,7 +241,6 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
             ) : (
               clients.map((client) => {
                 const badgeStyle = getStatusBadgeStyle(client.status);
-                const isMenuOpen = activeMenuId === client.id;
 
                 return (
                   <tr
@@ -313,7 +250,7 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
                       borderBottom: '1px solid #F1F5F9',
                       transition: 'background-color 0.15s ease',
                     }}
-                    className="hover:bg-slate-50/70"
+                    className="hover:bg-slate-50/70 group"
                   >
                     {/* CLIENT ID */}
                     <td style={{ width: '90.45px', padding: '15px 16px', boxSizing: 'border-box' }}>
@@ -349,15 +286,12 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
                     {/* CLIENT NAME */}
                     <td style={{ width: '152.52px', padding: '15px 16px', boxSizing: 'border-box' }}>
                       <span
-                        onClick={() => onViewClient(client)}
                         style={{
                           fontSize: '12.5px',
                           fontWeight: 600,
                           lineHeight: '19px',
-                          color: '#2563EB',
-                          cursor: 'pointer',
+                          color: '#0F172A',
                         }}
-                        className="hover:underline"
                       >
                         {client.clientName}
                       </span>
@@ -398,7 +332,7 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
                           fontSize: '12.5px',
                           fontWeight: 400,
                           lineHeight: '19px',
-                          color: '#334155',
+                          color: '#475569',
                         }}
                       >
                         {client.contactPerson}
@@ -407,19 +341,16 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
 
                     {/* EMAIL */}
                     <td style={{ width: '183.7px', padding: '15px 16px', boxSizing: 'border-box' }}>
-                      <a
-                        href={`mailto:${client.email}`}
+                      <span
                         style={{
                           fontSize: '12.5px',
                           fontWeight: 400,
                           lineHeight: '19px',
                           color: '#2563EB',
-                          textDecoration: 'none',
                         }}
-                        className="hover:underline"
                       >
                         {client.email}
-                      </a>
+                      </span>
                     </td>
 
                     {/* PHONE */}
@@ -525,135 +456,31 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
                       </div>
                     </td>
 
-                    {/* ACTIONS */}
+                    {/* Sticky Right ACTIONS Column */}
                     <td
+                      className="sticky right-0 z-10 bg-white group-hover:bg-slate-50/70 shadow-[-2px_0_4px_-1px_rgba(0,0,0,0.06)] border-l border-[#E2E8F0] transition-colors"
                       style={{
-                        width: '86.23px',
-                        padding: '12px 16px',
+                        width: '90px',
+                        minWidth: '90px',
+                        padding: '10px 16px',
                         boxSizing: 'border-box',
                         textAlign: 'center',
-                        position: 'relative',
                       }}
                     >
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveMenuId(isMenuOpen ? null : client.id);
-                        }}
-                        style={{
-                          width: '28px',
-                          height: '28px',
-                          borderRadius: '6px',
-                          border: 'none',
-                          backgroundColor: 'transparent',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          cursor: 'pointer',
-                        }}
-                        className="hover:bg-slate-100"
-                        title="Actions"
-                      >
-                        <MoreVertical size={16} color="#94A3B8" />
-                      </button>
-
-                      {/* Dropdown Menu */}
-                      {isMenuOpen && (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            right: '20px',
-                            top: '40px',
-                            width: '140px',
-                            backgroundColor: '#FFFFFF',
-                            border: '1px solid #E2E8F0',
-                            borderRadius: '8px',
-                            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
-                            zIndex: 50,
-                            padding: '4px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '2px',
-                          }}
-                        >
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setActiveMenuId(null);
-                              onViewClient(client);
-                            }}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '8px',
-                              padding: '6px 8px',
-                              fontSize: '12px',
-                              color: '#334155',
-                              backgroundColor: 'transparent',
-                              border: 'none',
-                              borderRadius: '4px',
-                              cursor: 'pointer',
-                              width: '100%',
-                              textAlign: 'left',
-                            }}
-                            className="hover:bg-slate-100"
-                          >
-                            <Eye size={14} color="#64748B" />
-                            <span>View Details</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setActiveMenuId(null);
-                              onEditClient(client);
-                            }}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '8px',
-                              padding: '6px 8px',
-                              fontSize: '12px',
-                              color: '#334155',
-                              backgroundColor: 'transparent',
-                              border: 'none',
-                              borderRadius: '4px',
-                              cursor: 'pointer',
-                              width: '100%',
-                              textAlign: 'left',
-                            }}
-                            className="hover:bg-slate-100"
-                          >
-                            <Edit size={14} color="#64748B" />
-                            <span>Edit Client</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setActiveMenuId(null);
-                              onDeleteClient(client.id);
-                            }}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '8px',
-                              padding: '6px 8px',
-                              fontSize: '12px',
-                              color: '#EF4444',
-                              backgroundColor: 'transparent',
-                              border: 'none',
-                              borderRadius: '4px',
-                              cursor: 'pointer',
-                              width: '100%',
-                              textAlign: 'left',
-                            }}
-                            className="hover:bg-red-50"
-                          >
-                            <Trash2 size={14} color="#EF4444" />
-                            <span>Delete</span>
-                          </button>
-                        </div>
-                      )}
+                      <div className="flex items-center justify-center">
+                        <TableActionMenu
+                          isOpen={activeMenuId === client.id}
+                          onToggle={() => setActiveMenuId((prev) => (prev === client.id ? null : client.id))}
+                          onClose={() => setActiveMenuId((prev) => (prev === client.id ? null : prev))}
+                          onViewDetails={() => onViewClient(client)}
+                          onEdit={() => onEditClient(client)}
+                          onDelete={() => onDeleteClient(client.id)}
+                          viewLabel="View Details"
+                          editLabel="Edit Client"
+                          deleteLabel="Delete"
+                          ariaLabel={`Actions for ${client.clientName}`}
+                        />
+                      </div>
                     </td>
                   </tr>
                 );
@@ -664,48 +491,25 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
       </div>
 
       {/* Pagination Footer */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '16px 20px',
-          width: '100%',
-          boxSizing: 'border-box',
-          fontFamily: "'Inter', sans-serif",
-          flexWrap: 'wrap',
-          gap: '12px',
-        }}
-      >
+      <div className="px-4 sm:px-5 py-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 bg-white">
         {/* Left: Showing Range */}
-        <div style={{ fontSize: '12px', color: '#64748B' }}>
-          Showing <span style={{ fontWeight: 600, color: '#1E293B' }}>{startRange} – {endRange}</span> of{' '}
-          <span style={{ fontWeight: 600, color: '#1E293B' }}>{totalCount}</span> clients
+        <div>
+          Showing <span className="font-semibold text-slate-800">{startRange} – {endRange}</span> of{' '}
+          <span className="font-semibold text-slate-800">{totalCount}</span> clients
         </div>
 
         {/* Center / Right: Page Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div className="flex items-center gap-4">
           {/* Page Buttons */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <div className="flex items-center gap-1">
             <button
               type="button"
               disabled={currentPage <= 1}
               onClick={() => onPageChange(currentPage - 1)}
-              style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: '6px',
-                border: '1px solid #E2E8F0',
-                backgroundColor: '#FFFFFF',
-                color: currentPage <= 1 ? '#CBD5E1' : '#64748B',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: currentPage <= 1 ? 'not-allowed' : 'pointer',
-              }}
+              className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+              title="Previous Page"
             >
-              <ChevronLeft size={14} />
+              <ChevronLeft size={15} />
             </button>
 
             {getPageNumbers().map((p) => {
@@ -715,20 +519,11 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
                   key={p}
                   type="button"
                   onClick={() => onPageChange(p)}
-                  style={{
-                    width: '28px',
-                    height: '28px',
-                    borderRadius: '6px',
-                    border: isActive ? 'none' : '1px solid #E2E8F0',
-                    backgroundColor: isActive ? '#4F46E5' : '#FFFFFF',
-                    color: isActive ? '#FFFFFF' : '#64748B',
-                    fontSize: '12px',
-                    fontWeight: isActive ? 600 : 500,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                  }}
+                  className={`w-8 h-8 flex items-center justify-center rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                    isActive
+                      ? 'bg-[#4F46E5] text-white shadow-xs'
+                      : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
+                  }`}
                 >
                   {p}
                 </button>
@@ -739,41 +534,19 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
               type="button"
               disabled={currentPage >= totalPages}
               onClick={() => onPageChange(currentPage + 1)}
-              style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: '6px',
-                border: '1px solid #E2E8F0',
-                backgroundColor: '#FFFFFF',
-                color: currentPage >= totalPages ? '#CBD5E1' : '#64748B',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
-              }}
+              className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+              title="Next Page"
             >
-              <ChevronRight size={14} />
+              <ChevronRight size={15} />
             </button>
           </div>
 
           {/* Page Size Select */}
-          <div style={{ position: 'relative' }}>
+          <div className="relative">
             <select
               value={pageSize}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
-              style={{
-                height: '30px',
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #E2E8F0',
-                borderRadius: '8px',
-                padding: '4px 26px 4px 10px',
-                fontFamily: "'Inter', sans-serif",
-                fontSize: '12px',
-                color: '#475569',
-                outline: 'none',
-                appearance: 'none',
-                cursor: 'pointer',
-              }}
+              className="appearance-none pl-3 pr-8 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-2xs"
             >
               <option value={8}>8 per page</option>
               <option value={10}>10 per page</option>
@@ -781,17 +554,10 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
               <option value={50}>50 per page</option>
               <option value={100}>100 per page</option>
             </select>
-            <div
-              style={{
-                position: 'absolute',
-                right: '8px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                pointerEvents: 'none',
-              }}
-            >
-              <ChevronDown size={14} color="#94A3B8" />
-            </div>
+            <ChevronDown
+              size={13}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+            />
           </div>
         </div>
       </div>

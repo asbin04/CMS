@@ -14,6 +14,7 @@ import { employeeService } from '@/services/employeeService';
 import { AddEmployeeModal } from '@/features/hr/components/AddEmployeeModal';
 import { EmployeeDetailModal } from '@/features/hr/components/EmployeeDetailModal';
 import { StatusDropdownMenu, StatusItemConfig } from '@/components/ui/StatusDropdownMenu';
+import { TableActionMenu } from '@/components/ui/TableActionMenu';
 
 export const EMPLOYEE_STATUS_CONFIGS: StatusItemConfig[] = [
   { value: 'Active', label: 'Active', dotColor: '#059669', textColor: '#059669' },
@@ -48,6 +49,30 @@ export const EmployeeMasterTabContent: React.FC<EmployeeMasterTabContentProps> =
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeData | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isDetailEditing, setIsDetailEditing] = useState(false);
+  const [activeActionMenuId, setActiveActionMenuId] = useState<number | null>(null);
+
+  const handleViewEmployee = (emp: EmployeeData) => {
+    setSelectedEmployee(emp);
+    setIsDetailEditing(false);
+    setIsDetailModalOpen(true);
+    setActiveActionMenuId(null);
+  };
+
+  const handleEditEmployee = (emp: EmployeeData) => {
+    setSelectedEmployee(emp);
+    setIsDetailEditing(true);
+    setIsDetailModalOpen(true);
+    setActiveActionMenuId(null);
+  };
+
+  const handleDeleteWithConfirm = async (emp: EmployeeData) => {
+    setActiveActionMenuId(null);
+    if (window.confirm(`Are you sure you want to delete ${emp.fullName} (${emp.employeeId})?`)) {
+      await employeeService.deleteEmployee(emp.id);
+      await fetchData();
+    }
+  };
 
   // Filters & Search State
   const [searchQuery, setSearchQuery] = useState('');
@@ -545,7 +570,13 @@ export const EmployeeMasterTabContent: React.FC<EmployeeMasterTabContentProps> =
                 <th className="px-[14px] py-[12px] text-left" style={{ width: '106.56px' }}>PT MONTHLY</th>
                 <th className="px-[14px] py-[12px] text-left" style={{ width: '115.13px' }}>TDS MONTHLY</th>
                 <th className="px-[14px] py-[12px] text-left" style={{ width: '104.73px' }}>NOTES</th>
-                <th className="px-[14px] py-[12px] text-center" style={{ width: '82.23px' }}>ACTIONS</th>
+                {/* 26. ACTIONS (Sticky Right) */}
+                <th
+                  className="px-[14px] py-[12px] text-center sticky right-0 z-20 bg-[#F8FAFC] shadow-[-2px_0_4px_-1px_rgba(0,0,0,0.06)] border-l border-[#E2E8F0]"
+                  style={{ width: '90px', minWidth: '90px' }}
+                >
+                  ACTIONS
+                </th>
               </tr>
             </thead>
 
@@ -574,7 +605,7 @@ export const EmployeeMasterTabContent: React.FC<EmployeeMasterTabContentProps> =
                   return (
                     <tr
                       key={emp.id}
-                      className="h-[49px] border-b border-[#F1F5F9] hover:bg-[#F8FAFC] transition-colors text-[12px]"
+                      className="h-[49px] border-b border-[#F1F5F9] hover:bg-[#F8FAFC] transition-colors text-[12px] group"
                     >
                       {/* 1. EMPLOYEE ID */}
                       <td className="px-[14px] py-[16px] whitespace-nowrap" style={{ width: '119.78px' }}>
@@ -737,18 +768,24 @@ export const EmployeeMasterTabContent: React.FC<EmployeeMasterTabContentProps> =
                         </span>
                       </td>
 
-                      {/* 26. ACTIONS */}
-                      <td className="px-[14px] py-[12.5px] whitespace-nowrap text-center" style={{ width: '82.23px' }}>
-                        <div className="flex justify-center">
-                          <button
-                            onClick={() => {
-                              setSelectedEmployee(emp);
-                              setIsDetailModalOpen(true);
-                            }}
-                            className="h-[28px] px-2.5 bg-white border border-[#E2E8F0] hover:bg-slate-50 text-[11px] font-semibold text-[#334155] rounded-[6px] transition-colors cursor-pointer"
-                          >
-                            View
-                          </button>
+                      {/* 26. ACTIONS (Sticky Right with TableActionMenu) */}
+                      <td
+                        className="px-[14px] py-[10px] whitespace-nowrap text-center sticky right-0 z-10 bg-white group-hover:bg-[#F8FAFC] shadow-[-2px_0_4px_-1px_rgba(0,0,0,0.06)] border-l border-[#E2E8F0] transition-colors"
+                        style={{ width: '90px', minWidth: '90px' }}
+                      >
+                        <div className="flex items-center justify-center">
+                          <TableActionMenu
+                            isOpen={activeActionMenuId === emp.id}
+                            onToggle={() => setActiveActionMenuId((prev) => (prev === emp.id ? null : emp.id))}
+                            onClose={() => setActiveActionMenuId((prev) => (prev === emp.id ? null : prev))}
+                            onViewDetails={() => handleViewEmployee(emp)}
+                            onEdit={() => handleEditEmployee(emp)}
+                            onDelete={() => handleDeleteWithConfirm(emp)}
+                            viewLabel="View Details"
+                            editLabel="Edit"
+                            deleteLabel="Delete"
+                            ariaLabel={`Actions for ${emp.fullName}`}
+                          />
                         </div>
                       </td>
                     </tr>
@@ -839,6 +876,7 @@ export const EmployeeMasterTabContent: React.FC<EmployeeMasterTabContentProps> =
         isOpen={isDetailModalOpen}
         onClose={() => {
           setIsDetailModalOpen(false);
+          setIsDetailEditing(false);
           setSelectedEmployee(null);
         }}
         onUpdate={async (id: number, data: Partial<EmployeeData>) => {
@@ -849,6 +887,7 @@ export const EmployeeMasterTabContent: React.FC<EmployeeMasterTabContentProps> =
           await employeeService.deleteEmployee(id);
           await fetchData();
         }}
+        initialIsEditing={isDetailEditing}
       />
     </div>
   );

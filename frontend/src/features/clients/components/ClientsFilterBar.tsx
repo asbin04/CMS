@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Search, Filter, RotateCcw, Calendar, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, Filter, RotateCcw, Calendar, ChevronDown } from 'lucide-react';
 import { ClientsFilterState } from '../types/clients';
+import { CalendarDateRangePicker } from '../../../components/ui/CalendarDateRangePicker';
 
 interface ClientsFilterBarProps {
   filterState: ClientsFilterState;
@@ -14,6 +15,7 @@ export const ClientsFilterBar: React.FC<ClientsFilterBarProps> = ({
   onClearFilters,
 }) => {
   const [showFiltersPanel, setShowFiltersPanel] = useState(true);
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   const statusOptions = ['All', 'Active', 'Pending', 'Prospect', 'Suspended', 'Inactive'];
   const clientTypeOptions = ['All', 'Enterprise', 'SMB', 'Startup', 'Government'];
@@ -52,177 +54,65 @@ export const ClientsFilterBar: React.FC<ClientsFilterBarProps> = ({
   ];
 
   return (
-    <div
-      style={{
-        backgroundColor: '#FFFFFF',
-        border: '1px solid #E2E8F0',
-        borderRadius: '12px',
-        padding: '16px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '16px',
-        width: '100%',
-        boxSizing: 'border-box',
-      }}
-    >
-      {/* Search Bar Row with Filters Toggle and Clear Button */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: '12px',
-          width: '100%',
-        }}
-      >
-        {/* Search Input Box */}
-        <div
-          style={{
-            position: 'relative',
-            flex: 1,
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              left: '12px',
-              display: 'flex',
-              alignItems: 'center',
-              pointerEvents: 'none',
-            }}
-          >
-            <Search size={16} color="#94A3B8" />
-          </div>
+    <div className="p-4 sm:p-5 flex flex-col gap-4 border-b border-slate-100 w-full">
+      {/* Top Search & Actions Row */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
+        {/* Search Input on the Left */}
+        <div className="relative flex-1">
+          <Search
+            size={18}
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#3B82F6] pointer-events-none"
+          />
           <input
             type="text"
             value={filterState.searchQuery}
             onChange={(e) => onFilterChange({ searchQuery: e.target.value })}
             placeholder="Search by client ID, client name, company, email or phone..."
-            style={{
-              width: '100%',
-              height: '34px',
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              borderRadius: '8px',
-              padding: '8px 16px 8px 36px',
-              fontFamily: "'Inter', sans-serif",
-              fontSize: '12px',
-              lineHeight: '15px',
-              color: '#1E293B',
-              outline: 'none',
-              boxSizing: 'border-box',
-            }}
+            className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
           />
         </div>
 
-        {/* Filters Toggle Button */}
-        <button
-          type="button"
-          onClick={() => setShowFiltersPanel(!showFiltersPanel)}
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            padding: '8px 12px',
-            gap: '6px',
-            height: '34px',
-            backgroundColor: '#FFFFFF',
-            border: '1px solid #BFDBFE',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            flexShrink: 0,
-          }}
-        >
-          <Filter size={14} color="#4F46E5" />
-          <span
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontSize: '12px',
-              fontWeight: 500,
-              color: '#4F46E5',
-            }}
+        {/* Buttons on the Right: Filters + Clear Filters */}
+        <div className="flex items-center gap-4 shrink-0 self-end sm:self-auto">
+          <button
+            type="button"
+            onClick={() => setShowFiltersPanel((prev) => !prev)}
+            className="flex items-center gap-[8px] h-[34px] px-[14px] py-[8px] bg-white border border-[#4F46E5] hover:bg-indigo-50/40 text-[#4F46E5] rounded-[8px] text-[13px] font-medium transition-colors cursor-pointer select-none"
           >
-            Filters
-          </span>
-          {showFiltersPanel ? (
-            <ChevronUp size={14} color="#4F46E5" />
-          ) : (
-            <ChevronDown size={14} color="#4F46E5" />
-          )}
-        </button>
+            <Filter size={15} className="text-[#4F46E5]" />
+            <span>Filters</span>
+            <ChevronDown
+              size={15}
+              className={`text-[#4F46E5] transition-transform duration-200 ${
+                showFiltersPanel ? '' : '-rotate-180'
+              }`}
+            />
+          </button>
 
-        {/* Clear Filters Button */}
-        <button
-          type="button"
-          onClick={onClearFilters}
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            padding: '8px 12px',
-            gap: '6px',
-            height: '34px',
-            backgroundColor: 'transparent',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            flexShrink: 0,
-          }}
-        >
-          <RotateCcw size={14} color="#4F46E5" />
-          <span
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontSize: '12px',
-              fontWeight: 500,
-              color: '#4F46E5',
-            }}
+          <button
+            type="button"
+            onClick={onClearFilters}
+            className="flex items-center gap-1.5 px-1 py-2 text-[13px] font-medium text-[#4F46E5] hover:text-[#4338CA] transition-colors cursor-pointer"
           >
-            Clear Filters
-          </span>
-        </button>
+            <RotateCcw size={15} className="text-[#4F46E5]" />
+            <span>Clear Filters</span>
+          </button>
+        </div>
       </div>
 
-      {/* Expanded Filters Dropdowns */}
+      {/* Filter Section: Clean, Organized Grid matching Leads layout */}
       {showFiltersPanel && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
-          {/* Row 1: 6 Select Dropdowns */}
-          <div
-            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 w-full"
-          >
-            {/* 1. Status */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: '11px',
-                  fontWeight: 500,
-                  color: '#64748B',
-                  lineHeight: '16px',
-                }}
-              >
-                Status
-              </label>
-              <div style={{ position: 'relative' }}>
+        <div className="flex flex-col gap-3.5 pb-1">
+          {/* Row 1: 6 Columns */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            {/* Status */}
+            <div className="flex flex-col">
+              <label className="text-xs font-medium text-slate-600 mb-1.5">Status</label>
+              <div className="relative">
                 <select
                   value={filterState.status}
                   onChange={(e) => onFilterChange({ status: e.target.value })}
-                  style={{
-                    width: '100%',
-                    height: '30px',
-                    backgroundColor: '#FFFFFF',
-                    border: '1px solid #E2E8F0',
-                    borderRadius: '8px',
-                    padding: '4px 28px 4px 10px',
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: '12px',
-                    color: '#1E293B',
-                    outline: 'none',
-                    appearance: 'none',
-                    cursor: 'pointer',
-                  }}
+                  className="w-full appearance-none px-3 py-2 pr-8 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer shadow-2xs"
                 >
                   {statusOptions.map((opt) => (
                     <option key={opt} value={opt}>
@@ -230,51 +120,21 @@ export const ClientsFilterBar: React.FC<ClientsFilterBarProps> = ({
                     </option>
                   ))}
                 </select>
-                <div
-                  style={{
-                    position: 'absolute',
-                    right: '8px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    pointerEvents: 'none',
-                  }}
-                >
-                  <ChevronDown size={14} color="#94A3B8" />
-                </div>
+                <ChevronDown
+                  size={14}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                />
               </div>
             </div>
 
-            {/* 2. Client Type */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: '11px',
-                  fontWeight: 500,
-                  color: '#64748B',
-                  lineHeight: '16px',
-                }}
-              >
-                Client Type
-              </label>
-              <div style={{ position: 'relative' }}>
+            {/* Client Type */}
+            <div className="flex flex-col">
+              <label className="text-xs font-medium text-slate-600 mb-1.5">Client Type</label>
+              <div className="relative">
                 <select
                   value={filterState.clientType}
                   onChange={(e) => onFilterChange({ clientType: e.target.value })}
-                  style={{
-                    width: '100%',
-                    height: '30px',
-                    backgroundColor: '#FFFFFF',
-                    border: '1px solid #E2E8F0',
-                    borderRadius: '8px',
-                    padding: '4px 28px 4px 10px',
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: '12px',
-                    color: '#1E293B',
-                    outline: 'none',
-                    appearance: 'none',
-                    cursor: 'pointer',
-                  }}
+                  className="w-full appearance-none px-3 py-2 pr-8 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer shadow-2xs"
                 >
                   {clientTypeOptions.map((opt) => (
                     <option key={opt} value={opt}>
@@ -282,51 +142,21 @@ export const ClientsFilterBar: React.FC<ClientsFilterBarProps> = ({
                     </option>
                   ))}
                 </select>
-                <div
-                  style={{
-                    position: 'absolute',
-                    right: '8px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    pointerEvents: 'none',
-                  }}
-                >
-                  <ChevronDown size={14} color="#94A3B8" />
-                </div>
+                <ChevronDown
+                  size={14}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                />
               </div>
             </div>
 
-            {/* 3. Industry */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: '11px',
-                  fontWeight: 500,
-                  color: '#64748B',
-                  lineHeight: '16px',
-                }}
-              >
-                Industry
-              </label>
-              <div style={{ position: 'relative' }}>
+            {/* Industry */}
+            <div className="flex flex-col">
+              <label className="text-xs font-medium text-slate-600 mb-1.5">Industry</label>
+              <div className="relative">
                 <select
                   value={filterState.industry}
                   onChange={(e) => onFilterChange({ industry: e.target.value })}
-                  style={{
-                    width: '100%',
-                    height: '30px',
-                    backgroundColor: '#FFFFFF',
-                    border: '1px solid #E2E8F0',
-                    borderRadius: '8px',
-                    padding: '4px 28px 4px 10px',
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: '12px',
-                    color: '#1E293B',
-                    outline: 'none',
-                    appearance: 'none',
-                    cursor: 'pointer',
-                  }}
+                  className="w-full appearance-none px-3 py-2 pr-8 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer shadow-2xs"
                 >
                   {industryOptions.map((opt) => (
                     <option key={opt} value={opt}>
@@ -334,51 +164,21 @@ export const ClientsFilterBar: React.FC<ClientsFilterBarProps> = ({
                     </option>
                   ))}
                 </select>
-                <div
-                  style={{
-                    position: 'absolute',
-                    right: '8px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    pointerEvents: 'none',
-                  }}
-                >
-                  <ChevronDown size={14} color="#94A3B8" />
-                </div>
+                <ChevronDown
+                  size={14}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                />
               </div>
             </div>
 
-            {/* 4. Country */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: '11px',
-                  fontWeight: 500,
-                  color: '#64748B',
-                  lineHeight: '16px',
-                }}
-              >
-                Country
-              </label>
-              <div style={{ position: 'relative' }}>
+            {/* Country */}
+            <div className="flex flex-col">
+              <label className="text-xs font-medium text-slate-600 mb-1.5">Country</label>
+              <div className="relative">
                 <select
                   value={filterState.country}
                   onChange={(e) => onFilterChange({ country: e.target.value })}
-                  style={{
-                    width: '100%',
-                    height: '30px',
-                    backgroundColor: '#FFFFFF',
-                    border: '1px solid #E2E8F0',
-                    borderRadius: '8px',
-                    padding: '4px 28px 4px 10px',
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: '12px',
-                    color: '#1E293B',
-                    outline: 'none',
-                    appearance: 'none',
-                    cursor: 'pointer',
-                  }}
+                  className="w-full appearance-none px-3 py-2 pr-8 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer shadow-2xs"
                 >
                   {countryOptions.map((opt) => (
                     <option key={opt} value={opt}>
@@ -386,51 +186,21 @@ export const ClientsFilterBar: React.FC<ClientsFilterBarProps> = ({
                     </option>
                   ))}
                 </select>
-                <div
-                  style={{
-                    position: 'absolute',
-                    right: '8px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    pointerEvents: 'none',
-                  }}
-                >
-                  <ChevronDown size={14} color="#94A3B8" />
-                </div>
+                <ChevronDown
+                  size={14}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                />
               </div>
             </div>
 
-            {/* 5. City */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: '11px',
-                  fontWeight: 500,
-                  color: '#64748B',
-                  lineHeight: '16px',
-                }}
-              >
-                City
-              </label>
-              <div style={{ position: 'relative' }}>
+            {/* City */}
+            <div className="flex flex-col">
+              <label className="text-xs font-medium text-slate-600 mb-1.5">City</label>
+              <div className="relative">
                 <select
                   value={filterState.city}
                   onChange={(e) => onFilterChange({ city: e.target.value })}
-                  style={{
-                    width: '100%',
-                    height: '30px',
-                    backgroundColor: '#FFFFFF',
-                    border: '1px solid #E2E8F0',
-                    borderRadius: '8px',
-                    padding: '4px 28px 4px 10px',
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: '12px',
-                    color: '#1E293B',
-                    outline: 'none',
-                    appearance: 'none',
-                    cursor: 'pointer',
-                  }}
+                  className="w-full appearance-none px-3 py-2 pr-8 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer shadow-2xs"
                 >
                   {cityOptions.map((opt) => (
                     <option key={opt} value={opt}>
@@ -438,51 +208,21 @@ export const ClientsFilterBar: React.FC<ClientsFilterBarProps> = ({
                     </option>
                   ))}
                 </select>
-                <div
-                  style={{
-                    position: 'absolute',
-                    right: '8px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    pointerEvents: 'none',
-                  }}
-                >
-                  <ChevronDown size={14} color="#94A3B8" />
-                </div>
+                <ChevronDown
+                  size={14}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                />
               </div>
             </div>
 
-            {/* 6. Account Owner */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: '11px',
-                  fontWeight: 500,
-                  color: '#64748B',
-                  lineHeight: '16px',
-                }}
-              >
-                Account Owner
-              </label>
-              <div style={{ position: 'relative' }}>
+            {/* Account Owner */}
+            <div className="flex flex-col">
+              <label className="text-xs font-medium text-slate-600 mb-1.5">Account Owner</label>
+              <div className="relative">
                 <select
                   value={filterState.accountOwner}
                   onChange={(e) => onFilterChange({ accountOwner: e.target.value })}
-                  style={{
-                    width: '100%',
-                    height: '30px',
-                    backgroundColor: '#FFFFFF',
-                    border: '1px solid #E2E8F0',
-                    borderRadius: '8px',
-                    padding: '4px 28px 4px 10px',
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: '12px',
-                    color: '#1E293B',
-                    outline: 'none',
-                    appearance: 'none',
-                    cursor: 'pointer',
-                  }}
+                  className="w-full appearance-none px-3 py-2 pr-8 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer shadow-2xs"
                 >
                   {accountOwnerOptions.map((opt) => (
                     <option key={opt} value={opt}>
@@ -490,65 +230,36 @@ export const ClientsFilterBar: React.FC<ClientsFilterBarProps> = ({
                     </option>
                   ))}
                 </select>
-                <div
-                  style={{
-                    position: 'absolute',
-                    right: '8px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    pointerEvents: 'none',
-                  }}
-                >
-                  <ChevronDown size={14} color="#94A3B8" />
-                </div>
+                <ChevronDown
+                  size={14}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                />
               </div>
             </div>
           </div>
 
           {/* Row 2: Onboarding Date */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '256px' }}>
-            <label
-              style={{
-                fontFamily: "'Inter', sans-serif",
-                fontSize: '11px',
-                fontWeight: 500,
-                color: '#64748B',
-                lineHeight: '16px',
-              }}
-            >
-              Onboarding Date
-            </label>
-            <div style={{ position: 'relative', width: '256px' }}>
-              <div
-                style={{
-                  position: 'absolute',
-                  left: '10px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  pointerEvents: 'none',
-                }}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="relative flex flex-col sm:col-span-2 lg:col-span-2">
+              <label className="text-xs font-medium text-slate-600 mb-1.5">Onboarding Date</label>
+              <button
+                type="button"
+                onClick={() => setIsDatePickerOpen((prev) => !prev)}
+                className="w-full flex items-center justify-between px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 hover:border-slate-300 transition-colors text-left shadow-2xs cursor-pointer"
               >
-                <Calendar size={14} color="#94A3B8" />
-              </div>
-              <input
-                type="text"
+                <div className="flex items-center gap-2 truncate">
+                  <Calendar size={14} className="text-slate-400 shrink-0" />
+                  <span className={filterState.onboardingDateRange ? 'text-slate-900 font-medium' : 'text-slate-400'}>
+                    {filterState.onboardingDateRange || 'Select date range'}
+                  </span>
+                </div>
+              </button>
+
+              <CalendarDateRangePicker
                 value={filterState.onboardingDateRange}
-                onChange={(e) => onFilterChange({ onboardingDateRange: e.target.value })}
-                placeholder="Select date range"
-                style={{
-                  width: '100%',
-                  height: '30px',
-                  backgroundColor: '#FFFFFF',
-                  border: '1px solid #E2E8F0',
-                  borderRadius: '8px',
-                  padding: '4px 10px 4px 32px',
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: '12px',
-                  lineHeight: '15px',
-                  color: '#1E293B',
-                  outline: 'none',
-                  boxSizing: 'border-box',
-                }}
+                onChange={(range) => onFilterChange({ onboardingDateRange: range })}
+                isOpen={isDatePickerOpen}
+                onClose={() => setIsDatePickerOpen(false)}
               />
             </div>
           </div>

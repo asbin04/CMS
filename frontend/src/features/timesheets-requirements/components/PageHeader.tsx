@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers } from 'lucide-react';
+import { Layers, RefreshCw } from 'lucide-react';
 
 export const PageHeader: React.FC = () => {
   return (
@@ -17,6 +17,15 @@ export const PageHeader: React.FC = () => {
           </p>
         </div>
       </div>
+      <button
+        type="button"
+        onClick={() => window.location.reload()}
+        title="Refresh"
+        aria-label="Refresh"
+        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer self-end sm:self-auto"
+      >
+        <RefreshCw className="w-4 h-4 text-slate-500" />
+      </button>
     </div>
   );
 };
