@@ -39,7 +39,16 @@ export const UiuxPage: React.FC = () => {
   const [selectedDesignType, setSelectedDesignType] = useState('All');
   const [selectedApprovalStatus, setSelectedApprovalStatus] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
-  const [isMoreFiltersOpen, setIsMoreFiltersOpen] = useState(false);
+  const [isMoreFiltersOpen, setIsMoreFiltersOpen] = useState(true);
+
+  // Clear all filters handler
+  const handleClearFilters = () => {
+    setSearchQuery('');
+    setSelectedProject('All');
+    setSelectedDesignType('All');
+    setSelectedApprovalStatus('All');
+    setSelectedStatus('All');
+  };
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -188,73 +197,173 @@ export const UiuxPage: React.FC = () => {
         background: '#F8FAFC',
       }}
     >
-      {/* Section - Breadcrumb and Page Header */}
+      {/* Section - Page Header with Actions */}
       <div
         style={{
           display: 'flex',
           flexDirection: 'row',
+          justifyContent: 'space-between',
           alignItems: 'center',
           width: '100%',
-          height: '48px',
           boxSizing: 'border-box',
-          gap: '12px',
         }}
       >
-        {/* Green Badge Icon (48x48px, #ECFDF5, border #D1FAE5, radius 12px) */}
+        {/* Left Side: Icon & Title/Subtitle */}
         <div
           style={{
-            boxSizing: 'border-box',
             display: 'flex',
             flexDirection: 'row',
-            justifyContent: 'center',
             alignItems: 'center',
-            width: '48px',
-            height: '48px',
-            background: '#ECFDF5',
-            border: '1px solid #D1FAE5',
-            borderRadius: '12px',
-            flexShrink: 0,
+            gap: '12px',
           }}
         >
-          <Monitor size={24} color="#059669" strokeWidth={1.8} />
+          {/* Green Badge Icon (48x48px, #ECFDF5, border #D1FAE5, radius 12px) */}
+          <div
+            style={{
+              boxSizing: 'border-box',
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '48px',
+              height: '48px',
+              background: '#ECFDF5',
+              border: '1px solid #D1FAE5',
+              borderRadius: '12px',
+              flexShrink: 0,
+            }}
+          >
+            <Monitor size={24} color="#059669" strokeWidth={1.8} />
+          </div>
+
+          {/* Heading and Description */}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              gap: '2px',
+            }}
+          >
+            <h1
+              style={{
+                margin: 0,
+                fontFamily: 'Inter',
+                fontStyle: 'normal',
+                fontWeight: 700,
+                fontSize: '20px',
+                lineHeight: '28px',
+                letterSpacing: '-0.5px',
+                color: '#0F172A',
+              }}
+            >
+              UI/UX
+            </h1>
+            <p
+              style={{
+                margin: 0,
+                fontFamily: 'Inter',
+                fontStyle: 'normal',
+                fontWeight: 400,
+                fontSize: '12px',
+                lineHeight: '16px',
+                color: '#64748B',
+              }}
+            >
+              Manage design deliverables, versions, client feedback, approvals and change requests.
+            </p>
+          </div>
         </div>
 
-        {/* Heading and Description */}
+        {/* Right Side: Action Buttons (Refresh, Export, Add Design) */}
         <div
           style={{
             display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            gap: '2px',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: '12px',
           }}
         >
-          <h1
+          {/* Refresh Button */}
+          <button
+            type="button"
+            onClick={loadData}
+            title="Refresh"
+            aria-label="Refresh"
             style={{
-              margin: 0,
-              fontFamily: 'Inter',
-              fontStyle: 'normal',
-              fontWeight: 700,
-              fontSize: '20px',
-              lineHeight: '28px',
-              letterSpacing: '-0.5px',
-              color: '#0F172A',
+              boxSizing: 'border-box',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '32px',
+              height: '32px',
+              background: 'transparent',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
             }}
+            className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
           >
-            UI/UX
-          </h1>
-          <p
+            <RefreshCw size={15} color="#64748B" className={isLoading ? 'animate-spin' : ''} />
+          </button>
+
+          {/* Export Button */}
+          <button
+            type="button"
+            onClick={handleExport}
             style={{
-              margin: 0,
+              boxSizing: 'border-box',
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              padding: '8px 14px',
+              gap: '6px',
+              height: '36px',
+              background: '#FFFFFF',
+              border: '1px solid #E2E8F0',
+              borderRadius: '8px',
+              cursor: 'pointer',
               fontFamily: 'Inter',
-              fontStyle: 'normal',
-              fontWeight: 400,
+              fontWeight: 600,
               fontSize: '12px',
               lineHeight: '16px',
-              color: '#64748B',
+              color: '#334155',
+              boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
             }}
+            className="hover:bg-slate-50 transition-colors"
           >
-            Manage design deliverables, versions, client feedback, approvals and change requests.
-          </p>
+            <Download size={16} color="#64748B" strokeWidth={1.33} />
+            <span>Export</span>
+          </button>
+
+          {/* + Add Design Button */}
+          <button
+            type="button"
+            onClick={() => setIsAddModalOpen(true)}
+            style={{
+              boxSizing: 'border-box',
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              padding: '8px 16px',
+              gap: '6px',
+              height: '36px',
+              background: '#4F46E5',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontFamily: 'Inter',
+              fontWeight: 600,
+              fontSize: '12px',
+              lineHeight: '16px',
+              color: '#FFFFFF',
+              boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
+            }}
+            className="hover:bg-indigo-700 transition-colors"
+          >
+            <Plus size={16} color="#FFFFFF" strokeWidth={1.33} />
+            <span>Add Design</span>
+          </button>
         </div>
       </div>
 
@@ -307,116 +416,52 @@ export const UiuxPage: React.FC = () => {
       {/* Section - KPI Metric Cards */}
       <UiuxKpiCards kpis={kpis} />
 
-      {/* Section - Tabs and Action Buttons Header */}
+      {/* Unified Filter and Table Container */}
       <div
         style={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-          width: '100%',
-          height: '34px',
           boxSizing: 'border-box',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          padding: '0px',
+          width: '100%',
+          background: '#FFFFFF',
+          border: '1px solid rgba(226, 232, 240, 0.9)',
+          borderRadius: '12px',
+          overflow: 'hidden',
+          boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: '10px',
-            width: '221px',
-            height: '34px',
-          }}
-        >
-          {/* Export Button */}
-          <button
-            type="button"
-            onClick={handleExport}
-            style={{
-              boxSizing: 'border-box',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              padding: '8px 14px',
-              gap: '6px',
-              width: '90.11px',
-              height: '34px',
-              background: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontFamily: 'Inter',
-              fontWeight: 600,
-              fontSize: '12px',
-              lineHeight: '16px',
-              color: '#334155',
-            }}
-            className="hover:bg-slate-50 transition-colors"
-          >
-            <Download size={16} color="#64748B" strokeWidth={1.33} />
-            <span>Export</span>
-          </button>
+        {/* Filter Controls Bar */}
+        <UiuxFilterBar
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          selectedProject={selectedProject}
+          onProjectChange={setSelectedProject}
+          selectedDesignType={selectedDesignType}
+          onDesignTypeChange={setSelectedDesignType}
+          selectedApprovalStatus={selectedApprovalStatus}
+          onApprovalStatusChange={setSelectedApprovalStatus}
+          selectedStatus={selectedStatus}
+          onStatusChange={setSelectedStatus}
+          filterOptions={filterOptions}
+          onToggleMoreFilters={() => setIsMoreFiltersOpen(!isMoreFiltersOpen)}
+          isMoreFiltersOpen={isMoreFiltersOpen}
+          onClearFilters={handleClearFilters}
+        />
 
-          {/* + Add Design Button */}
-          <button
-            type="button"
-            onClick={() => setIsAddModalOpen(true)}
-            style={{
-              boxSizing: 'border-box',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              padding: '8px 16px',
-              gap: '6px',
-              width: '120.89px',
-              height: '32px',
-              background: '#4F46E5',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontFamily: 'Inter',
-              fontWeight: 600,
-              fontSize: '12px',
-              lineHeight: '16px',
-              color: '#FFFFFF',
-            }}
-            className="hover:bg-indigo-700 transition-colors"
-          >
-            <Plus size={16} color="#FFFFFF" strokeWidth={1.33} />
-            <span>Add Design</span>
-          </button>
-        </div>
+        {/* 17 Columns Data Table & Pagination */}
+        <UiuxTable
+          designs={paginatedDesigns}
+          onEdit={(item) => setEditingDesign(item)}
+          onDelete={handleDeleteDesign}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          pageSize={pageSize}
+          onPageSizeChange={setPageSize}
+          totalElements={totalElements}
+        />
       </div>
-
-      {/* Filter Controls Bar */}
-      <UiuxFilterBar
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        selectedProject={selectedProject}
-        onProjectChange={setSelectedProject}
-        selectedDesignType={selectedDesignType}
-        onDesignTypeChange={setSelectedDesignType}
-        selectedApprovalStatus={selectedApprovalStatus}
-        onApprovalStatusChange={setSelectedApprovalStatus}
-        selectedStatus={selectedStatus}
-        onStatusChange={setSelectedStatus}
-        filterOptions={filterOptions}
-        onToggleMoreFilters={() => setIsMoreFiltersOpen(!isMoreFiltersOpen)}
-        isMoreFiltersOpen={isMoreFiltersOpen}
-      />
-
-      {/* 17 Columns Data Table & Pagination */}
-      <UiuxTable
-        designs={paginatedDesigns}
-        onEdit={(item) => setEditingDesign(item)}
-        onDelete={handleDeleteDesign}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-        pageSize={pageSize}
-        onPageSizeChange={setPageSize}
-        totalElements={totalElements}
-      />
 
       {/* Modals */}
       <AddDesignModal

@@ -124,9 +124,7 @@ export const UiuxTable: React.FC<UiuxTableProps> = ({
         padding: '0px',
         width: '100%',
         background: '#FFFFFF',
-        border: '1px solid rgba(226, 232, 240, 0.9)',
-        borderRadius: '12px',
-        overflow: 'hidden',
+        borderTop: '1px solid #E2E8F0',
       }}
     >
       {/* Horizontally scrollable table container (width: 1925.97px) */}

@@ -9,41 +9,58 @@ import { SalesPerformanceCards } from '../components/SalesPerformanceCards';
 import { SalesConversionFunnelCard } from '../components/SalesConversionFunnelCard';
 import { SalesWorkflowCard } from '../components/SalesWorkflowCard';
 import { SalesDashboardSkeleton } from '../components/SalesDashboardSkeleton';
-import { salesDashboardService } from '../services/salesDashboardService';
+import { salesDashboardService, clearSalesDashboardMemoryCache } from '../services/salesDashboardService';
 import { exportSalesDashboardCsv } from '../utils/exportCsv';
 import { SalesDashboardData } from '../types';
+import { apiClient } from '../../../services/api/apiClient';
+import { NOTIFICATION_REFRESH_EVENT } from '../../../services/notificationService';
 
 export const SalesDashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const outletContext = useOutletContext<AppLayoutContextType | undefined>();
+
+  // Determine active period; compute current dynamic fiscal year if no explicit range is selected
+  const currentYear = new Date().getFullYear();
+  const defaultFiscalYear = `Apr ${currentYear} - Mar ${currentYear + 1}`;
   const activeDateRange = outletContext?.dateRange && outletContext.dateRange !== '—'
     ? outletContext.dateRange
-    : 'Apr 2024 - Mar 2025';
+    : defaultFiscalYear;
 
   const { toasts, addToast, removeToast } = useToast();
 
-  const [data, setData] = useState<SalesDashboardData | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [data, setData] = useState<SalesDashboardData | null>(() => {
+    return salesDashboardService.getCachedDashboard(activeDateRange);
+  });
+  const dataRef = useRef<SalesDashboardData | null>(null);
+  dataRef.current = data;
+
+  const [isLoading, setIsLoading] = useState<boolean>(() => !data);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Monotonic request sequence tracker to prevent stale responses overwriting newer date filters
+  // Monotonic request sequence tracker to prevent stale responses overwriting newer data
   const requestIdRef = useRef<number>(0);
 
   // Load sales dashboard data based on active period
-  const loadData = useCallback(async (period: string, isManualRefresh = false) => {
+  const loadData = useCallback(async (period: string, isManualRefresh = false, skipCache = false) => {
     const currentReqId = ++requestIdRef.current;
     if (isManualRefresh) {
       setIsRefreshing(true);
-    } else {
-      setIsLoading(true);
+    } else if (!dataRef.current) {
+      const cached = salesDashboardService.getCachedDashboard(period);
+      if (cached && !skipCache) {
+        setData(cached);
+        setIsLoading(false);
+      } else {
+        setIsLoading(true);
+      }
     }
     setErrorMessage(null);
 
     try {
-      const result = await salesDashboardService.getDashboardData(period);
-      // Ignore response if user switched date filter before this request finished
+      const result = await salesDashboardService.getDashboardData(period, { skipCache });
+      // Ignore response if a newer request has already been initiated
       if (currentReqId !== requestIdRef.current) return;
 
       setData(result);
@@ -65,13 +82,32 @@ export const SalesDashboardPage: React.FC = () => {
 
   // Initial and reactive load when dateRange changes
   useEffect(() => {
-    loadData(activeDateRange);
+    loadData(activeDateRange, false, false);
   }, [activeDateRange, loadData]);
 
-  // Manual refresh with duplicate request prevention
+  // Reactively listen to sales mutation events across the app to reload fresh data
+  useEffect(() => {
+    const handleSalesUpdate = () => {
+      apiClient.clearCache();
+      clearSalesDashboardMemoryCache();
+      loadData(activeDateRange, false, true);
+    };
+
+    window.addEventListener(NOTIFICATION_REFRESH_EVENT, handleSalesUpdate);
+    window.addEventListener('cms_sales_data_changed', handleSalesUpdate);
+
+    return () => {
+      window.removeEventListener(NOTIFICATION_REFRESH_EVENT, handleSalesUpdate);
+      window.removeEventListener('cms_sales_data_changed', handleSalesUpdate);
+    };
+  }, [activeDateRange, loadData]);
+
+  // Manual refresh with cache clearance and visual spinning indicator
   const handleRefresh = () => {
     if (isRefreshing || isLoading) return;
-    loadData(activeDateRange, true);
+    apiClient.clearCache();
+    clearSalesDashboardMemoryCache();
+    loadData(activeDateRange, true, true);
   };
 
   // CSV Report Export via backend endpoint with JWT auth

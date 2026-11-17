@@ -95,6 +95,26 @@ class SalesDashboardPeriodParserTest {
     }
 
     @Test
+    @DisplayName("Should parse custom day-month-year range '01 Nov 2026 - 16 Nov 2026'")
+    void testDayMonthYearRange() {
+        SalesDashboardPeriodParser.DateRange range = SalesDashboardPeriodParser.parse(null, null, "01 Nov 2026 - 16 Nov 2026");
+        assertNotNull(range);
+        assertEquals(LocalDate.of(2026, 11, 1), range.startDate());
+        assertEquals(LocalDate.of(2026, 11, 16), range.endDate());
+        assertEquals("01 Nov 2026 - 16 Nov 2026", range.periodLabel());
+    }
+
+    @Test
+    @DisplayName("Should parse single day format '16 Nov 2026'")
+    void testSingleDayFormat() {
+        SalesDashboardPeriodParser.DateRange range = SalesDashboardPeriodParser.parse(null, null, "16 Nov 2026");
+        assertNotNull(range);
+        assertEquals(LocalDate.of(2026, 11, 16), range.startDate());
+        assertEquals(LocalDate.of(2026, 11, 16), range.endDate());
+        assertEquals("16 Nov 2026", range.periodLabel());
+    }
+
+    @Test
     @DisplayName("Should throw BusinessValidationException when period label is unsupported")
     void testUnsupportedPeriodLabel() {
         BusinessValidationException ex = assertThrows(BusinessValidationException.class, () ->

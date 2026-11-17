@@ -115,72 +115,49 @@ export const TimesheetsSection: React.FC = () => {
       <ToastNotification toasts={toasts} onDismiss={removeToast} position="top-right" />
 
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold text-slate-900 tracking-tight">Timesheets</h2>
-        <div className="flex items-center gap-2.5 self-end sm:self-auto">
-          {/* Export Button with Visible Light-Grey Border */}
-          <button
-            type="button"
-            onClick={handleExport}
-            className="inline-flex items-center gap-2 px-3.5 py-2 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-300 text-slate-700 hover:text-slate-900 text-xs font-semibold rounded-xl shadow-xs transition-all cursor-pointer h-[36px]"
-            style={{
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #CBD5E1',
-              borderRadius: '12px',
-              boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-              color: '#334155',
-            }}
-          >
-            <Download className="w-3.5 h-3.5 text-slate-600" />
-            <span>Export</span>
-          </button>
-
-          {/* + Log Time Button */}
-          <button
-            type="button"
-            onClick={() => setIsLogTimeOpen(true)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-semibold rounded-[10px] shadow-sm transition-colors cursor-pointer h-[36px]"
-          >
-            <Plus className="w-3.5 h-3.5 text-white" />
-            <span>Log Time</span>
-          </button>
-        </div>
       </div>
 
       {/* Dynamic KPI Cards */}
       <TimesheetsKpiCards kpis={kpis} />
 
-      {/* Dynamic Filter Bar */}
-      <TimesheetsFilterBar
-        search={search}
-        onSearchChange={setSearch}
-        projectFilter={projectFilter}
-        onProjectFilterChange={setProjectFilter}
-        employeeFilter={employeeFilter}
-        onEmployeeFilterChange={setEmployeeFilter}
-        approvalFilter={approvalFilter}
-        onApprovalFilterChange={setApprovalFilter}
-        billableFilter={billableFilter}
-        onBillableFilterChange={setBillableFilter}
-        onResetFilters={resetFilters}
-      />
+      {/* Unified Filter and Table Container */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col w-full">
+        {/* Dynamic Filter Bar */}
+        <TimesheetsFilterBar
+          search={search}
+          onSearchChange={setSearch}
+          projectFilter={projectFilter}
+          onProjectFilterChange={setProjectFilter}
+          employeeFilter={employeeFilter}
+          onEmployeeFilterChange={setEmployeeFilter}
+          approvalFilter={approvalFilter}
+          onApprovalFilterChange={setApprovalFilter}
+          billableFilter={billableFilter}
+          onBillableFilterChange={setBillableFilter}
+          onResetFilters={resetFilters}
+          onExport={handleExport}
+          onLogTime={() => setIsLogTimeOpen(true)}
+        />
 
-      {/* Dynamic Table */}
-      <TimesheetsTable
-        records={paginatedRecords}
-        totalCount={totalRecordsCount}
-        currentPage={currentPage}
-        pageSize={pageSize}
-        onPageChange={setCurrentPage}
-        onPageSizeChange={setPageSize}
-        onUpdateApprovalStatus={handleApprovalChange}
-        onViewDetails={(rec) => setViewRecord(rec)}
-        onEdit={(rec) => setEditRecord(rec)}
-        onDelete={(id) => setDeleteId(id)}
-        sortField={sortField}
-        sortOrder={sortOrder}
-        onSort={handleSort}
-      />
+        {/* Dynamic Table */}
+        <TimesheetsTable
+          records={paginatedRecords}
+          totalCount={totalRecordsCount}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={setPageSize}
+          onUpdateApprovalStatus={handleApprovalChange}
+          onViewDetails={(rec) => setViewRecord(rec)}
+          onEdit={(rec) => setEditRecord(rec)}
+          onDelete={(id) => setDeleteId(id)}
+          sortField={sortField}
+          sortOrder={sortOrder}
+          onSort={handleSort}
+        />
+      </div>
 
       {/* Modals */}
       <LogTimeModal

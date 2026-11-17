@@ -255,4 +255,43 @@ describe('SalesDashboardPage', () => {
 
     errorSpy.mockRestore();
   });
+
+  it('automatically refetches fresh data when cms_sales_data_changed event is dispatched', async () => {
+    const getDashboardDataSpy = vi.spyOn(salesDashboardService, 'getDashboardData');
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText('Sales Performance & Pipeline')).toBeInTheDocument();
+    });
+
+    const initialCallCount = getDashboardDataSpy.mock.calls.length;
+
+    // Simulate lead/opportunity creation elsewhere in the app
+    window.dispatchEvent(new CustomEvent('cms_sales_data_changed', { detail: { type: 'lead' } }));
+
+    await waitFor(() => {
+      expect(getDashboardDataSpy.mock.calls.length).toBeGreaterThan(initialCallCount);
+    });
+  });
+
+  it('manual refresh invokes getDashboardData with skipCache: true and shows toast', async () => {
+    const getDashboardDataSpy = vi.spyOn(salesDashboardService, 'getDashboardData');
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByTitle('Refresh sales data')).toBeInTheDocument();
+    });
+
+    const refreshBtn = screen.getByTitle('Refresh sales data');
+    fireEvent.click(refreshBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText('Sales performance data refreshed successfully.')).toBeInTheDocument();
+    });
+
+    expect(getDashboardDataSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ skipCache: true })
+    );
+  });
 });

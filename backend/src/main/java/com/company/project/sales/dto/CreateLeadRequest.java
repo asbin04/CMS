@@ -16,19 +16,23 @@ public class CreateLeadRequest {
 
     @NotBlank(message = "Company name is required")
     @Size(max = 255)
+    @Pattern(
+        regexp = "^(?=.*[\\p{L}])[\\p{L}0-9\\s.'&/()#,-]+$",
+        message = "Enter a valid company name containing letters."
+    )
     private String company;
 
     @NotBlank(message = "Contact name is required")
     @Size(max = 255)
     @Pattern(
         regexp = "^(?=[^0-9]*$)(?=[\\s.'-]*\\p{L})[\\p{L}\\s.'-]+$",
-        message = "Name must contain letters only. Numbers and special characters are not allowed."
+        message = "Enter a valid contact person name."
     )
     private String contactName;
 
     @NotBlank(message = "Email is required")
     @Pattern(
-        regexp = "^(?!.*\\.\\.)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)*\\.[a-zA-Z]{2,}$",
+        regexp = "^(?!.*\\.\\.)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)*\\.[a-zA-Z]{2,}$",
         message = "Enter a valid email address."
     )
     private String email;
@@ -74,4 +78,5 @@ public class CreateLeadRequest {
     private LocalDate expectedCloseDate;
     private String lostReason;
     private String notes;
+    private Boolean confirmTypoDomain;
 }

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { X, Building2, Clock } from 'lucide-react';
 import { Lead } from '../types/leads';
 import { formatRupee } from '../../collections/utils';
+import { formatDisplayDate } from './LeadsTable';
 
 interface LeadDetailModalProps {
   lead: Lead | null;
@@ -110,7 +111,7 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1.5">Lead Date</label>
               <div className="w-full h-[38px] px-3.5 py-2 bg-slate-50/60 border border-slate-200 rounded-lg text-xs text-slate-800 flex items-center truncate">
-                {lead.leadDate || '—'}
+                {formatDisplayDate(lead.leadDate)}
               </div>
             </div>
 
@@ -217,8 +218,8 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
                 {(() => {
                   const rawVal = lead.expectedValue ?? lead.estimatedValue;
                   if (rawVal == null || rawVal === '') return '—';
-                  const numVal = typeof rawVal === 'number' ? rawVal : Number(rawVal);
-                  return !isNaN(numVal) ? formatRupee(numVal) : String(rawVal);
+                  const numVal = typeof rawVal === 'number' ? rawVal : Number(String(rawVal).replace(/[^\d.-]/g, ''));
+                  return !isNaN(numVal) && isFinite(numVal) ? formatRupee(numVal) : String(rawVal);
                 })()}
               </div>
             </div>
@@ -227,7 +228,7 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1.5">Expected Close Date</label>
               <div className="w-full h-[38px] px-3.5 py-2 bg-slate-50/60 border border-slate-200 rounded-lg text-xs text-slate-800 flex items-center truncate">
-                {lead.expectedCloseDate || '—'}
+                {formatDisplayDate(lead.expectedCloseDate)}
               </div>
             </div>
 
@@ -237,7 +238,7 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
               <div className="w-full h-[38px] px-3.5 py-2 bg-slate-50/60 border border-slate-200 rounded-lg text-xs flex items-center">
                 {lead.nextFollowUp ? (
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#FEE2E2] text-[#DC2626] border border-[#FECACA]">
-                    {lead.nextFollowUp}
+                    {formatDisplayDate(lead.nextFollowUp)}
                   </span>
                 ) : (
                   <span className="text-slate-400">—</span>
@@ -259,7 +260,7 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1.5">Lost Reason</label>
               <div className="w-full h-[38px] px-3.5 py-2 bg-slate-50/60 border border-slate-200 rounded-lg text-xs text-slate-500 flex items-center truncate">
-                {lead.lostReason || '-'}
+                {lead.lostReason || '—'}
               </div>
             </div>
           </div>
