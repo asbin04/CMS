@@ -36,30 +36,21 @@ public class ExpenseServiceImpl implements ExpenseService {
         BigDecimal approved = repository.sumExpensesByStatus("Approved");
         BigDecimal pending = repository.sumExpensesByStatus("Pending");
         BigDecimal rejected = repository.sumExpensesByStatus("Rejected");
-        BigDecimal thisMonth = repository.sumExpensesByMonth("Oct 2026");
+        String currentMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("MMM yyyy", Locale.ENGLISH));
+        BigDecimal thisMonth = repository.sumExpensesByMonth(currentMonth);
         long count = repository.count();
 
-        // If no records in db, provide fallback defaults matching design
-        if (count == 0) {
-            total = new BigDecimal("18760.00");
-            approved = new BigDecimal("15760.00");
-            pending = new BigDecimal("23760.00");
-            rejected = new BigDecimal("37950.00");
-            thisMonth = new BigDecimal("37950.00");
-            count = 124;
-        }
-
         return ExpenseKpiResponse.builder()
-                .totalExpenses(total)
-                .approvedExpenses(approved)
-                .pendingApproval(pending)
-                .rejectedExpenses(rejected)
-                .thisMonthExpenses(thisMonth)
-                .totalExpensesTrend(14)
-                .approvedExpensesTrend(18)
-                .pendingApprovalTrend(6)
-                .rejectedExpensesTrend(28)
-                .thisMonthExpensesTrend(12)
+                .totalExpenses(total != null ? total : BigDecimal.ZERO)
+                .approvedExpenses(approved != null ? approved : BigDecimal.ZERO)
+                .pendingApproval(pending != null ? pending : BigDecimal.ZERO)
+                .rejectedExpenses(rejected != null ? rejected : BigDecimal.ZERO)
+                .thisMonthExpenses(thisMonth != null ? thisMonth : BigDecimal.ZERO)
+                .totalExpensesTrend(0)
+                .approvedExpensesTrend(0)
+                .pendingApprovalTrend(0)
+                .rejectedExpensesTrend(0)
+                .thisMonthExpensesTrend(0)
                 .totalCount(count)
                 .build();
     }
@@ -93,7 +84,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         String code = request.getExpenseCode();
         if (code == null || code.isBlank()) {
             long nextVal = repository.count() + 1;
-            code = String.format("EXP-%d-%04d", LocalDate.now().getYear(), 483 + nextVal);
+            code = String.format("EXP-%d-%04d", LocalDate.now().getYear(), nextVal);
         }
 
         BigDecimal beforeTax = request.getAmountBeforeTax() != null ? request.getAmountBeforeTax() : BigDecimal.ZERO;
@@ -124,7 +115,7 @@ public class ExpenseServiceImpl implements ExpenseService {
                 .expenseBucket(request.getExpenseBucket() != null ? request.getExpenseBucket() : "Operational")
                 .isProjectExpense(request.getProjectId() != null && !request.getProjectId().isBlank())
                 .projectLabel(request.getProjectId())
-                .createdBy(request.getEmployeeId() != null ? request.getEmployeeId() : "EMP-014")
+                .createdBy(request.getEmployeeId() != null && !request.getEmployeeId().isBlank() ? request.getEmployeeId() : "SYSTEM")
                 .build();
 
         ExpenseEntity saved = repository.save(entity);

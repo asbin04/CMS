@@ -1,5 +1,8 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { ReloadButton } from '../../../components/ui/ReloadButton';
+import { ExportButton } from '../../../components/ui/ExportButton';
+import { ToastNotification, useToast } from '../../../components/ui/ToastNotification';
+import { Skeleton } from '../../../components/ui/Skeleton';
 import {
   Users,
   RotateCcw,
@@ -40,14 +43,85 @@ const formatCurrency = (val: number | string | undefined | null): string => {
   return '₹ ' + num.toLocaleString('en-IN');
 };
 
+function parseCsvRecords(text: string): Record<string, string>[] {
+  const lines: string[] = [];
+  let currentLine = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    if (char === '"') {
+      inQuotes = !inQuotes;
+      currentLine += char;
+    } else if ((char === '\n' || char === '\r') && !inQuotes) {
+      if (char === '\r' && text[i + 1] === '\n') {
+        i++;
+      }
+      if (currentLine.trim()) {
+        lines.push(currentLine);
+      }
+      currentLine = '';
+    } else {
+      currentLine += char;
+    }
+  }
+  if (currentLine.trim()) {
+    lines.push(currentLine);
+  }
+
+  if (lines.length < 2) return [];
+
+  const splitRow = (row: string): string[] => {
+    const cells: string[] = [];
+    let cell = '';
+    let inQ = false;
+    for (let i = 0; i < row.length; i++) {
+      const c = row[i];
+      if (c === '"') {
+        if (inQ && row[i + 1] === '"') {
+          cell += '"';
+          i++;
+        } else {
+          inQ = !inQ;
+        }
+      } else if (c === ',' && !inQ) {
+        cells.push(cell.trim());
+        cell = '';
+      } else {
+        cell += c;
+      }
+    }
+    cells.push(cell.trim());
+    return cells;
+  };
+
+  const headers = splitRow(lines[0]).map((h) =>
+    h.toLowerCase().replace(/[^a-z0-9]/g, '')
+  );
+
+  const records: Record<string, string>[] = [];
+  for (let i = 1; i < lines.length; i++) {
+    const values = splitRow(lines[i]);
+    const obj: Record<string, string> = {};
+    headers.forEach((header, idx) => {
+      obj[header] = values[idx] !== undefined ? values[idx] : '';
+    });
+    records.push(obj);
+  }
+  return records;
+}
+
 export const EmployeeMasterPage: React.FC = () => {
   // Data state
   const [employees, setEmployees] = useState<EmployeeData[]>([]);
   const [summary, setSummary] = useState<EmployeeSummaryData | null>(null);
-  const getFormattedTimestamp = () => { const now = new Date(); return `${now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}, ${now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`; };
-  const [lastUpdated, setLastUpdated] = useState<string>(getFormattedTimestamp);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isImporting, setIsImporting] = useState(false);
+
+  // Toast notifications & File input ref
+  const { toasts, addToast, removeToast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -81,10 +155,6 @@ export const EmployeeMasterPage: React.FC = () => {
       if (summaryData) {
         setSummary(summaryData);
       }
-      const now = new Date();
-      setLastUpdated(
-        `${now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}, ${now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`
-      );
     } catch (err) {
       // Failed to fetch employee data
     } finally {
@@ -273,6 +343,136 @@ export const EmployeeMasterPage: React.FC = () => {
     await fetchData();
   };
 
+  const handleImportClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsImporting(true);
+      const text = await file.text();
+      const rows = parseCsvRecords(text);
+      if (rows.length === 0) {
+        addToast('error', 'Import Failed', 'CSV file is empty or missing data rows.');
+        return;
+      }
+
+      const today = new Date().toISOString().slice(0, 10);
+      const payloads: CreateEmployeePayload[] = [];
+
+      for (const row of rows) {
+        const fullName = (
+          row.fullname ||
+          row.name ||
+          row.employeename ||
+          ''
+        ).trim();
+
+        if (!fullName) continue;
+
+        const email =
+          (row.email || row.workemail || row.emailaddress || '').trim() ||
+          `${fullName.toLowerCase().replace(/[^a-z0-9]/g, '.')}@kalpanaaasoftwaresolutions.in`;
+
+        const phone = (row.phone || row.phonenumber || row.mobile || '').trim() || '-';
+        const department = (row.department || row.dept || '').trim() || 'Engineering';
+        const designation = (row.designation || row.role || row.jobtitle || '').trim() || 'Associate';
+        const employmentType = (row.employmenttype || row.type || '').trim() || 'Full Time';
+        const status = (row.status || '').trim() || 'Active';
+        const location = (row.location || row.branch || row.city || '').trim() || 'Bangalore';
+        const reportingManager = (row.reportingmanager || row.manager || '').trim() || '';
+        const joiningDate = (row.joiningdate || row.dateofjoining || row.doj || '').trim() || today;
+        const employeeId = (row.employeeid || row.empid || row.id || '').trim() || undefined;
+        const employeeCode = (row.employeecode || row.empcode || row.code || '').trim() || undefined;
+
+        const rawCtc = row.monthlyctc || row.ctc || row.monthlysalary || row.salary || '';
+        const monthlyCtc = parseFloat(String(rawCtc).replace(/[^0-9.]/g, '')) || 0;
+
+        const rawAnnual = row.annualctc || '';
+        const annualCtc = rawAnnual ? parseFloat(String(rawAnnual).replace(/[^0-9.]/g, '')) : undefined;
+
+        const rawCost = row.monthlycost || '';
+        const monthlyCost = rawCost ? parseFloat(String(rawCost).replace(/[^0-9.]/g, '')) : undefined;
+
+        const rawBasic = row.basic || row.basicpercentage || '';
+        const basicPercentage = rawBasic ? parseFloat(String(rawBasic).replace(/[^0-9.]/g, '')) : undefined;
+
+        const rawHra = row.hra || row.hrapercentage || '';
+        const hraPercentage = rawHra ? parseFloat(String(rawHra).replace(/[^0-9.]/g, '')) : undefined;
+
+        const rawOther = row.otherallowance || '';
+        const otherAllowance = rawOther ? parseFloat(String(rawOther).replace(/[^0-9.]/g, '')) : undefined;
+
+        const rawPf = row.employeepf || row.employeepfpercentage || '';
+        const employeePfPercentage = rawPf ? parseFloat(String(rawPf).replace(/[^0-9.]/g, '')) : undefined;
+
+        const rawEsi = row.employeeesi || row.employeeesipercentage || '';
+        const employeeEsiPercentage = rawEsi ? parseFloat(String(rawEsi).replace(/[^0-9.]/g, '')) : undefined;
+
+        const rawPt = row.ptmonthly || row.pt || '';
+        const ptMonthly = rawPt ? parseFloat(String(rawPt).replace(/[^0-9.]/g, '')) : undefined;
+
+        const rawTds = row.tdsmonthly || row.tds || '';
+        const tdsMonthly = rawTds ? parseFloat(String(rawTds).replace(/[^0-9.]/g, '')) : undefined;
+
+        const notes = (row.notes || row.remarks || '').trim() || undefined;
+        const yearsOfService = (row.yearsofservice || '').trim() || undefined;
+        const tenureStatus = (row.currenttenurestatus || row.tenurestatus || row.tenure || '').trim() || undefined;
+
+        payloads.push({
+          employeeId,
+          employeeCode,
+          fullName,
+          workEmail: email,
+          phone,
+          department,
+          designation,
+          employmentType,
+          status,
+          location,
+          reportingManager,
+          joiningDate,
+          monthlyCtc,
+          annualCtc,
+          monthlyCost,
+          basicPercentage,
+          hraPercentage,
+          otherAllowance,
+          employeePfPercentage,
+          employeeEsiPercentage,
+          ptMonthly,
+          tdsMonthly,
+          notes,
+          yearsOfService,
+          tenureStatus,
+        });
+      }
+
+      if (payloads.length === 0) {
+        addToast('error', 'Import Failed', 'No valid employee records found in CSV.');
+        return;
+      }
+
+      const imported = await employeeService.bulkCreateEmployees(payloads);
+      await fetchData();
+      addToast(
+        'success',
+        'Import Successful',
+        `Successfully imported ${imported.length || payloads.length} employee record${payloads.length === 1 ? '' : 's'} from ${file.name}.`
+      );
+    } catch (err: any) {
+      addToast('error', 'Import Failed', err?.message || 'Failed to import employee records.');
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
   const handleExport = () => {
     const csvContent =
       'data:text/csv;charset=utf-8,' +
@@ -428,22 +628,25 @@ export const EmployeeMasterPage: React.FC = () => {
               onClick={handleRefresh}
               isRefreshing={isRefreshing}
               title="Refresh employee data"
-              className="w-[34px] h-[34px] p-2 bg-white border border-[#E2E8F0] rounded-[8px] flex items-center justify-center text-[#64748B] hover:bg-slate-50 transition-colors shadow-sm"
+            />
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".csv"
+              className="hidden"
+              onChange={handleFileChange}
+              data-testid="employee-csv-input"
             />
             <button
-              onClick={() => alert('Import CSV/Excel functionality')}
-              className="h-[34px] px-3 py-2 gap-1.5 bg-white border border-[#E2E8F0] rounded-[8px] flex items-center text-[12px] font-semibold text-[#334155] hover:bg-slate-50 transition-colors shadow-sm"
+              type="button"
+              onClick={handleImportClick}
+              disabled={isImporting}
+              className="h-[34px] px-3 py-2 gap-1.5 bg-white border border-[#E2E8F0] rounded-[8px] flex items-center text-[12px] font-semibold text-[#334155] hover:bg-slate-50 transition-colors shadow-sm cursor-pointer disabled:opacity-50"
             >
-              <Upload className="w-3.5 h-3.5 text-[#334155]" />
-              <span>Import</span>
+              <Upload className={`w-3.5 h-3.5 text-[#334155] ${isImporting ? 'animate-bounce' : ''}`} />
+              <span>{isImporting ? 'Importing...' : 'Import'}</span>
             </button>
-            <button
-              onClick={handleExport}
-              className="h-[34px] px-3 py-2 gap-1.5 bg-white border border-[#E2E8F0] rounded-[8px] flex items-center text-[12px] font-semibold text-[#334155] hover:bg-slate-50 transition-colors shadow-sm"
-            >
-              <Download className="w-3.5 h-3.5 text-[#334155]" />
-              <span>Export</span>
-            </button>
+            <ExportButton onClick={handleExport} />
             <button
               onClick={() => setIsAddModalOpen(true)}
               className="h-[32px] px-3.5 py-2 gap-1.5 bg-[#4F46E5] hover:bg-[#4338CA] rounded-[8px] flex items-center text-[12px] font-semibold text-white shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors"
@@ -769,9 +972,9 @@ export const EmployeeMasterPage: React.FC = () => {
 
           {/* Horizontal Scrollable Table Wrapper: 26 Columns with Exact Figma Layout */}
           <div className="overflow-x-auto horizontal-table-scroll">
-            <table className="table-fixed border-collapse" style={{ width: '3430px', minWidth: '3430px' }}>
+            <table className="table-fixed border-collapse whitespace-nowrap" style={{ width: '3430px', minWidth: '3430px' }}>
               <thead>
-                <tr className="h-[42px] bg-[#F8FAFC]/80 border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.55px] select-none">
+                <tr className="h-[42px] bg-[#F8FAFC]/80 border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.55px] select-none whitespace-nowrap">
                   {/* 1. EMPLOYEE ID */}
                   <th className="px-[14px] py-[12px] text-left" style={{ width: '119.78px' }}>
                     <div className="flex items-center gap-1">
@@ -948,14 +1151,41 @@ export const EmployeeMasterPage: React.FC = () => {
 
               <tbody>
                 {isLoading ? (
-                  <tr>
-                    <td colSpan={26} className="py-12 text-center text-[13px] text-[#64748B]">
-                      <div className="inline-flex items-center gap-2">
-                        <RotateCcw className="w-4 h-4 animate-spin text-indigo-600" />
-                        Loading employee records...
-                      </div>
-                    </td>
-                  </tr>
+                  Array.from({ length: 5 }).map((_, idx) => (
+                    <tr key={idx} className="h-[48px] border-b border-[#F1F5F9] hover:bg-slate-50/50">
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={70} height={12} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={80} height={12} /></td>
+                      <td className="px-[14px] py-[10px]">
+                        <div className="flex items-center gap-2">
+                          <Skeleton variant="circular" width={24} height={24} />
+                          <Skeleton variant="text" width={90} height={12} />
+                        </div>
+                      </td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={140} height={12} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={95} height={12} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={80} height={12} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={100} height={12} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="badge" width={85} height={18} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={75} height={12} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="badge" width={60} height={18} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={80} height={12} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={95} height={12} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={50} height={12} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="badge" width={70} height={18} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={75} height={12} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={75} height={12} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={85} height={12} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={45} height={12} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={45} height={12} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={60} height={12} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={45} height={12} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={45} height={12} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={55} height={12} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={55} height={12} /></td>
+                      <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={80} height={12} /></td>
+                      <td className="px-[14px] py-[10px] text-center"><Skeleton variant="circular" width={22} height={22} className="mx-auto" /></td>
+                    </tr>
+                  ))
                 ) : paginatedEmployees.length === 0 ? (
                   <tr>
                     <td colSpan={26} className="py-12 text-center text-[13px] text-[#64748B]">
@@ -1244,6 +1474,9 @@ export const EmployeeMasterPage: React.FC = () => {
         onUpdate={handleUpdateEmployee}
         onDelete={handleDeleteEmployee}
       />
+
+      {/* Toast Notifications */}
+      <ToastNotification toasts={toasts} onDismiss={removeToast} />
     </div>
   );
 };

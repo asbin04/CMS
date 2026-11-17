@@ -15,18 +15,20 @@ export const AddUatModal: React.FC<AddUatModalProps> = ({
   onSubmit,
   projectOptions,
 }) => {
-  const [projectId, setProjectId] = useState(projectOptions[0] || 'PRJ-001');
-  const [requirementId, setRequirementId] = useState('REQ-2026-0186');
-  const [testDate, setTestDate] = useState('28 Oct 2026');
-  const [testCase, setTestCase] = useState('TC-011');
+  const [projectId, setProjectId] = useState(projectOptions[0] || '');
+  const [requirementId, setRequirementId] = useState('');
+  const [testDate, setTestDate] = useState(
+    new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+  );
+  const [testCase, setTestCase] = useState('');
   const [expectedResult, setExpectedResult] = useState('');
   const [actualResult, setActualResult] = useState('');
-  const [testerName, setTesterName] = useState('Amit Sharma');
+  const [testerName, setTesterName] = useState('');
   const [status, setStatus] = useState('Passed');
   const [defectId, setDefectId] = useState('-');
-  const [clientApproval, setClientApproval] = useState('Approved');
-  const [approvalDate, setApprovalDate] = useState('28 Oct 2026');
-  const [comments, setComments] = useState('Working as expected');
+  const [clientApproval, setClientApproval] = useState('Pending');
+  const [approvalDate, setApprovalDate] = useState('');
+  const [comments, setComments] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -167,17 +169,13 @@ export const AddUatModal: React.FC<AddUatModalProps> = ({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-slate-700 mb-1">Tester Name</label>
-              <select
+              <input
+                type="text"
                 value={testerName}
                 onChange={(e) => setTesterName(e.target.value)}
+                placeholder="Enter tester name"
                 className="w-full h-9 px-3 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              >
-                <option value="Amit Sharma">Amit Sharma (AS)</option>
-                <option value="Sneha Nair">Sneha Nair (SN)</option>
-                <option value="Divya Patel">Divya Patel (DP)</option>
-                <option value="Rohan Verma">Rohan Verma (RV)</option>
-                <option value="Vikram Shah">Vikram Shah (VK)</option>
-              </select>
+              />
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-700 mb-1">Status</label>

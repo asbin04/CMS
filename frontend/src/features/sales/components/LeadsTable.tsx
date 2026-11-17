@@ -1,10 +1,10 @@
 import React from 'react';
 import {
-  Download,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
+import { ExportButton } from '@/components/ui/ExportButton';
 import { Lead, LeadSortOption, ServiceInterest, LeadStage, LeadStatus } from '../types/leads';
 import { formatRupee } from '../../collections/utils';
 
@@ -178,22 +178,15 @@ export const LeadsTable: React.FC<LeadsTableProps> = ({
           </div>
 
           {/* Export Button */}
-          <button
-            type="button"
-            onClick={onExport}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold transition-colors shadow-2xs cursor-pointer active:scale-98"
-          >
-            <Download size={14} className="text-slate-500" />
-            <span>Export</span>
-          </button>
+          <ExportButton onClick={onExport} />
         </div>
       </div>
 
       {/* Horizontal Scrollable Table Container */}
       <div className="w-full overflow-x-auto horizontal-table-scroll">
-        <table className="w-full text-left border-collapse min-w-[2450px]">
+        <table className="w-full text-left border-collapse min-w-[2450px] whitespace-nowrap">
           <thead>
-            <tr className="border-b border-slate-200 bg-[#E9EEF5] text-[11px] font-bold text-slate-600 tracking-wider uppercase select-none">
+            <tr className="border-b border-slate-200 bg-[#E9EEF5] text-[11px] font-bold text-slate-600 tracking-wider uppercase select-none whitespace-nowrap">
               {/* 1. LEAD ID (Sticky Left) */}
               <th className="py-3.5 pl-6 pr-4 sticky left-0 z-20 bg-[#E9EEF5] shadow-[2px_0_4px_-1px_rgba(0,0,0,0.06)] min-w-[120px]">
                 LEAD ID

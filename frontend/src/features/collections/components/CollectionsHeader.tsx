@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { FileText, Upload, Plus } from 'lucide-react';
+import { FileText, Plus } from 'lucide-react';
 import { ReloadButton } from '../../../components/ui/ReloadButton';
+import { ExportButton } from '../../../components/ui/ExportButton';
 
 interface CollectionsHeaderProps {
   onRefresh?: () => void;
@@ -49,27 +50,15 @@ export const CollectionsHeader: React.FC<CollectionsHeaderProps> = ({
         </div>
       </div>
 
-      {/* Right side: Timestamp + Refresh + Export + Log Payment */}
+      {/* Right side: Refresh + Export + Log Payment */}
       <div className="flex items-center gap-3 self-end sm:self-auto shrink-0 flex-wrap">
-        {/* Refresh Icon */}
-        <div className="flex items-center gap-2 text-xs text-slate-500 mr-1">
-          <ReloadButton
-            onClick={handleRefreshClick}
-            isRefreshing={isRefreshing}
-            title="Refresh collections data"
-            className="p-1 rounded-md text-[#64748B] hover:text-[#0F172A] hover:bg-slate-100 transition-colors cursor-pointer"
-          />
-        </div>
+        <ReloadButton
+          onClick={handleRefreshClick}
+          isRefreshing={isRefreshing}
+          title="Refresh collections data"
+        />
 
-        {/* Export Button (Secondary) */}
-        <button
-          type="button"
-          onClick={onExport}
-          className="inline-flex items-center gap-2 px-3.5 py-2 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold leading-4 rounded-lg shadow-2xs transition-colors cursor-pointer"
-        >
-          <Upload className="w-4 h-4 text-slate-600 stroke-[2]" />
-          <span>Export</span>
-        </button>
+        <ExportButton onClick={onExport} />
 
         {/* Primary + Log Payment Button */}
         <button

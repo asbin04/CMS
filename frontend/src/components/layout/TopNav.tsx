@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Clock, UserCheck, Shield, FileText, TrendingUp, Bell } from 'lucide-react';
+import { Clock, UserCheck, Shield, FileText, TrendingUp, Bell, Menu } from 'lucide-react';
+import { Skeleton } from '../ui/Skeleton';
 import { CalendarDateRangePicker } from '../ui/CalendarDateRangePicker';
 import {
   notificationService,
@@ -25,6 +26,20 @@ function formatTimeAgo(isoString?: string): string {
   } catch {
     return '';
   }
+}
+
+function formatLiveDateTime(d: Date = new Date()): string {
+  const dateStr = d.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+  const timeStr = d.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
+  return `${dateStr}, ${timeStr}`;
 }
 
 function getNotifIcon(type?: string) {
@@ -105,6 +120,23 @@ export const TopNav: React.FC<TopNavProps> = ({
   const [notifications, setNotifications] = useState<PortalNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [isLoadingNotifs, setIsLoadingNotifs] = useState<boolean>(false);
+  const [currentExactDateTime, setCurrentExactDateTime] = useState<string>(() => formatLiveDateTime());
+
+  useEffect(() => {
+    const updateDateTime = () => {
+      setCurrentExactDateTime(formatLiveDateTime());
+    };
+    updateDateTime();
+    const timer = setInterval(updateDateTime, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const displayDateText =
+    selectedDateRange &&
+    selectedDateRange !== '—' &&
+    selectedDateRange !== 'Apr 2024 - Mar 2025'
+      ? selectedDateRange
+      : currentExactDateTime;
 
   const isStoppedRef = useRef(false);
   const backoffRef = useRef(15000);
@@ -196,22 +228,6 @@ export const TopNav: React.FC<TopNavProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const dateRanges = React.useMemo(() => {
-    const list: string[] = [];
-    if (selectedDateRange && selectedDateRange !== '—') {
-      list.push(selectedDateRange);
-    }
-    const currentYear = new Date().getFullYear();
-    const nextYear = currentYear + 1;
-    const prevYear = currentYear - 1;
-    list.push(`Apr ${currentYear} - Mar ${nextYear}`);
-    list.push(`Apr ${prevYear} - Mar ${currentYear}`);
-    list.push(`Jan ${currentYear} - Dec ${currentYear}`);
-    list.push('Last 30 Days');
-    list.push('This Quarter');
-    return Array.from(new Set(list));
-  }, [selectedDateRange]);
-
   return (
     <header
       className="px-3 sm:px-6"
@@ -233,20 +249,30 @@ export const TopNav: React.FC<TopNavProps> = ({
         fontFamily: "'Inter', sans-serif",
       }}
     >
-      {/* Left: Search Bar */}
+      {/* Left: Mobile Toggle & Search Bar */}
       <div
         style={{
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
           padding: '0px',
-          gap: '10px',
+          gap: '8px',
           height: '34px',
           maxWidth: '672px',
           flex: '1 1 auto',
           minWidth: 0,
         }}
       >
+        {/* Mobile Hamburger Menu Toggle */}
+        <button
+          type="button"
+          onClick={onToggleMobileMenu}
+          aria-label="Toggle navigation menu"
+          className="md:hidden p-2 -ml-1 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer flex items-center justify-center shrink-0"
+        >
+          <Menu size={20} />
+        </button>
+
         {/* Container - Search Bar */}
         <div
           style={{
@@ -350,7 +376,7 @@ export const TopNav: React.FC<TopNavProps> = ({
           <button
             type="button"
             onClick={() => setIsDateOpen(!isDateOpen)}
-            className="hover:bg-slate-100 transition-colors w-auto sm:w-[193.31px]"
+            className="hover:bg-slate-100 transition-colors w-auto sm:min-w-[193.31px]"
             style={{
               boxSizing: 'border-box',
               display: 'flex',
@@ -390,7 +416,8 @@ export const TopNav: React.FC<TopNavProps> = ({
               style={{
                 boxSizing: 'border-box',
                 padding: '0px',
-                width: '121.31px',
+                width: 'auto',
+                minWidth: '121.31px',
                 height: '16px',
                 flex: 'none',
                 order: 1,
@@ -400,7 +427,8 @@ export const TopNav: React.FC<TopNavProps> = ({
             >
               <span
                 style={{
-                  width: '121.31px',
+                  width: 'auto',
+                  minWidth: '121.31px',
                   height: '16px',
                   fontFamily: "'Inter', sans-serif",
                   fontStyle: 'normal',
@@ -416,7 +444,7 @@ export const TopNav: React.FC<TopNavProps> = ({
                   textAlign: 'left',
                 }}
               >
-                {selectedDateRange}
+                {displayDateText}
               </span>
             </div>
 
@@ -449,7 +477,7 @@ export const TopNav: React.FC<TopNavProps> = ({
 
           {/* Date Picker Component */}
           <CalendarDateRangePicker
-            value={selectedDateRange}
+            value={displayDateText}
             onChange={(range) => {
               onDateRangeChange?.(range);
               setIsDateOpen(false);
@@ -547,7 +575,7 @@ export const TopNav: React.FC<TopNavProps> = ({
           </button>
 
           {isNotifOpen && (
-            <div className="absolute right-0 mt-1.5 w-84 bg-white border border-[#E2E8F0] rounded-xl shadow-xl py-2 z-50">
+            <div className="absolute right-0 mt-1.5 w-[calc(100vw-24px)] sm:w-84 max-w-[340px] bg-white border border-[#E2E8F0] rounded-xl shadow-xl py-2 z-50">
               <div className="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
                 <span className="font-semibold text-xs text-slate-800">Notifications</span>
                 <div className="flex items-center gap-2">
@@ -576,7 +604,17 @@ export const TopNav: React.FC<TopNavProps> = ({
               </div>
               <div className="divide-y divide-slate-50 max-h-72 overflow-y-auto">
                 {isLoadingNotifs && notifications.length === 0 ? (
-                  <div className="p-4 text-center text-xs text-slate-400">Loading notifications...</div>
+                  <div className="p-3 space-y-3">
+                    {Array.from({ length: 3 }).map((_, idx) => (
+                      <div key={idx} className="flex items-start gap-2.5">
+                        <Skeleton variant="rectangular" rounded="lg" width={28} height={28} />
+                        <div className="flex-1 space-y-1.5 min-w-0">
+                          <Skeleton variant="text" width="80%" height={12} />
+                          <Skeleton variant="text" width="60%" height={10} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 ) : notifications.length === 0 ? (
                   <div className="p-6 text-center text-xs text-slate-400">No notifications right now</div>
                 ) : (

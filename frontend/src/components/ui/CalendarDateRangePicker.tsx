@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Check } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export interface CalendarDateRangePickerProps {
   value?: string;
@@ -14,7 +14,6 @@ export const CalendarDateRangePicker: React.FC<CalendarDateRangePickerProps> = (
   onChange,
   isOpen,
   onClose,
-  showPresets = true,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -75,25 +74,6 @@ export const CalendarDateRangePicker: React.FC<CalendarDateRangePickerProps> = (
 
   const firstDayIndex = new Date(year, month, 1).getDay(); // 0 = Sun
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-  // Presets list
-  const currentYear = new Date().getFullYear();
-  const presets = [
-    { label: `Apr ${currentYear - 2} - Mar ${currentYear - 1}`, start: new Date(currentYear - 2, 3, 1), end: new Date(currentYear - 1, 2, 31) },
-    { label: `Apr ${currentYear - 1} - Mar ${currentYear}`, start: new Date(currentYear - 1, 3, 1), end: new Date(currentYear, 2, 31) },
-    { label: `Apr ${currentYear} - Mar ${currentYear + 1}`, start: new Date(currentYear, 3, 1), end: new Date(currentYear + 1, 2, 31) },
-    { label: `Jan ${currentYear} - Dec ${currentYear}`, start: new Date(currentYear, 0, 1), end: new Date(currentYear, 11, 31) },
-    {
-      label: 'Last 30 Days',
-      start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-      end: new Date(),
-    },
-    {
-      label: 'This Quarter',
-      start: new Date(currentYear, Math.floor(new Date().getMonth() / 3) * 3, 1),
-      end: new Date(currentYear, Math.floor(new Date().getMonth() / 3) * 3 + 3, 0),
-    },
-  ];
 
   const handleDateClick = (day: number) => {
     const clicked = new Date(year, month, day);
@@ -168,14 +148,6 @@ export const CalendarDateRangePicker: React.FC<CalendarDateRangePickerProps> = (
     onClose();
   };
 
-  const handlePresetSelect = (preset: typeof presets[0]) => {
-    setStartDate(preset.start);
-    setEndDate(preset.end);
-    setViewDate(new Date(preset.start.getFullYear(), preset.start.getMonth(), 1));
-    onChange(preset.label);
-    onClose();
-  };
-
   const daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
   return (
@@ -183,50 +155,12 @@ export const CalendarDateRangePicker: React.FC<CalendarDateRangePickerProps> = (
       ref={containerRef}
       role="dialog"
       aria-label="Date Range Picker"
-      className="absolute right-0 top-full mt-2 bg-white border border-[#E2E8F0] rounded-2xl shadow-2xl z-50 overflow-hidden animate-fade-in select-none text-slate-800"
+      className="absolute right-0 top-full mt-2 w-[calc(100vw-24px)] sm:w-[310px] max-w-[320px] bg-white border border-[#E2E8F0] rounded-2xl shadow-2xl z-50 overflow-hidden animate-fade-in select-none text-slate-800"
       style={{
         boxShadow: '0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.1)',
       }}
     >
-      <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
-        {/* Left column: Quick Period Presets */}
-        {showPresets && (
-          <div className="w-full sm:w-[190px] bg-[#F8FAFC] p-3 flex flex-col justify-between shrink-0">
-            <div>
-              <div className="px-2.5 py-1 text-[10.5px] font-bold tracking-wider text-[#64748B] uppercase">
-                Select Period
-              </div>
-              <div className="mt-1 space-y-0.5">
-                {presets.map((preset) => {
-                  const isSelected = value === preset.label;
-                  return (
-                    <button
-                      key={preset.label}
-                      type="button"
-                      onClick={() => handlePresetSelect(preset)}
-                      className={`w-full text-left px-2.5 py-1.5 rounded-lg text-[12px] font-medium transition-colors flex items-center justify-between cursor-pointer ${
-                        isSelected
-                          ? 'bg-indigo-50 text-[#4F46E5] font-semibold'
-                          : 'text-slate-700 hover:bg-slate-200/60'
-                      }`}
-                    >
-                      <span className="truncate">{preset.label}</span>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-[#4F46E5] shrink-0 ml-1" />}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="mt-3 pt-2.5 border-t border-slate-200/70 px-1 text-[11px] text-slate-500 flex items-center gap-1.5">
-              <CalendarIcon size={13} className="text-slate-400 shrink-0" />
-              <span>Or pick custom dates</span>
-            </div>
-          </div>
-        )}
-
-        {/* Right column: Interactive Calendar Grid */}
-        <div className="p-4 w-[300px]">
+      <div className="p-3 sm:p-4 w-full">
           {/* Month & Year Navigation Header */}
           <div className="flex items-center justify-between mb-3 px-1">
             <span className="text-[13.5px] font-bold text-slate-900 tracking-tight">
@@ -332,7 +266,6 @@ export const CalendarDateRangePicker: React.FC<CalendarDateRangePickerProps> = (
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

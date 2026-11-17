@@ -21,7 +21,7 @@ export const EmployeeExitPage: React.FC = () => {
   const [filteredCount, setFilteredCount] = useState<number>(18);
   const [lastUpdated, setLastUpdated] = useState('15 Oct 2026, 11:30 AM');
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // 2. Filter states
   const defaultFilters: ExitFilters = {
@@ -262,7 +262,7 @@ export const EmployeeExitPage: React.FC = () => {
       />
 
       {/* 2. 4 KPI Cards */}
-      <EmployeeExitKpis summary={kpiSummary} />
+      <EmployeeExitKpis summary={kpiSummary} isLoading={isLoading} />
 
       {/* 3. Search and Filters Card */}
       <EmployeeExitFilterCard
@@ -278,6 +278,7 @@ export const EmployeeExitPage: React.FC = () => {
         totalRecords={totalRecords}
         filteredCount={filteredCount}
         sortOption={sortOption}
+        isLoading={isLoading}
         onSortChange={setSortOption}
         currentPage={currentPage}
         pageSize={pageSize}

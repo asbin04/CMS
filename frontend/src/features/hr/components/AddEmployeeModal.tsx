@@ -101,7 +101,7 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
         employmentType: employmentType || 'Full Time',
         status: status || 'Active',
         location: location || 'Bangalore',
-        reportingManager: reportingManager || 'Akshit Ujjain',
+        reportingManager: reportingManager || '',
         joiningDate:
           joiningDate ||
           new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),

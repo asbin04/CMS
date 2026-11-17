@@ -24,6 +24,8 @@ public interface EmployeeMasterService {
 
     EmployeeMasterDto createEmployee(CreateEmployeeRequest request);
 
+    List<EmployeeMasterDto> createEmployees(List<CreateEmployeeRequest> requests);
+
     EmployeeMasterDto updateEmployee(Long id, CreateEmployeeRequest request);
 
     void deleteEmployee(Long id);

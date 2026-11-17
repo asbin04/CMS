@@ -1,5 +1,6 @@
 import React from 'react';
-import { ChevronDown, Download, ChevronLeft, ChevronRight, Target } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, Target } from 'lucide-react';
+import { ExportButton } from '@/components/ui/ExportButton';
 import { OpportunityData } from '@/types/opportunity';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -144,33 +145,7 @@ export const OpportunitiesTable: React.FC<OpportunitiesTableProps> = ({
             </div>
           </div>
 
-          <button
-            onClick={onExport}
-            style={{
-              boxSizing: 'border-box',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              padding: '6px 12px',
-              gap: '6px',
-              height: '30px',
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              color: '#334155',
-              fontFamily: "'Inter', sans-serif",
-              fontWeight: 500,
-              fontSize: '12px',
-              lineHeight: '16px',
-              transition: 'background-color 0.15s ease',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F8FAFC')}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#FFFFFF')}
-          >
-            <Download style={{ width: '14px', height: '14px', color: '#334155', strokeWidth: 1.2 }} />
-            <span>Export</span>
-          </button>
+          <ExportButton onClick={onExport} />
         </div>
       </div>
 

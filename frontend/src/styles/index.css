@@ -213,6 +213,53 @@ button {
   animation: toastProgress 4.5s linear forwards;
 }
 
+/* Shimmer Wave Animation for Skeleton Loaders */
+@keyframes skeletonShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    #E2E8F0 0%,
+    #EDF2F7 25%,
+    #F8FAFC 50%,
+    #EDF2F7 75%,
+    #E2E8F0 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.6s ease-in-out infinite;
+}
+
+.dark .animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    #1E293B 0%,
+    #334155 25%,
+    #475569 50%,
+    #334155 75%,
+    #1E293B 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-shimmer {
+    animation: none;
+    background: #E2E8F0;
+  }
+  .dark .animate-shimmer {
+    animation: none;
+    background: #334155;
+  }
+}
+
 /* Custom Accessible Table Scrollbar */
 .custom-scrollbar {
   scrollbar-width: thin;

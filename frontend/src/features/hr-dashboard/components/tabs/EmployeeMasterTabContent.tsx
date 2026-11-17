@@ -14,6 +14,7 @@ import { employeeService } from '@/services/employeeService';
 import { AddEmployeeModal } from '@/features/hr/components/AddEmployeeModal';
 import { EmployeeDetailModal } from '@/features/hr/components/EmployeeDetailModal';
 import { StatusDropdownMenu, StatusItemConfig } from '@/components/ui/StatusDropdownMenu';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 export const EMPLOYEE_STATUS_CONFIGS: StatusItemConfig[] = [
   { value: 'Active', label: 'Active', dotColor: '#059669', textColor: '#059669' },
@@ -517,9 +518,9 @@ export const EmployeeMasterTabContent: React.FC<EmployeeMasterTabContentProps> =
 
         {/* Horizontal Scrollable Table Wrapper: 26 Columns */}
         <div className="overflow-x-auto horizontal-table-scroll">
-          <table className="table-fixed border-collapse" style={{ width: '3430px', minWidth: '3430px' }}>
+          <table className="table-fixed border-collapse whitespace-nowrap" style={{ width: '3430px', minWidth: '3430px' }}>
             <thead>
-              <tr className="h-[42px] bg-[#F8FAFC]/80 border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.55px] select-none">
+              <tr className="h-[42px] bg-[#F8FAFC]/80 border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.55px] select-none whitespace-nowrap">
                 <th className="px-[14px] py-[12px] text-left" style={{ width: '119.78px' }}>EMPLOYEE ID</th>
                 <th className="px-[14px] py-[12px] text-left" style={{ width: '141.09px' }}>EMPLOYEE CODE</th>
                 <th className="px-[14px] py-[12px] text-left" style={{ width: '136.5px' }}>FULL NAME</th>
@@ -551,14 +552,41 @@ export const EmployeeMasterTabContent: React.FC<EmployeeMasterTabContentProps> =
 
             <tbody>
               {isLoading ? (
-                <tr>
-                  <td colSpan={26} className="py-12 text-center text-[13px] text-[#64748B]">
-                    <div className="inline-flex items-center gap-2">
-                      <RotateCcw className="w-4 h-4 animate-spin text-indigo-600" />
-                      Loading live employee records...
-                    </div>
-                  </td>
-                </tr>
+                Array.from({ length: 5 }).map((_, idx) => (
+                  <tr key={idx} className="h-[48px] border-b border-[#F1F5F9] hover:bg-slate-50/50">
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={70} height={12} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={80} height={12} /></td>
+                    <td className="px-[14px] py-[10px]">
+                      <div className="flex items-center gap-2">
+                        <Skeleton variant="circular" width={24} height={24} />
+                        <Skeleton variant="text" width={90} height={12} />
+                      </div>
+                    </td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={140} height={12} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={95} height={12} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={80} height={12} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={100} height={12} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="badge" width={85} height={18} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={75} height={12} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="badge" width={60} height={18} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={80} height={12} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={95} height={12} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={50} height={12} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="badge" width={70} height={18} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={75} height={12} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={75} height={12} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={85} height={12} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={45} height={12} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={45} height={12} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={60} height={12} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={45} height={12} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={45} height={12} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={55} height={12} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={55} height={12} /></td>
+                    <td className="px-[14px] py-[10px]"><Skeleton variant="text" width={80} height={12} /></td>
+                    <td className="px-[14px] py-[10px] text-center"><Skeleton variant="circular" width={22} height={22} className="mx-auto" /></td>
+                  </tr>
+                ))
               ) : filteredEmployees.length === 0 ? (
                 <tr>
                   <td colSpan={26} className="py-12 text-center text-[13px] text-[#64748B]">

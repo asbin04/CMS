@@ -7,6 +7,7 @@ import com.company.project.leave.dto.UpdateLeaveRequest;
 import com.company.project.leave.entity.LeaveEntity;
 import com.company.project.leave.repository.LeaveRepository;
 import com.company.project.leave.service.LeaveService;
+import com.company.project.security.repository.AppUserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,9 @@ class LeaveServiceTest {
 
     @Mock
     private LeaveRepository leaveRepository;
+
+    @Mock
+    private AppUserRepository appUserRepository;
 
     @InjectMocks
     private LeaveService leaveService;
@@ -127,22 +131,76 @@ class LeaveServiceTest {
     }
 
     @Test
-    @DisplayName("updateLeave updates status and approver")
-    void testUpdateLeave() {
+    @DisplayName("updateLeave updates status and approver to Akshit Ujjain")
+    void testUpdateLeaveAkshit() {
         when(leaveRepository.findById("LV-00086")).thenReturn(Optional.of(sampleLeave));
         when(leaveRepository.save(any(LeaveEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         UpdateLeaveRequest req = UpdateLeaveRequest.builder()
                 .approvalStatus("Approved")
-                .approvedBy("Rahul Mehta")
+                .approvedBy("Akshit Ujjain")
                 .leaveStatus("Approved")
                 .build();
 
         LeaveEntity updated = leaveService.updateLeave("LV-00086", req);
 
         assertThat(updated.getApprovalStatus()).isEqualTo("Approved");
-        assertThat(updated.getApprovedBy()).isEqualTo("Rahul Mehta");
+        assertThat(updated.getApprovedBy()).isEqualTo("Akshit Ujjain");
         assertThat(updated.getLeaveStatus()).isEqualTo("Approved");
+    }
+
+    @Test
+    @DisplayName("updateLeave updates status and approver to Gaurav Tripathy")
+    void testUpdateLeaveGaurav() {
+        when(leaveRepository.findById("LV-00086")).thenReturn(Optional.of(sampleLeave));
+        when(leaveRepository.save(any(LeaveEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        UpdateLeaveRequest req = UpdateLeaveRequest.builder()
+                .approvalStatus("Approved")
+                .approvedBy("Gaurav Tripathy")
+                .leaveStatus("Approved")
+                .build();
+
+        LeaveEntity updated = leaveService.updateLeave("LV-00086", req);
+
+        assertThat(updated.getApprovalStatus()).isEqualTo("Approved");
+        assertThat(updated.getApprovedBy()).isEqualTo("Gaurav Tripathy");
+    }
+
+    @Test
+    @DisplayName("updateLeave updates status and approver to Asbin T S")
+    void testUpdateLeaveAsbin() {
+        when(leaveRepository.findById("LV-00086")).thenReturn(Optional.of(sampleLeave));
+        when(leaveRepository.save(any(LeaveEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        UpdateLeaveRequest req = UpdateLeaveRequest.builder()
+                .approvalStatus("Approved")
+                .approvedBy("Asbin T S")
+                .leaveStatus("Approved")
+                .build();
+
+        LeaveEntity updated = leaveService.updateLeave("LV-00086", req);
+
+        assertThat(updated.getApprovalStatus()).isEqualTo("Approved");
+        assertThat(updated.getApprovedBy()).isEqualTo("Asbin T S");
+    }
+
+    @Test
+    @DisplayName("updateLeave automatically resolves default approver when approvedBy is omitted")
+    void testUpdateLeaveResolvesDefaultApprover() {
+        when(leaveRepository.findById("LV-00086")).thenReturn(Optional.of(sampleLeave));
+        when(leaveRepository.save(any(LeaveEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        UpdateLeaveRequest req = UpdateLeaveRequest.builder()
+                .approvalStatus("Approved")
+                .leaveStatus("Approved")
+                .build();
+
+        LeaveEntity updated = leaveService.updateLeave("LV-00086", req);
+
+        assertThat(updated.getApprovalStatus()).isEqualTo("Approved");
+        assertThat(updated.getApprovedBy()).isNotNull();
+        assertThat(updated.getApprovedBy()).isEqualTo("Akshit Ujjain");
     }
 
     @Test

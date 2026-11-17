@@ -15,13 +15,13 @@ export const AddDeploymentModal: React.FC<AddDeploymentModalProps> = ({
   onSubmit,
   projectOptions,
 }) => {
-  const [projectId, setProjectId] = useState(projectOptions[0] || 'PRJ-001');
-  const [releaseVersion, setReleaseVersion] = useState('v1.0.0');
+  const [projectId, setProjectId] = useState(projectOptions[0] || '');
+  const [releaseVersion, setReleaseVersion] = useState('');
   const [deploymentDate, setDeploymentDate] = useState(
     new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
   );
   const [environment, setEnvironment] = useState('Production');
-  const [deploymentOwner, setDeploymentOwner] = useState('Amit Sharma');
+  const [deploymentOwner, setDeploymentOwner] = useState('');
   const [preDeploymentChecklist, setPreDeploymentChecklist] = useState('Completed');
   const [backupCompleted, setBackupCompleted] = useState('Yes');
   const [rollbackPlan, setRollbackPlan] = useState('Available');

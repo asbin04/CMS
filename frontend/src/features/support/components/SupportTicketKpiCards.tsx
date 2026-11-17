@@ -1,6 +1,7 @@
 import React from 'react';
 import { Ticket, Clock, CheckCircle2, AlertTriangle, Target } from 'lucide-react';
 import { SupportTicketKpis } from '../types/tickets';
+import { Skeleton } from '../../../components/ui/Skeleton';
 
 interface SupportTicketKpiCardsProps {
   kpis: SupportTicketKpis | null;
@@ -74,7 +75,11 @@ export const SupportTicketKpiCards: React.FC<SupportTicketKpiCardsProps> = ({ kp
                 {card.label}
               </span>
               <span className="text-2xl font-bold text-[#111827] leading-8 truncate">
-                {isLoading ? '...' : card.value}
+                {isLoading ? (
+                  <Skeleton variant="text" width={52} height={26} className="rounded" />
+                ) : (
+                  card.value
+                )}
               </span>
             </div>
           </div>

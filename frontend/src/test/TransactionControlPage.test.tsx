@@ -132,8 +132,8 @@ const mockLiveResponse: TransactionControlResponse = {
       description: 'Client, invoice, or payment records missing required identifiers or non-positive amounts.',
       classification: 'REVIEW',
       count: 0,
-      actionLabel: 'Open Data Quality',
-      actionPath: '/reports/data-quality',
+      actionLabel: 'Review records',
+      actionPath: '/reports/transaction-control',
       nested: false,
       statusFilterLabel: 'Status',
       statusOptions: [],
@@ -183,7 +183,7 @@ describe('TransactionControlPage', () => {
     expect(screen.getByText('Overdue collections')).toBeInTheDocument();
     expect(screen.getByText('Overdue tasks')).toBeInTheDocument();
     expect(screen.getByText('Data quality issues')).toBeInTheDocument();
-    expect(screen.getByText('Amounts keep their source currency when available')).toBeInTheDocument();
+    expect(screen.queryByText('Amounts keep their source currency when available')).not.toBeInTheDocument();
 
     // Search filters rows
     const searchInput = screen.getByPlaceholderText('Search payment ID, invoice ID or reference...');

@@ -6,10 +6,10 @@ import { AttendanceRecord, AttendanceMetrics } from '../types/attendance';
 function mapAttendance(item: any): AttendanceRecord {
   return {
     id: item.id,
-    attendanceDate: item.attendanceDate || item.attendance_date || '31 Oct 2026',
+    attendanceDate: item.attendanceDate || item.attendance_date || '',
     employeeId: item.employeeId || item.employee_id || '',
-    employeeName: item.employeeName || item.employee_name || 'Amit Sharma',
-    avatarInitials: item.avatarInitials || item.avatar_initials || 'AS',
+    employeeName: item.employeeName || item.employee_name || '',
+    avatarInitials: item.avatarInitials || item.avatar_initials || (item.employeeName ? item.employeeName.substring(0, 2).toUpperCase() : ''),
     avatarColor: item.avatarColor || item.avatar_color || 'blue',
     status: item.status || 'Present',
     checkIn: item.checkIn || item.check_in || '-',

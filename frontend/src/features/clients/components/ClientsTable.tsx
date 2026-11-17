@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Download,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -9,6 +8,7 @@ import {
   Edit,
   Trash2,
 } from 'lucide-react';
+import { ExportButton } from '@/components/ui/ExportButton';
 import { Client, ClientSortOption } from '../types/clients';
 
 interface ClientsTableProps {
@@ -193,29 +193,7 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
           </div>
 
           {/* Export Button */}
-          <button
-            type="button"
-            onClick={onExport}
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              padding: '6px 12px',
-              gap: '6px',
-              height: '30px',
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontFamily: "'Inter', sans-serif",
-              fontSize: '12px',
-              fontWeight: 500,
-              color: '#64748B',
-            }}
-          >
-            <Download size={14} color="#64748B" />
-            <span>Export</span>
-          </button>
+          <ExportButton onClick={onExport} />
         </div>
       </div>
 
@@ -236,6 +214,7 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
             borderCollapse: 'collapse',
             textAlign: 'left',
             fontFamily: "'Inter', sans-serif",
+            whiteSpace: 'nowrap',
           }}
         >
           {/* Header Row */}
@@ -245,6 +224,7 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
                 height: '42px',
                 backgroundColor: 'rgba(248, 250, 252, 0.8)',
                 borderBottom: '1px solid #E2E8F0',
+                whiteSpace: 'nowrap',
               }}
             >
               <th style={{ width: '90.45px', padding: '12px 16px', fontSize: '11px', fontWeight: 700, color: '#94A3B8', letterSpacing: '0.55px', textTransform: 'uppercase' }}>

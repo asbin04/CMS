@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, ChevronDown, MoreVertical, Edit2, Trash2 } from 'lucide-react';
 import { SupportTicketItem } from '../types/tickets';
+import { Skeleton } from '../../../components/ui/Skeleton';
 
 interface SupportTicketsTableProps {
   tickets: SupportTicketItem[];
@@ -212,10 +213,10 @@ export const SupportTicketsTable: React.FC<SupportTicketsTableProps> = ({
     <div className="w-full flex flex-col items-start p-0">
       {/* Strict single line horizontal table wrapper with scroll matching 2378.59px Figma specification */}
       <div className="w-full overflow-x-auto">
-        <div className="flex flex-col items-start p-0 w-[2378.59px] min-w-[2378.59px]">
+        <div className="flex flex-col items-start p-0 w-[2378.59px] min-w-[2378.59px] whitespace-nowrap">
           {/* Table Header */}
           <div className="box-border flex flex-col items-start p-0 w-[2378.59px] h-[41px] bg-[#F8FAFC] border-b border-[#E5E7EB]">
-            <div className="flex flex-row items-center w-[2378.59px] h-10">
+            <div className="flex flex-row items-center w-[2378.59px] h-10 whitespace-nowrap">
               {/* 1. Ticket ID */}
               <div className="flex flex-col items-start py-3 px-3.5 w-[113.02px] h-10">
                 <span className="font-['Inter'] font-bold text-[11px] leading-4 text-[#1F2937]">Ticket ID</span>
@@ -302,9 +303,35 @@ export const SupportTicketsTable: React.FC<SupportTicketsTableProps> = ({
           {/* Table Body */}
           <div className="flex flex-col items-start p-0 w-[2378.59px]">
             {isLoading ? (
-              <div className="w-full py-12 flex items-center justify-center text-xs text-[#94A3B8]">
-                Loading support tickets...
-              </div>
+              Array.from({ length: 5 }).map((_, idx) => (
+                <div
+                  key={idx}
+                  className="flex flex-row items-center border-b border-[#F1F5F9] w-full hover:bg-slate-50/50"
+                  style={{ height: '48px' }}
+                >
+                  <div className="flex flex-row items-center px-4 py-3 w-[116.3px] shrink-0"><Skeleton variant="text" width={75} height={12} /></div>
+                  <div className="flex flex-row items-center px-4 py-3 w-[130.67px] shrink-0"><Skeleton variant="text" width={80} height={12} /></div>
+                  <div className="flex flex-row items-center px-4 py-3 w-[172.95px] shrink-0"><Skeleton variant="text" width={110} height={12} /></div>
+                  <div className="flex flex-row items-center px-4 py-3 w-[190.22px] shrink-0"><Skeleton variant="text" width={120} height={12} /></div>
+                  <div className="flex flex-row items-center px-4 py-3 w-[150px] shrink-0"><Skeleton variant="text" width={95} height={12} /></div>
+                  <div className="flex flex-row items-center px-4 py-3 w-[100px] shrink-0"><Skeleton variant="badge" width={65} height={18} /></div>
+                  <div className="flex flex-row items-center px-4 py-3 w-[100px] shrink-0"><Skeleton variant="badge" width={65} height={18} /></div>
+                  <div className="flex flex-row items-center px-4 py-3 w-[140px] shrink-0"><Skeleton variant="text" width={90} height={12} /></div>
+                  <div className="flex flex-row items-center px-4 py-3 w-[140px] shrink-0"><Skeleton variant="text" width={90} height={12} /></div>
+                  <div className="flex flex-row items-center px-4 py-3 w-[130px] shrink-0"><Skeleton variant="text" width={80} height={12} /></div>
+                  <div className="flex flex-row items-center px-4 py-3 w-[130px] shrink-0"><Skeleton variant="text" width={80} height={12} /></div>
+                  <div className="flex flex-row items-center px-4 py-3 w-[130px] shrink-0"><Skeleton variant="text" width={80} height={12} /></div>
+                  <div className="flex flex-row items-center px-4 py-3 w-[120px] shrink-0"><Skeleton variant="text" width={75} height={12} /></div>
+                  <div className="flex flex-row items-center px-4 py-3 w-[120px] shrink-0"><Skeleton variant="text" width={75} height={12} /></div>
+                  <div className="flex flex-row items-center px-4 py-3 w-[120px] shrink-0"><Skeleton variant="text" width={75} height={12} /></div>
+                  <div className="flex flex-row items-center px-4 py-3 w-[120px] shrink-0"><Skeleton variant="text" width={75} height={12} /></div>
+                  <div className="flex flex-row items-center px-4 py-3 w-[110px] shrink-0"><Skeleton variant="text" width={65} height={12} /></div>
+                  <div className="flex flex-row items-center px-4 py-3 w-[100px] shrink-0"><Skeleton variant="text" width={60} height={12} /></div>
+                  <div className="flex flex-row items-center justify-center px-4 py-3 w-[68.45px] shrink-0">
+                    <Skeleton variant="circular" width={20} height={20} className="mx-auto" />
+                  </div>
+                </div>
+              ))
             ) : paginatedTickets.length === 0 ? (
               <div className="w-full py-12 flex items-center justify-center text-xs text-[#94A3B8]">
                 No support tickets found matching the criteria.
@@ -324,7 +351,7 @@ export const SupportTicketsTable: React.FC<SupportTicketsTableProps> = ({
                   <div
                     key={ticket.id}
                     onClick={() => onEditTicket?.(ticket)}
-                    className={`box-border flex flex-row items-center p-0 w-[2378.59px] h-[49px] hover:bg-[#F8FAFC] transition-colors cursor-pointer ${
+                    className={`box-border flex flex-row items-center p-0 w-[2378.59px] h-[49px] whitespace-nowrap hover:bg-[#F8FAFC] transition-colors cursor-pointer ${
                       index > 0 ? 'border-t border-[#F3F4F6]' : ''
                     }`}
                   >

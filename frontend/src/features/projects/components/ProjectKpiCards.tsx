@@ -1,12 +1,23 @@
 import React from 'react';
 import { Folder, PlayCircle, AlertTriangle, Layers } from 'lucide-react';
 import { ProjectKpis } from '../types/project';
+import { SkeletonCard } from '@/components/ui/SkeletonCard';
 
 interface ProjectKpiCardsProps {
   kpis: ProjectKpis;
+  isLoading?: boolean;
 }
 
-export const ProjectKpiCards: React.FC<ProjectKpiCardsProps> = ({ kpis }) => {
+export const ProjectKpiCards: React.FC<ProjectKpiCardsProps> = ({ kpis, isLoading = false }) => {
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+        {[1, 2, 3, 4].map((i) => (
+          <SkeletonCard key={i} />
+        ))}
+      </div>
+    );
+  }
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
       {/* Card 1: Total Projects */}

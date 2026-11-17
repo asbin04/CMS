@@ -20,7 +20,6 @@ import {
   EmployeeOption,
   TimesheetApprovalStatus,
 } from '../../types';
-import { MASTER_PROJECTS, MASTER_EMPLOYEES, MASTER_TASKS } from '../../mockData';
 import { projectLookupService } from '../../services/projectLookupService';
 import { calculateBillableAmount } from '../../utils/calculations';
 import { formatRupee, formatDateForDisplay, formatDateForInput } from '../../utils/formatters';
@@ -38,21 +37,21 @@ export const LogTimeModal: React.FC<LogTimeModalProps> = ({
   onSave,
   nextId,
 }) => {
-  const [employeeOptions, setEmployeeOptions] = useState<EmployeeOption[]>(MASTER_EMPLOYEES);
-  const [projectOptions, setProjectOptions] = useState<ProjectOption[]>(MASTER_PROJECTS);
-  const [taskOptions, setTaskOptions] = useState<TaskOption[]>(MASTER_TASKS);
+  const [employeeOptions, setEmployeeOptions] = useState<EmployeeOption[]>([]);
+  const [projectOptions, setProjectOptions] = useState<ProjectOption[]>([]);
+  const [taskOptions, setTaskOptions] = useState<TaskOption[]>([]);
 
-  const [timesheetIdDisplay, setTimesheetIdDisplay] = useState(nextId || 'TS-202610-049');
-  const [employeeId, setEmployeeId] = useState('EMP-011');
-  const [projectId, setProjectId] = useState('PRJ-006');
-  const [taskId, setTaskId] = useState('TSK-00128');
+  const [timesheetIdDisplay, setTimesheetIdDisplay] = useState(nextId || '');
+  const [employeeId, setEmployeeId] = useState('');
+  const [projectId, setProjectId] = useState('');
+  const [taskId, setTaskId] = useState('');
   const [date, setDate] = useState(formatDateForInput(new Date()));
-  const [hours, setHours] = useState<number | string>(8.0);
+  const [hours, setHours] = useState<number | string>('');
   const [billable, setBillable] = useState<BillableOption>('Yes');
-  const [billableRate, setBillableRate] = useState<number | string>(1500);
+  const [billableRate, setBillableRate] = useState<number | string>('');
   const [approvalStatus, setApprovalStatus] = useState<TimesheetApprovalStatus>('Pending');
-  const [assignedApprover, setAssignedApprover] = useState('Admin – Akshit Ujjain');
-  const [notes, setNotes] = useState('Worked on dashboard UI, updated components, and prepared for review.');
+  const [assignedApprover, setAssignedApprover] = useState('');
+  const [notes, setNotes] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -105,19 +104,17 @@ export const LogTimeModal: React.FC<LogTimeModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      setTimesheetIdDisplay(nextId || 'TS-202610-049');
-      const hasEmp011 = employeeOptions.some((e) => e.id === 'EMP-011') || MASTER_EMPLOYEES.some((e) => e.id === 'EMP-011');
-      setEmployeeId(hasEmp011 ? 'EMP-011' : (employeeOptions[0]?.id || 'EMP-001'));
-
-      const defaultPrj = projectOptions.some((p) => p.id === 'PRJ-006') ? 'PRJ-006' : (projectOptions[0]?.id || 'PRJ-001');
-      setProjectId(defaultPrj);
-      setTaskId('TSK-00128');
+      setTimesheetIdDisplay(nextId || '');
+      setEmployeeId(employeeOptions[0]?.id || '');
+      setProjectId(projectOptions[0]?.id || '');
+      setTaskId(taskOptions[0]?.id || '');
       setDate(formatDateForInput(new Date()));
-      setHours(8.0);
+      setHours('');
       setBillable('Yes');
-      setBillableRate(1500);
+      setBillableRate('');
       setApprovalStatus('Pending');
-      setNotes('Worked on dashboard UI, updated components, and prepared for review.');
+      setAssignedApprover('');
+      setNotes('');
       setError(null);
       setIsSubmitting(false);
     }
@@ -130,10 +127,8 @@ export const LogTimeModal: React.FC<LogTimeModalProps> = ({
   const calculatedBillableAmount = calculateBillableAmount(hoursNum, rateNum, billable === 'Yes');
   const estimatedLaborCostNum = hoursNum * 800;
 
-  const currentEmp =
-    employeeOptions.find((emp) => emp.id === employeeId) ||
-    MASTER_EMPLOYEES.find((emp) => emp.id === employeeId);
-  const employeeName = currentEmp ? currentEmp.name : (employeeId === 'EMP-011' ? 'Pooja Mehta' : 'Amit Sharma');
+  const currentEmp = employeeOptions.find((emp) => emp.id === employeeId);
+  const employeeName = currentEmp ? currentEmp.name : '';
 
   const handleEmployeeChange = (id: string) => {
     setEmployeeId(id);
@@ -172,7 +167,7 @@ export const LogTimeModal: React.FC<LogTimeModalProps> = ({
     }
 
     const resolvedApprovedBy = approvalStatus === 'Approved'
-      ? (assignedApprover.includes('Gaurav') ? 'Gaurav Tripathy' : 'Akshit Ujjain')
+      ? (assignedApprover.includes('Gaurav') ? '' : '')
       : undefined;
 
     const isTest = typeof process !== 'undefined' && process.env?.NODE_ENV === 'test';
@@ -578,7 +573,7 @@ export const LogTimeModal: React.FC<LogTimeModalProps> = ({
                     onChange={(e) => setAssignedApprover(e.target.value)}
                     className="w-full h-[30px] px-2.5 bg-white border border-[#CBD5E1] rounded-[8px] text-xs font-normal text-[#0F172A] focus:outline-none focus:ring-1 focus:ring-[#4F46E5] appearance-none pr-7 cursor-pointer"
                   >
-                    <option value="Admin – Akshit Ujjain">Admin – Akshit Ujjain</option>
+                    <option value="">Admin – Akshit Ujjain</option>
                     <option value="MD – Gaurav Tripathy">MD – Gaurav Tripathy</option>
                   </select>
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />

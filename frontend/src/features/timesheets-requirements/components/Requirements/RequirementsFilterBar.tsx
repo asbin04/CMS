@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ChevronDown, RotateCcw } from 'lucide-react';
-import { MASTER_PROJECTS } from '../../mockData';
 import { projectLookupService } from '../../services/projectLookupService';
 import { ProjectOption } from '../../types';
 
@@ -63,7 +62,7 @@ export const RequirementsFilterBar: React.FC<RequirementsFilterBarProps> = ({
   onStatusFilterChange,
   onResetFilters,
 }) => {
-  const [projectOptions, setProjectOptions] = useState<ProjectOption[]>(MASTER_PROJECTS);
+  const [projectOptions, setProjectOptions] = useState<ProjectOption[]>([]);
 
   useEffect(() => {
     projectLookupService.getProjects().then(setProjectOptions).catch(() => {});

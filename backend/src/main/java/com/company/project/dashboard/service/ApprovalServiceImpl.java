@@ -80,7 +80,7 @@ public class ApprovalServiceImpl implements ApprovalService {
         EmployeeApproval item = employeeRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee approval not found with ID: " + id));
         item.setStatus(status);
-        item.setApprovedBy("Akshit Ujjain (Admin)");
+        item.setApprovedBy(resolveCurrentApprover());
         item.setDecidedAt(LocalDateTime.now());
         EmployeeApproval saved = employeeRepo.save(item);
         if (notificationService != null) {
@@ -133,7 +133,7 @@ public class ApprovalServiceImpl implements ApprovalService {
         ClientApproval item = clientRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Client approval not found with ID: " + id));
         item.setStatus(status);
-        item.setApprovedBy("Akshit Ujjain (Admin)");
+        item.setApprovedBy(resolveCurrentApprover());
         item.setDecidedAt(LocalDateTime.now());
         ClientApproval saved = clientRepo.save(item);
         if (notificationService != null) {
@@ -190,7 +190,7 @@ public class ApprovalServiceImpl implements ApprovalService {
         TicketAssetApproval item = ticketAssetRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket/Asset approval not found with ID: " + id));
         item.setStatus(status);
-        item.setApprovedBy("Akshit Ujjain (Admin)");
+        item.setApprovedBy(resolveCurrentApprover());
         item.setDecidedAt(LocalDateTime.now());
         TicketAssetApproval saved = ticketAssetRepo.save(item);
         if (notificationService != null) {
@@ -240,6 +240,16 @@ public class ApprovalServiceImpl implements ApprovalService {
                 .sortOrder(request.getSortOrder())
                 .build();
         return createTicketAssetApproval(entity);
+    }
+
+    private String resolveCurrentApprover() {
+        try {
+            org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.getName() != null && !auth.getName().isBlank() && !"anonymousUser".equalsIgnoreCase(auth.getName())) {
+                return auth.getName();
+            }
+        } catch (Exception ignored) {}
+        return "Admin";
     }
 
     @Override

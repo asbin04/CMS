@@ -42,12 +42,12 @@ export function mapBackendTimesheetToRecord(raw: any): TimesheetRecord {
         ? raw.billableAmount
         : formatRupee(rawAmt, true),
     approvalStatus: (raw.approvalStatus || 'Pending') as TimesheetApprovalStatus,
-    assignedApprover: raw.assignedApprover || raw.assigned_approver || 'Admin – Akshit Ujjain',
+    assignedApprover: raw.assignedApprover || raw.assigned_approver || '',
     approvedBy:
       raw.approvalStatus === 'Approved'
         ? (raw.approvedBy && raw.approvedBy !== '-'
-            ? (raw.approvedBy.toLowerCase().includes('gaurav') ? 'Gaurav Tripathy' : 'Akshit Ujjain')
-            : ((raw.assignedApprover || raw.assigned_approver || '').toLowerCase().includes('gaurav') ? 'Gaurav Tripathy' : 'Akshit Ujjain'))
+            ? (raw.approvedBy.toLowerCase().includes('gaurav') ? '' : '')
+            : ((raw.assignedApprover || raw.assigned_approver || '').toLowerCase().includes('gaurav') ? '' : ''))
         : '-',
     approvalDate:
       raw.approvalStatus === 'Approved'
@@ -152,7 +152,7 @@ export const timesheetsApiService = {
       notes: payload.taskDescription ?? payload.description ?? payload.notes ?? '',
       taskDescription: payload.taskDescription ?? payload.description ?? payload.notes ?? '',
       approvalStatus: payload.approvalStatus || 'Pending',
-      assignedApprover: payload.assignedApprover || 'Admin – Akshit Ujjain',
+      assignedApprover: payload.assignedApprover || '',
     };
     if (payload.approvedBy) {
       body.approvedBy = payload.approvedBy;

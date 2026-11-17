@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Download, Plus, Monitor, AlertCircle, RefreshCw } from 'lucide-react';
+import { Plus, Monitor, AlertCircle, RefreshCw } from 'lucide-react';
+import { ReloadButton } from '@/components/ui/ReloadButton';
+import { ExportButton } from '@/components/ui/ExportButton';
 import {
   UiuxDesignItem,
   UiuxKpis,
@@ -305,7 +307,7 @@ export const UiuxPage: React.FC = () => {
       )}
 
       {/* Section - KPI Metric Cards */}
-      <UiuxKpiCards kpis={kpis} />
+      <UiuxKpiCards kpis={kpis} isLoading={isLoading} />
 
       {/* Section - Tabs and Action Buttons Header */}
       <div
@@ -325,38 +327,18 @@ export const UiuxPage: React.FC = () => {
             flexDirection: 'row',
             alignItems: 'center',
             gap: '10px',
-            width: '221px',
+            width: 'auto',
             height: '34px',
           }}
         >
+          <ReloadButton
+            onClick={() => loadData()}
+            isRefreshing={isLoading}
+            title="Refresh"
+          />
+
           {/* Export Button */}
-          <button
-            type="button"
-            onClick={handleExport}
-            style={{
-              boxSizing: 'border-box',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              padding: '8px 14px',
-              gap: '6px',
-              width: '90.11px',
-              height: '34px',
-              background: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontFamily: 'Inter',
-              fontWeight: 600,
-              fontSize: '12px',
-              lineHeight: '16px',
-              color: '#334155',
-            }}
-            className="hover:bg-slate-50 transition-colors"
-          >
-            <Download size={16} color="#64748B" strokeWidth={1.33} />
-            <span>Export</span>
-          </button>
+          <ExportButton onClick={handleExport} />
 
           {/* + Add Design Button */}
           <button
@@ -408,6 +390,7 @@ export const UiuxPage: React.FC = () => {
 
       {/* 17 Columns Data Table & Pagination */}
       <UiuxTable
+        isLoading={isLoading}
         designs={paginatedDesigns}
         onEdit={(item) => setEditingDesign(item)}
         onDelete={handleDeleteDesign}

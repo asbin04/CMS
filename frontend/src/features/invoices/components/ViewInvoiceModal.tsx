@@ -550,9 +550,9 @@ export const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse text-xs">
+                <table className="w-full text-left border-collapse text-xs whitespace-nowrap">
                   <thead>
-                    <tr className="bg-slate-50 text-[11px] font-semibold text-slate-600 border-b border-slate-200">
+                    <tr className="bg-slate-50 text-[11px] font-semibold text-slate-600 border-b border-slate-200 whitespace-nowrap">
                       <th className="px-3 py-2">Payment ID</th>
                       <th className="px-3 py-2">Date</th>
                       <th className="px-3 py-2">Method</th>

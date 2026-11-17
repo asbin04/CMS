@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Headphones, Download, Plus } from 'lucide-react';
+import { Headphones, Plus } from 'lucide-react';
 import { ReloadButton } from '../../../components/ui/ReloadButton';
+import { ExportButton } from '../../../components/ui/ExportButton';
 import { ticketService } from '../services/ticketService';
 import {
   SupportTicketItem,
@@ -227,14 +228,7 @@ export const SupportTicketsPage: React.FC = () => {
             />
           </div>
 
-          <button
-            type="button"
-            onClick={handleExport}
-            className="h-[34px] px-[15px] bg-white border border-[#E5E7EB] rounded-lg text-[13px] font-medium text-[#334155] flex items-center gap-2 hover:bg-[#F8FAFC] transition-colors shadow-sm"
-          >
-            <Download className="w-4 h-4 text-[#334155]" />
-            <span>Export</span>
-          </button>
+          <ExportButton onClick={handleExport} />
 
           <button
             type="button"

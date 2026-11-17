@@ -12,6 +12,7 @@ import { ManagementAlertsSection } from '../../../components/dashboard/Managemen
 import { EditDataModal } from '../../../components/dashboard/EditDataModal';
 import { Skeleton } from '../../../components/ui/Skeleton';
 import { ErrorBanner } from '../../../components/ui/ErrorBanner';
+import { CeoDashboardSkeleton } from '../components/CeoDashboardSkeleton';
 
 interface CeoDashboardPageProps {
   dateRange: string;
@@ -27,7 +28,6 @@ export const CeoDashboardPage: React.FC<CeoDashboardPageProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [lastRefreshed, setLastRefreshed] = useState<string>('—');
 
   const loadData = useCallback(async (isManual = false) => {
     if (isManual) {
@@ -40,10 +40,6 @@ export const CeoDashboardPage: React.FC<CeoDashboardPageProps> = ({
     try {
       const fetched = await dashboardService.getDashboardData();
       setData(fetched);
-      const now = new Date();
-      setLastRefreshed(
-        `${now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}, ${now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`
-      );
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to connect to backend server';
       setErrorMessage(msg);
@@ -84,31 +80,30 @@ export const CeoDashboardPage: React.FC<CeoDashboardPageProps> = ({
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-7 flex flex-col gap-5 max-w-[1400px] mx-auto w-full">
+    <div className="p-6 flex flex-col gap-6 max-w-[1600px] mx-auto w-full select-none" style={{ fontFamily: "'Inter', sans-serif" }}>
       {/* Page Title Row: Crown icon, "CEO Dashboard", and subtitle */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-500 border border-amber-200 flex items-center justify-center shrink-0 shadow-xs">
+          <div className="w-9 h-9 rounded-xl bg-[#FFFBEB] text-[#F59E0B] border border-[#FDE68A]/60 flex items-center justify-center shrink-0">
             <Crown size={20} />
           </div>
-          <div>
-            <h1 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight leading-tight">
-              {data?.settings?.dashboard_title || 'Admin Dashboard'}
+          <div className="flex flex-col gap-0.5">
+            <h1 className="text-[20px] font-bold text-[#0F172A] tracking-[-0.5px] leading-7">
+              {data?.settings?.dashboard_title || 'CEO Dashboard'}
             </h1>
-            <p className="text-xs text-slate-500">
+            <p className="text-[12px] font-normal text-[#64748B] leading-4">
               {data?.settings?.dashboard_subtitle ||
                 'Executive view of business performance across Finance, Sales, Delivery, People and Risk.'}
             </p>
           </div>
         </div>
 
-        {/* Refresh Action */}
-        <div className="flex items-center gap-2 text-xs text-slate-400">
+        {/* Right Action: Refresh */}
+        <div className="flex items-center gap-2">
           <ReloadButton
             onClick={handleManualRefresh}
             isRefreshing={isRefreshing}
             disabled={isLoading || isRefreshing}
-            className="p-1.5 rounded-md hover:bg-slate-200/60 text-[#64748B] hover:text-[#0F172A] transition-colors cursor-pointer disabled:opacity-50"
             title="Refresh dashboard data"
           />
         </div>
@@ -126,22 +121,7 @@ export const CeoDashboardPage: React.FC<CeoDashboardPageProps> = ({
 
       {/* Skeletons while loading initial data */}
       {isLoading && !data ? (
-        <div className="flex flex-col gap-5">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3.5">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <Skeleton key={i} variant="card" height={96} />
-            ))}
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <Skeleton variant="card" height={280} />
-            <Skeleton variant="card" height={280} />
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <Skeleton variant="card" height={260} />
-            <Skeleton variant="card" height={260} />
-          </div>
-          <Skeleton variant="card" height={320} />
-        </div>
+        <CeoDashboardSkeleton />
       ) : data ? (
         <>
           {/* A. KPI Cards (Two rows of 5 on desktop, responsive to 2 -> 1) */}

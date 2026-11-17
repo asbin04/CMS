@@ -20,7 +20,8 @@ export interface AppLayoutContextType {
 export const AppLayout: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [dateRange, setDateRange] = useState<string>(() => {
-    return (typeof window !== 'undefined' ? localStorage.getItem('cms_active_date_range') : null) || '—';
+    const stored = typeof window !== 'undefined' ? localStorage.getItem('cms_active_date_range') : null;
+    return (stored && stored !== 'Apr 2024 - Mar 2025' && stored !== '—') ? stored : '';
   });
   const [userName, setUserName] = useState<string>('—');
   const [userRole, setUserRole] = useState<string>('—');
@@ -79,7 +80,7 @@ export const AppLayout: React.FC = () => {
 
     dashboardService.getDashboardData()
       .then((data) => {
-        if (data.settings?.active_date_range) {
+        if (data.settings?.active_date_range && data.settings.active_date_range !== 'Apr 2024 - Mar 2025' && data.settings.active_date_range !== '—') {
           setDateRange(data.settings.active_date_range);
           try {
             localStorage.setItem('cms_active_date_range', data.settings.active_date_range);
@@ -95,9 +96,46 @@ export const AppLayout: React.FC = () => {
       window.removeEventListener('storage', syncAuthUser);
     };
   }, []);
+
+  const location = useLocation();
+
+  // Close mobile drawer on navigation
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  // Lock body scroll when mobile drawer is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
+  // Responsive tablet sidebar auto-collapse
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window !== 'undefined') {
+        if (window.innerWidth >= 768 && window.innerWidth < 1024) {
+          setIsSidebarCollapsed(true);
+        }
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   // Side rail defaults to expanded; toggles and persists preference in localStorage
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 1024 && window.innerWidth >= 768) {
+      return true;
+    }
     return localStorage.getItem('cms_sidebar_collapsed') === 'true';
   });
 
@@ -114,7 +152,8 @@ export const AppLayout: React.FC = () => {
       style={{
         display: 'flex',
         flexDirection: 'row',
-        width: '100vw',
+        width: '100%',
+        maxWidth: '100%',
         height: '100vh',
         overflow: 'hidden',
         backgroundColor: '#F8FAFC',

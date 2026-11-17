@@ -1,5 +1,6 @@
 import React from 'react';
-import { ChevronDown, Download, ChevronLeft, ChevronRight, FileCheck } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, FileCheck } from 'lucide-react';
+import { ExportButton } from '@/components/ui/ExportButton';
 import { ContractData } from '@/types/contract';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -143,30 +144,7 @@ export const ContractsTable: React.FC<ContractsTableProps> = ({
             </div>
           </div>
 
-          <button
-            onClick={onExport}
-            style={{
-              boxSizing: 'border-box',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              padding: '6px 12px',
-              gap: '6px',
-              height: '30px',
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              color: '#334155',
-              fontFamily: "'Inter', sans-serif",
-              fontWeight: 500,
-              fontSize: '12px',
-              lineHeight: '16px',
-            }}
-          >
-            <Download style={{ width: '14px', height: '14px', color: '#334155', strokeWidth: 1.2 }} />
-            <span>Export</span>
-          </button>
+          <ExportButton onClick={onExport} />
         </div>
       </div>
 

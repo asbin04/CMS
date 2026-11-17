@@ -114,7 +114,7 @@ export const SalesDashboardPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-full bg-[#F8FAFC] p-4 sm:p-6 lg:p-7 w-full flex flex-col gap-5">
+    <div className="w-full p-4 sm:p-6 lg:p-7 flex flex-col gap-5">
       {/* Error Banner with Retry */}
       {errorMessage && (
         <ErrorBanner
@@ -144,9 +144,9 @@ export const SalesDashboardPage: React.FC = () => {
           <SalesPerformanceCards data={data.performance} />
 
           {/* 4. Lower Row: Funnel (5 cols) + Workflow (7 cols) */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 w-full items-stretch">
             {/* Lower-left: Sales Conversion Funnel */}
-            <div className="lg:col-span-5 min-w-0">
+            <div className="col-span-12 lg:col-span-5">
               <SalesConversionFunnelCard
                 stages={data.funnelStages}
                 conversion={data.conversion}
@@ -154,7 +154,7 @@ export const SalesDashboardPage: React.FC = () => {
             </div>
 
             {/* Lower-right: Sales Workflow */}
-            <div className="lg:col-span-7 min-w-0">
+            <div className="col-span-12 lg:col-span-7 min-w-0">
               <SalesWorkflowCard
                 stages={data.workflowStages}
                 onNavigateFollowUpQueue={handleNavigateFollowUpQueue}

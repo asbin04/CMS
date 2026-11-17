@@ -39,9 +39,9 @@ export const CashFlowTable: React.FC<CashFlowTableProps> = ({
 
   return (
     <div className="overflow-x-auto w-full">
-      <table className="w-full border-collapse text-left">
+      <table className="w-full border-collapse text-left min-w-[1350px] whitespace-nowrap">
         <thead>
-          <tr className="bg-white border-b border-slate-200/80">
+          <tr className="bg-white border-b border-slate-200/80 whitespace-nowrap">
             <th className="py-3.5 px-4 text-[11px] font-bold text-slate-700 uppercase tracking-wider whitespace-nowrap">
               CASH FLOW ID
             </th>

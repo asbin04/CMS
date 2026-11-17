@@ -212,6 +212,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
     if (path === '/finance/payments' && (location.pathname === '/payments' || location.pathname === '/finance/payments')) {
       return true;
     }
+    if (
+      path === '/reports/transaction-control' &&
+      (location.pathname === '/transaction-control' || location.pathname === '/reports/transaction-control')
+    ) {
+      return true;
+    }
     return location.pathname === path;
   };
 
@@ -226,7 +232,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         (item.path === '/clients/list' &&
           (location.pathname === '/clients' || location.pathname.startsWith('/clients'))) ||
         (item.path === '/finance/payments' &&
-          (location.pathname === '/payments' || location.pathname.startsWith('/finance/payments')))
+          (location.pathname === '/payments' || location.pathname.startsWith('/finance/payments'))) ||
+        (item.path === '/reports/transaction-control' &&
+          (location.pathname === '/transaction-control' || location.pathname.startsWith('/reports/transaction-control')))
     );
   };
 

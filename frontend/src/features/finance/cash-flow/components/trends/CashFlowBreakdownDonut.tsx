@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { OutflowBreakdownCategory } from '../../types';
-import { formatIndianCurrency, MOCK_OUTFLOW_BREAKDOWN } from '../../mockData';
+import { formatIndianCurrency } from '../../mockData';
 
 const EXACT_CATEGORY_COLORS: Record<string, string> = {
   'Vendor Payments': '#3930A8',
@@ -16,15 +16,26 @@ interface CashFlowBreakdownDonutProps {
 
 export const CashFlowBreakdownDonut: React.FC<CashFlowBreakdownDonutProps> = ({
   categories,
-  totalAmount = 5285000,
+  totalAmount = 0,
 }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const rawCategories = categories && categories.length > 0 ? categories : MOCK_OUTFLOW_BREAKDOWN;
+  const rawCategories = categories && categories.length > 0 ? categories : [];
 
   const safeCategories = rawCategories.map((cat) => ({
     ...cat,
     color: EXACT_CATEGORY_COLORS[cat.name] || cat.color,
   }));
+
+  if (safeCategories.length === 0) {
+    return (
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs flex flex-col justify-between min-h-[340px]">
+        <h3 className="text-sm font-bold text-slate-900 tracking-tight mb-3">Outflow Breakdown</h3>
+        <div className="flex-1 flex items-center justify-center text-slate-400 text-xs">
+          No outflow breakdown data available for this period.
+        </div>
+      </div>
+    );
+  }
 
   // SVG dimensions for Donut matching designer specs
   const size = 190;

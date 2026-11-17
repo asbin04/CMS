@@ -151,9 +151,9 @@ export const ViewInvoiceModal: React.FC<ViewInvoiceModalProps> = ({
           </div>
 
           {/* Line Items Table */}
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px', lineHeight: '16px', marginBottom: '20px' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px', lineHeight: '16px', marginBottom: '20px', whiteSpace: 'nowrap' }}>
             <thead>
-              <tr style={{ backgroundColor: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
+              <tr style={{ backgroundColor: '#F8FAFC', borderBottom: '1px solid #E2E8F0', whiteSpace: 'nowrap' }}>
                 <th style={{ padding: '10px 12px', textAlign: 'left', color: '#475569', fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase' }}>DESCRIPTION</th>
                 <th style={{ padding: '10px 12px', textAlign: 'right', color: '#475569', fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase' }}>QTY</th>
                 <th style={{ padding: '10px 12px', textAlign: 'right', color: '#475569', fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase' }}>RATE</th>

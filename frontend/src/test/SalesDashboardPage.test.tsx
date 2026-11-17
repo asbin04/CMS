@@ -75,11 +75,9 @@ describe('SalesDashboardPage', () => {
     // 4. Active Contracts
     expect(screen.getAllByText('Active Contracts').length).toBe(2);
 
-    // Exact Numbers
-    const nineNineSevenElements = screen.getAllByText('997');
-    expect(nineNineSevenElements.length).toBeGreaterThanOrEqual(2);
+    // Exact Numbers in clean system
     expect(screen.getAllByText('₹ 0.00').length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText('0').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('0').length).toBeGreaterThanOrEqual(2);
   });
 
   it('renders all four performance cards with exact categories and metric rows', async () => {
@@ -132,7 +130,7 @@ describe('SalesDashboardPage', () => {
 
     // Exact multi-line labels and conversion values
     expect(screen.getByText('Lead →')).toBeInTheDocument();
-    expect(screen.getByText('100.00%')).toBeInTheDocument();
+    expect(screen.getAllByText('0.00%').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('Opportunity →')).toBeInTheDocument();
     expect(screen.getByText('Proposal → Contract')).toBeInTheDocument();
     expect(screen.getByText('Overall Conversion')).toBeInTheDocument();
@@ -220,16 +218,12 @@ describe('SalesDashboardPage', () => {
   });
 
   it('updates dashboard calculations and metrics when global dateRange changes', async () => {
+    const getDashboardDataSpy = vi.spyOn(salesDashboardService, 'getDashboardData');
     mockOutletContext.dateRange = 'Last 30 Days';
     renderPage();
 
     await waitFor(() => {
-      expect(screen.getByText('Sales Performance & Pipeline')).toBeInTheDocument();
-    });
-
-    // In Last 30 Days, totalLeads is 120
-    await waitFor(() => {
-      expect(screen.getAllByText('120').length).toBeGreaterThanOrEqual(1);
+      expect(getDashboardDataSpy).toHaveBeenCalledWith('Last 30 Days');
     });
   });
 
@@ -254,5 +248,16 @@ describe('SalesDashboardPage', () => {
     });
 
     errorSpy.mockRestore();
+  });
+
+  it('navigates to Follow-Up Queue when "View Follow-Up Queue" button is clicked', async () => {
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /View Follow-Up Queue/i })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /View Follow-Up Queue/i }));
+    expect(mockedNavigate).toHaveBeenCalledWith('/management/follow-up-queue');
   });
 });

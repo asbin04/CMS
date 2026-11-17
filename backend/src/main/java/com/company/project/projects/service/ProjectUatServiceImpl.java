@@ -95,10 +95,10 @@ public class ProjectUatServiceImpl implements ProjectUatService {
         List<String> testers = repository.findDistinctTesters();
 
         return UatFilterOptionsResponse.builder()
-                .projects(projects.isEmpty() ? Arrays.asList("PRJ-001", "PRJ-002", "PRJ-003", "PRJ-004", "PRJ-005") : projects)
-                .statuses(statuses.isEmpty() ? Arrays.asList("Passed", "In Testing", "Failed") : statuses)
-                .clientApprovals(clientApprovals.isEmpty() ? Arrays.asList("Approved", "Pending", "Rejected") : clientApprovals)
-                .testers(testers.isEmpty() ? Arrays.asList("Amit Sharma", "Sneha Nair", "Divya Patel", "Rohan Verma", "Vikram Shah") : testers)
+                .projects(projects)
+                .statuses(statuses)
+                .clientApprovals(clientApprovals)
+                .testers(testers)
                 .build();
     }
 

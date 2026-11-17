@@ -186,5 +186,61 @@ describe('EmployeeMasterPage Component', () => {
       screen.queryByText('Enter complete employee details to create a new record.')
     ).toBeNull();
   });
+
+  it('clicking Import triggers CSV file selection and imports records via bulkCreateEmployees', async () => {
+    const bulkSpy = vi.spyOn(employeeService, 'bulkCreateEmployees').mockResolvedValue([
+      { id: 10, employeeId: 'EMP-010', fullName: 'Imported User' } as any,
+    ]);
+
+    await act(async () => {
+      render(
+        <BrowserRouter>
+          <EmployeeMasterPage />
+        </BrowserRouter>
+      );
+    });
+
+    const fileInput = screen.getByTestId('employee-csv-input');
+    const csvContent =
+      'Employee ID,Full Name,Email,Phone,Department,Designation,Monthly CTC,Joining Date\n' +
+      'EMP-010,Imported User,imported@company.com,+91 99999 11111,Engineering,Lead,85000,2026-01-15';
+    const file = new File([csvContent], 'employees.csv', { type: 'text/csv' });
+
+    await act(async () => {
+      fireEvent.change(fileInput, { target: { files: [file] } });
+    });
+
+    expect(bulkSpy).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({
+          employeeId: 'EMP-010',
+          fullName: 'Imported User',
+          workEmail: 'imported@company.com',
+          department: 'Engineering',
+          monthlyCtc: 85000,
+        }),
+      ])
+    );
+    expect(screen.getByText('Import Successful')).toBeDefined();
+  });
+
+  it('shows error toast when importing an empty CSV file', async () => {
+    await act(async () => {
+      render(
+        <BrowserRouter>
+          <EmployeeMasterPage />
+        </BrowserRouter>
+      );
+    });
+
+    const fileInput = screen.getByTestId('employee-csv-input');
+    const emptyFile = new File([''], 'empty.csv', { type: 'text/csv' });
+
+    await act(async () => {
+      fireEvent.change(fileInput, { target: { files: [emptyFile] } });
+    });
+
+    expect(screen.getByText('Import Failed')).toBeDefined();
+  });
 });
 

@@ -16,7 +16,7 @@ function mapClient(item: any): Client {
     country: item.country || 'India',
     city: item.city || 'Bangalore',
     clientType: item.clientType || item.client_type || 'Enterprise',
-    accountOwner: item.accountOwner || item.account_owner || 'Akshit Ujjain',
+    accountOwner: item.accountOwner || item.account_owner || '',
     status: item.status || 'Active',
     creditLimit: item.creditLimit || item.credit_limit || '₹ 10,00,000',
     onboardingDate: item.onboardingDate || item.onboarding_date || '15 Jan 2024',

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Download, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import { ExportButton } from '../../../../components/ui/ExportButton';
 import { useTimesheetsState } from '../../hooks/useTimesheetsState';
 import { TimesheetRecord } from '../../types';
 import { TimesheetsKpiCards } from './TimesheetsKpiCards';
@@ -36,6 +37,7 @@ export const TimesheetsSection: React.FC = () => {
     updateApprovalStatus,
     exportCsv,
     resetFilters,
+    isLoading,
     nextTimesheetId,
     sortField,
     sortOrder,
@@ -118,22 +120,8 @@ export const TimesheetsSection: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <h2 className="text-lg font-bold text-slate-900 tracking-tight">Timesheets</h2>
         <div className="flex items-center gap-2.5 self-end sm:self-auto">
-          {/* Export Button with Visible Light-Grey Border */}
-          <button
-            type="button"
-            onClick={handleExport}
-            className="inline-flex items-center gap-2 px-3.5 py-2 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-300 text-slate-700 hover:text-slate-900 text-xs font-semibold rounded-xl shadow-xs transition-all cursor-pointer h-[36px]"
-            style={{
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #CBD5E1',
-              borderRadius: '12px',
-              boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-              color: '#334155',
-            }}
-          >
-            <Download className="w-3.5 h-3.5 text-slate-600" />
-            <span>Export</span>
-          </button>
+          {/* Export Button */}
+          <ExportButton onClick={handleExport} />
 
           {/* + Log Time Button */}
           <button
@@ -148,7 +136,7 @@ export const TimesheetsSection: React.FC = () => {
       </div>
 
       {/* Dynamic KPI Cards */}
-      <TimesheetsKpiCards kpis={kpis} />
+      <TimesheetsKpiCards kpis={kpis} isLoading={isLoading} />
 
       {/* Dynamic Filter Bar */}
       <TimesheetsFilterBar
@@ -167,6 +155,7 @@ export const TimesheetsSection: React.FC = () => {
 
       {/* Dynamic Table */}
       <TimesheetsTable
+        isLoading={isLoading}
         records={paginatedRecords}
         totalCount={totalRecordsCount}
         currentPage={currentPage}

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown, ChevronLeft, ChevronRight, MoreVertical, Eye, Edit3, Trash2, FileX, Loader2 } from 'lucide-react';
 import { InvoiceRecord, InvoiceSortOption } from '../types';
 import { formatRupee } from '../utils';
+import { Skeleton } from '../../../components/ui/Skeleton';
 
 interface InvoicesTableProps {
   records: InvoiceRecord[];
@@ -228,10 +229,47 @@ export const InvoicesTable: React.FC<InvoicesTableProps> = ({
           </div>
         )}
         {isLoading && records.length === 0 ? (
-          <div className="py-20 text-center">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600 mx-auto mb-3" />
-            <h4 className="text-sm font-semibold text-slate-800">Loading live invoice records...</h4>
-            <p className="text-xs text-slate-400 mt-1">Connecting to live Supabase database</p>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-left whitespace-nowrap min-w-[1700px]">
+              <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
+                <tr>
+                  <th className="px-4 py-3.5 text-[11px] font-bold text-slate-600 uppercase tracking-wider text-left">Invoice ID</th>
+                  <th className="px-4 py-3.5 text-[11px] font-bold text-slate-600 uppercase tracking-wider text-left">Invoice Date</th>
+                  <th className="px-4 py-3.5 text-[11px] font-bold text-slate-600 uppercase tracking-wider text-left">Client ID</th>
+                  <th className="px-4 py-3.5 text-[11px] font-bold text-slate-600 uppercase tracking-wider text-left">Project ID</th>
+                  <th className="px-4 py-3.5 text-[11px] font-bold text-slate-600 uppercase tracking-wider text-left">Contract ID</th>
+                  <th className="px-4 py-3.5 text-[11px] font-bold text-slate-600 uppercase tracking-wider text-left">Due Date</th>
+                  <th className="px-4 py-3.5 text-[11px] font-bold text-slate-600 uppercase tracking-wider text-right">Amount Before Tax</th>
+                  <th className="px-4 py-3.5 text-[11px] font-bold text-slate-600 uppercase tracking-wider text-right">Tax Amount</th>
+                  <th className="px-4 py-3.5 text-[11px] font-bold text-slate-600 uppercase tracking-wider text-right">Total Amount</th>
+                  <th className="px-4 py-3.5 text-[11px] font-bold text-slate-600 uppercase tracking-wider text-center">Status</th>
+                  <th className="px-4 py-3.5 text-[11px] font-bold text-slate-600 uppercase tracking-wider text-left">Currency</th>
+                  <th className="px-4 py-3.5 text-[11px] font-bold text-slate-600 uppercase tracking-wider text-left">Payment Terms</th>
+                  <th className="px-4 py-3.5 text-[11px] font-bold text-slate-600 uppercase tracking-wider text-left">Notes</th>
+                  <th className="px-4 py-3.5 text-[11px] font-bold text-slate-600 uppercase tracking-wider text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {Array.from({ length: 5 }).map((_, idx) => (
+                  <tr key={idx} className="h-12 hover:bg-slate-50/50">
+                    <td className="px-4 py-3.5"><Skeleton variant="text" width={80} height={13} /></td>
+                    <td className="px-4 py-3.5"><Skeleton variant="text" width={75} height={13} /></td>
+                    <td className="px-4 py-3.5"><Skeleton variant="text" width={90} height={13} /></td>
+                    <td className="px-4 py-3.5"><Skeleton variant="text" width={85} height={13} /></td>
+                    <td className="px-4 py-3.5"><Skeleton variant="text" width={85} height={13} /></td>
+                    <td className="px-4 py-3.5"><Skeleton variant="text" width={75} height={13} /></td>
+                    <td className="px-4 py-3.5 text-right"><Skeleton variant="text" width={70} height={13} className="ml-auto" /></td>
+                    <td className="px-4 py-3.5 text-right"><Skeleton variant="text" width={60} height={13} className="ml-auto" /></td>
+                    <td className="px-4 py-3.5 text-right"><Skeleton variant="text" width={80} height={13} className="ml-auto" /></td>
+                    <td className="px-4 py-3.5 text-center"><Skeleton variant="badge" width={65} height={20} className="mx-auto" /></td>
+                    <td className="px-4 py-3.5"><Skeleton variant="text" width={40} height={13} /></td>
+                    <td className="px-4 py-3.5"><Skeleton variant="text" width={70} height={13} /></td>
+                    <td className="px-4 py-3.5"><Skeleton variant="text" width={110} height={13} /></td>
+                    <td className="px-4 py-3.5 text-center"><Skeleton variant="circular" width={24} height={24} className="mx-auto" /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         ) : records.length === 0 ? (
           <div className="py-16 text-center">

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { MoreVertical, Download, Plus, Search, ChevronLeft, ChevronRight, ChevronDown, Edit2, Trash2, Check } from 'lucide-react';
+import { MoreVertical, Plus, Search, ChevronLeft, ChevronRight, ChevronDown, Edit2, Trash2, Check } from 'lucide-react';
+import { ExportButton } from '@/components/ui/ExportButton';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { Project } from '../types/project';
 
 interface ProjectsTableProps {
@@ -7,6 +9,7 @@ interface ProjectsTableProps {
   totalRecords: number;
   currentPage: number;
   pageSize: number;
+  isLoading?: boolean;
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: number) => void;
   onCreateProjectClick: () => void;
@@ -52,6 +55,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
   totalRecords,
   currentPage,
   pageSize,
+  isLoading = false,
   onPageChange,
   onPageSizeChange,
   onCreateProjectClick,
@@ -316,29 +320,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
           Projects
         </div>
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
-          <button
-            onClick={onExportClick}
-            style={{
-              boxSizing: 'border-box',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              padding: '6px 12px',
-              gap: '6px',
-              height: '32px',
-              background: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              borderRadius: '8px',
-              fontFamily: 'Inter',
-              fontWeight: 600,
-              fontSize: '12px',
-              color: '#334155',
-              cursor: 'pointer',
-            }}
-          >
-            <Download size={14} color="#64748B" />
-            Export
-          </button>
+          <ExportButton onClick={onExportClick} />
           <button
             onClick={onCreateProjectClick}
             style={{
@@ -666,6 +648,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
             minWidth: '1608.53px',
             borderCollapse: 'collapse',
             textAlign: 'left',
+            whiteSpace: 'nowrap',
           }}
         >
           <thead>
@@ -674,6 +657,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
                 height: '42px',
                 background: 'rgba(248, 250, 252, 0.75)',
                 borderBottom: '1px solid #E2E8F0',
+                whiteSpace: 'nowrap',
               }}
             >
               <th style={{ padding: '12px 16px', fontFamily: 'Inter', fontWeight: 700, fontSize: '11px', lineHeight: '16px', color: '#475569', width: '119.84px' }}>Project ID</th>
@@ -693,7 +677,26 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
             </tr>
           </thead>
           <tbody>
-            {projects.length === 0 ? (
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, idx) => (
+                <tr key={idx} style={{ height: '53px', borderTop: '1px solid #E2E8F0', background: '#FFFFFF' }}>
+                  <td style={{ padding: '18px 16px' }}><Skeleton variant="text" width={75} height={12} /></td>
+                  <td style={{ padding: '18px 16px' }}><Skeleton variant="text" width={65} height={12} /></td>
+                  <td style={{ padding: '18px 16px' }}><Skeleton variant="text" width={130} height={12} /></td>
+                  <td style={{ padding: '18px 16px' }}><Skeleton variant="text" width={60} height={12} /></td>
+                  <td style={{ padding: '18px 16px' }}><Skeleton variant="text" width={90} height={12} /></td>
+                  <td style={{ padding: '18px 16px' }}><Skeleton variant="text" width={75} height={12} /></td>
+                  <td style={{ padding: '18px 16px' }}><Skeleton variant="text" width={75} height={12} /></td>
+                  <td style={{ padding: '18px 16px' }}><Skeleton variant="badge" width={70} height={18} /></td>
+                  <td style={{ padding: '18px 16px' }}><Skeleton variant="badge" width={60} height={18} /></td>
+                  <td style={{ padding: '18px 16px' }}><Skeleton variant="badge" width={65} height={18} /></td>
+                  <td style={{ padding: '18px 16px' }}><Skeleton variant="text" width={75} height={12} /></td>
+                  <td style={{ padding: '18px 16px', textAlign: 'center' }}><Skeleton variant="text" width={30} height={12} className="mx-auto" /></td>
+                  <td style={{ padding: '18px 16px' }}><Skeleton variant="badge" width={75} height={18} /></td>
+                  <td style={{ padding: '12px', textAlign: 'center' }}><Skeleton variant="circular" width={22} height={22} className="mx-auto" /></td>
+                </tr>
+              ))
+            ) : projects.length === 0 ? (
               <tr>
                 <td
                   colSpan={14}

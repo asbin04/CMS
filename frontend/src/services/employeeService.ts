@@ -59,6 +59,16 @@ export const employeeService = {
     return res.data;
   },
 
+  bulkCreateEmployees: async (
+    payloads: CreateEmployeePayload[]
+  ): Promise<EmployeeData[]> => {
+    const res = await apiClient.post<EmployeeData[]>(
+      `${API_ENDPOINTS.EMPLOYEES.BASE}/bulk`,
+      payloads
+    );
+    return res.data;
+  },
+
   updateEmployee: async (
     id: string | number,
     payload: Partial<CreateEmployeePayload>

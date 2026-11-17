@@ -140,10 +140,10 @@ public class PayrollServiceImpl implements PayrollService {
                 .netSalary(net)
                 .paymentStatus(paymentStatus)
                 .paymentDate(paymentDate)
-                .paymentMode(request.getPaymentMode() != null ? request.getPaymentMode() : "Bank Transfer")
-                .bankName(request.getBankName() != null ? request.getBankName() : "HDFC Bank")
-                .bankAccount(request.getBankAccount() != null ? request.getBankAccount() : "XXXXXXXX" + (1000 + (int)(Math.random() * 9000)))
-                .panNumber(request.getPanNumber() != null ? request.getPanNumber() : "ABCDE1234F")
+                .paymentMode(request.getPaymentMode() != null && !request.getPaymentMode().isBlank() ? request.getPaymentMode() : "Bank Transfer")
+                .bankName(request.getBankName() != null ? request.getBankName() : "")
+                .bankAccount(request.getBankAccount() != null ? request.getBankAccount() : "")
+                .panNumber(request.getPanNumber() != null ? request.getPanNumber() : "")
                 .notes(request.getNotes())
                 .build();
 

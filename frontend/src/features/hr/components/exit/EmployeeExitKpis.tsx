@@ -1,12 +1,14 @@
 import React from 'react';
 import { Users, CheckCircle, Clock, FileText, ArrowUp, ArrowDown } from 'lucide-react';
 import { ExitKpiSummary } from '../../types';
+import { Skeleton } from '../../../../components/ui/Skeleton';
 
 interface EmployeeExitKpisProps {
   summary: ExitKpiSummary;
+  isLoading?: boolean;
 }
 
-export const EmployeeExitKpis: React.FC<EmployeeExitKpisProps> = ({ summary }) => {
+export const EmployeeExitKpis: React.FC<EmployeeExitKpisProps> = ({ summary, isLoading = false }) => {
   const cards = [
     {
       id: 'total-exit-requests',
@@ -76,7 +78,7 @@ export const EmployeeExitKpis: React.FC<EmployeeExitKpisProps> = ({ summary }) =
             <div className="min-w-0 flex-1">
               <div className="text-xs font-medium text-slate-500 truncate">{card.label}</div>
               <div className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight mt-0.5 tracking-tight group-hover:text-blue-600 transition-colors">
-                {card.value}
+                {isLoading ? <Skeleton variant="text" width={45} height={24} className="rounded" /> : card.value}
               </div>
               <div className="flex items-center gap-1 text-[11px] font-medium mt-1">
                 {isPositive ? (

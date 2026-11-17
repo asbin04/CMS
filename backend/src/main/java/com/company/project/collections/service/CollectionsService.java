@@ -301,7 +301,7 @@ public class CollectionsService {
         String clientName = request.getEffectiveClientName();
         String clientId = request.getClientId() != null && !request.getClientId().trim().isEmpty()
                 ? request.getClientId().trim()
-                : "CL-" + (1000 + new Random().nextInt(9000));
+                : (clientName != null && !clientName.isBlank() ? "CL-" + Math.abs(clientName.hashCode() % 1000) : "CL-001");
 
         CollectionInvoiceEntity entity = CollectionInvoiceEntity.builder()
                 .id(effectiveInvoiceId)
@@ -620,13 +620,13 @@ public class CollectionsService {
 
         return FinanceInvoiceKpiResponse.builder()
                 .totalInvoices(totalInvoices)
-                .totalInvoicesTrend(10.0)
+                .totalInvoicesTrend(0.0)
                 .totalInvoiceValue(totalInvoiceValue)
-                .totalInvoiceValueTrend(12.5)
+                .totalInvoiceValueTrend(0.0)
                 .paidAmount(paidAmount)
-                .paidAmountTrend(8.2)
+                .paidAmountTrend(0.0)
                 .outstandingAmount(outstandingAmount)
-                .outstandingAmountTrend(-4.1)
+                .outstandingAmountTrend(0.0)
                 .build();
     }
 
@@ -667,11 +667,6 @@ public class CollectionsService {
             collectedTotal = BigDecimal.ZERO;
         }
         long paymentCount = paymentRepository.count();
-
-        if (collectedTotal.compareTo(BigDecimal.ZERO) == 0) {
-            collectedTotal = BigDecimal.valueOf(960000);
-            paymentCount = 18;
-        }
 
         return KpiSummaryResponse.builder()
                 .totalOutstanding(KpiSummaryResponse.MetricItem.builder()

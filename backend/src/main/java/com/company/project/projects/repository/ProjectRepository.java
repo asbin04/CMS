@@ -19,6 +19,8 @@ public interface ProjectRepository extends JpaRepository<ProjectEntity, String>,
     @Query("SELECT COUNT(p) FROM ProjectEntity p")
     long countTotalProjects();
 
+    long countByStatusIgnoreCase(String status);
+
     @Query("SELECT COUNT(p) FROM ProjectEntity p WHERE LOWER(p.status) = 'in progress'")
     long countActiveProjects();
 

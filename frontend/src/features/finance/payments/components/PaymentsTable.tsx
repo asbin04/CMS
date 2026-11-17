@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { FinancePaymentRecord } from '../types/payments';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 interface PaymentsTableProps {
   records: FinancePaymentRecord[];
@@ -166,9 +167,9 @@ export const PaymentsTable: React.FC<PaymentsTableProps> = ({
 
       {/* Table Body */}
       <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse text-xs">
+        <table className="w-full text-left border-collapse text-xs min-w-[1400px] whitespace-nowrap">
           <thead>
-            <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+            <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
               <th className="py-3.5 px-4 font-semibold">Payment ID</th>
               <th className="py-3.5 px-4 font-semibold">Payment Date</th>
               <th className="py-3.5 px-4 font-semibold">Invoice ID</th>
@@ -182,17 +183,17 @@ export const PaymentsTable: React.FC<PaymentsTableProps> = ({
           </thead>
           <tbody className="divide-y divide-slate-100 text-slate-700">
             {isLoading ? (
-              Array.from({ length: 10 }).map((_, idx) => (
-                <tr key={idx} className="animate-pulse">
-                  <td className="py-3.5 px-4"><div className="h-4 w-24 bg-slate-100 rounded" /></td>
-                  <td className="py-3.5 px-4"><div className="h-4 w-20 bg-slate-100 rounded" /></td>
-                  <td className="py-3.5 px-4"><div className="h-4 w-24 bg-slate-100 rounded" /></td>
-                  <td className="py-3.5 px-4"><div className="h-4 w-16 bg-slate-100 rounded" /></td>
-                  <td className="py-3.5 px-4"><div className="h-4 w-20 bg-slate-100 rounded" /></td>
-                  <td className="py-3.5 px-4"><div className="h-4 w-20 bg-slate-100 rounded" /></td>
-                  <td className="py-3.5 px-4"><div className="h-4 w-24 bg-slate-100 rounded" /></td>
-                  <td className="py-3.5 px-4"><div className="h-4 w-16 bg-slate-100 rounded" /></td>
-                  <td className="py-3.5 px-4"><div className="h-4 w-32 bg-slate-100 rounded" /></td>
+              Array.from({ length: 6 }).map((_, idx) => (
+                <tr key={idx} className="h-12 hover:bg-slate-50/50">
+                  <td className="py-3.5 px-4"><Skeleton variant="text" width={75} height={13} /></td>
+                  <td className="py-3.5 px-4"><Skeleton variant="text" width={75} height={13} /></td>
+                  <td className="py-3.5 px-4"><Skeleton variant="text" width={85} height={13} /></td>
+                  <td className="py-3.5 px-4"><Skeleton variant="text" width={65} height={13} /></td>
+                  <td className="py-3.5 px-4"><Skeleton variant="text" width={75} height={13} /></td>
+                  <td className="py-3.5 px-4"><Skeleton variant="text" width={75} height={13} /></td>
+                  <td className="py-3.5 px-4"><Skeleton variant="text" width={85} height={13} /></td>
+                  <td className="py-3.5 px-4"><Skeleton variant="badge" width={65} height={20} /></td>
+                  <td className="py-3.5 px-4"><Skeleton variant="text" width={110} height={13} /></td>
                 </tr>
               ))
             ) : records.length === 0 ? (

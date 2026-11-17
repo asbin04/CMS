@@ -1,6 +1,7 @@
 import React from 'react';
 import { CreditCard, FileText, CheckCircle2, AlertTriangle, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { FinancePaymentKpiData } from '../types/payments';
+import { SkeletonCard } from '@/components/ui/SkeletonCard';
 
 interface PaymentsKpiCardsProps {
   kpis?: FinancePaymentKpiData | null;
@@ -22,12 +23,7 @@ export const PaymentsKpiCards: React.FC<PaymentsKpiCardsProps> = ({ kpis, isLoad
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm animate-pulse">
-            <div className="w-10 h-10 rounded-xl bg-slate-100 mb-3" />
-            <div className="h-4 w-24 bg-slate-100 rounded mb-2" />
-            <div className="h-8 w-32 bg-slate-100 rounded mb-2" />
-            <div className="h-4 w-28 bg-slate-100 rounded" />
-          </div>
+          <SkeletonCard key={i} />
         ))}
       </div>
     );
