@@ -73,13 +73,7 @@ export const EditDevelopmentModal: React.FC<EditDevelopmentModalProps> = ({
     { id: 'TSK-00128', name: 'TSK-00128 - Login Module' },
     { id: 'TSK-00129', name: 'TSK-00129 - API Integration' },
   ]);
-  const [employeeOptions, setEmployeeOptions] = useState<{ id: string; name: string }[]>([
-    { id: 'EMP-001', name: 'Amit Sharma' },
-    { id: 'EMP-002', name: 'Pooja Verma' },
-    { id: 'EMP-003', name: 'Rahul Nair' },
-    { id: 'EMP-004', name: 'Sneha Patel' },
-    { id: 'EMP-005', name: 'Vikram Rao' },
-  ]);
+  const [employeeOptions, setEmployeeOptions] = useState<{ id: string; name: string }[]>([]);
 
   // Sync state when record or open changes
   useEffect(() => {

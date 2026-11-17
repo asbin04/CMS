@@ -1,12 +1,14 @@
 import React from 'react';
 import { ClipboardList, Clock, CheckCircle2, User, Lock } from 'lucide-react';
+import { Skeleton } from '../../../../components/ui/Skeleton';
 import { RequirementKpis } from '../../types';
 
 interface RequirementsKpiCardsProps {
   kpis: RequirementKpis;
+  isLoading?: boolean;
 }
 
-export const RequirementsKpiCards: React.FC<RequirementsKpiCardsProps> = ({ kpis }) => {
+export const RequirementsKpiCards: React.FC<RequirementsKpiCardsProps> = ({ kpis, isLoading = false }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
       {/* Card 1: Total Requirements */}
@@ -17,7 +19,7 @@ export const RequirementsKpiCards: React.FC<RequirementsKpiCardsProps> = ({ kpis
         <div>
           <span className="block text-xs font-medium text-slate-500">Total Requirements</span>
           <span className="block text-xl font-bold text-slate-900 leading-tight mt-0.5">
-            {kpis.totalRequirements.toLocaleString('en-IN')}
+            {isLoading ? <Skeleton variant="text" width={40} height={22} /> : kpis.totalRequirements.toLocaleString('en-IN')}
           </span>
           <span className="block text-[11px] font-medium text-[#10B981] mt-1">
             {kpis.totalRequirementsTrend}
@@ -33,7 +35,7 @@ export const RequirementsKpiCards: React.FC<RequirementsKpiCardsProps> = ({ kpis
         <div>
           <span className="block text-xs font-medium text-slate-500">In Progress</span>
           <span className="block text-xl font-bold text-slate-900 leading-tight mt-0.5">
-            {kpis.inProgress.toLocaleString('en-IN')}
+            {isLoading ? <Skeleton variant="text" width={40} height={22} /> : kpis.inProgress.toLocaleString('en-IN')}
           </span>
         </div>
       </div>
@@ -46,7 +48,7 @@ export const RequirementsKpiCards: React.FC<RequirementsKpiCardsProps> = ({ kpis
         <div>
           <span className="block text-xs font-medium text-slate-500">Completed</span>
           <span className="block text-xl font-bold text-slate-900 leading-tight mt-0.5">
-            {kpis.completed.toLocaleString('en-IN')}
+            {isLoading ? <Skeleton variant="text" width={40} height={22} /> : kpis.completed.toLocaleString('en-IN')}
           </span>
         </div>
       </div>
@@ -59,7 +61,7 @@ export const RequirementsKpiCards: React.FC<RequirementsKpiCardsProps> = ({ kpis
         <div>
           <span className="block text-xs font-medium text-slate-500">Pending Approval</span>
           <span className="block text-xl font-bold text-slate-900 leading-tight mt-0.5">
-            {kpis.pendingApproval.toLocaleString('en-IN')}
+            {isLoading ? <Skeleton variant="text" width={40} height={22} /> : kpis.pendingApproval.toLocaleString('en-IN')}
           </span>
         </div>
       </div>
@@ -72,7 +74,7 @@ export const RequirementsKpiCards: React.FC<RequirementsKpiCardsProps> = ({ kpis
         <div>
           <span className="block text-xs font-medium text-slate-500">Scope Frozen</span>
           <span className="block text-xl font-bold text-slate-900 leading-tight mt-0.5">
-            {kpis.scopeFrozen.toLocaleString('en-IN')}
+            {isLoading ? <Skeleton variant="text" width={40} height={22} /> : kpis.scopeFrozen.toLocaleString('en-IN')}
           </span>
         </div>
       </div>

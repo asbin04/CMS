@@ -30,6 +30,10 @@ interface UniversalAreaLineChartProps {
   valueFormatter?: (val: number) => string;
   showLegend?: boolean;
   yAxisWidth?: number;
+  ticks?: number[];
+  domain?: [number | string, number | string];
+  showDots?: boolean;
+  strokeWidth?: number;
 }
 
 // Custom Light Theme Tooltip
@@ -62,7 +66,11 @@ export const UniversalAreaLineChart: React.FC<UniversalAreaLineChartProps> = ({
   height = 145,
   valueFormatter = (v) => `${v}`,
   showLegend = false,
-  yAxisWidth = 0
+  yAxisWidth = 0,
+  ticks,
+  domain,
+  showDots = false,
+  strokeWidth = 2
 }) => {
   return (
     <div className="w-full flex flex-col select-none">
@@ -108,6 +116,8 @@ export const UniversalAreaLineChart: React.FC<UniversalAreaLineChartProps> = ({
               axisLine={false}
               tick={{ fill: '#94A3B8', fontSize: 9 }}
               width={yAxisWidth}
+              ticks={ticks}
+              domain={domain}
               tickFormatter={(v) => (v >= 100000 ? `${(v / 100000).toFixed(0)}L` : `${v}`)}
             />
             <Tooltip
@@ -123,10 +133,10 @@ export const UniversalAreaLineChart: React.FC<UniversalAreaLineChartProps> = ({
                 dataKey={s.key}
                 name={s.name}
                 stroke={s.strokeColor}
-                strokeWidth={2.5}
+                strokeWidth={strokeWidth}
                 fill={s.fillGradient !== false ? `url(#areaGrad-${s.key})` : 'transparent'}
-                dot={{ r: 2.5, fill: '#FFFFFF', stroke: s.strokeColor, strokeWidth: 1.5 }}
-                activeDot={{ r: 5, fill: s.strokeColor, stroke: '#FFFFFF', strokeWidth: 2 }}
+                dot={showDots ? { r: 2.5, fill: s.strokeColor, stroke: s.strokeColor } : false}
+                activeDot={{ r: 4, fill: s.strokeColor, stroke: '#FFFFFF', strokeWidth: 2 }}
                 animationDuration={900}
                 animationEasing="ease-out"
               />

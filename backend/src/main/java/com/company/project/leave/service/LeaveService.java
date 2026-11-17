@@ -6,6 +6,9 @@ import com.company.project.leave.dto.LeaveMetricsResponse;
 import com.company.project.leave.dto.UpdateLeaveRequest;
 import com.company.project.leave.entity.LeaveEntity;
 import com.company.project.leave.repository.LeaveRepository;
+import com.company.project.security.SecurityUtils;
+import com.company.project.security.entity.AppUser;
+import com.company.project.security.repository.AppUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,12 +17,14 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class LeaveService {
 
     private final LeaveRepository leaveRepository;
+    private final AppUserRepository appUserRepository;
 
     @Transactional(readOnly = true)
     public List<LeaveEntity> getAllLeaves() {
@@ -60,6 +65,10 @@ public class LeaveService {
                 : "Pending";
 
         String appliedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH));
+        String approvedBy = request.getApprovedBy();
+        if ("Approved".equalsIgnoreCase(status) && (approvedBy == null || approvedBy.isBlank())) {
+            approvedBy = resolveCurrentApproverName();
+        }
 
         LeaveEntity entity = LeaveEntity.builder()
                 .id(nextId)
@@ -71,7 +80,7 @@ public class LeaveService {
                 .days(request.getDays())
                 .reason(request.getReason())
                 .approvalStatus(status)
-                .approvedBy(request.getApprovedBy())
+                .approvedBy(approvedBy)
                 .calculatedDays(request.getDays())
                 .leaveStatus(status)
                 .appliedDate(appliedDate)
@@ -103,10 +112,42 @@ public class LeaveService {
                 existing.setLeaveStatus(request.getApprovalStatus());
             }
         }
-        if (request.getApprovedBy() != null) existing.setApprovedBy(request.getApprovedBy());
+        if (request.getApprovedBy() != null) {
+            existing.setApprovedBy(request.getApprovedBy().trim().isEmpty() ? null : request.getApprovedBy().trim());
+        } else if ("Approved".equalsIgnoreCase(existing.getApprovalStatus()) && (existing.getApprovedBy() == null || existing.getApprovedBy().isBlank())) {
+            existing.setApprovedBy(resolveCurrentApproverName());
+        } else if ("Pending".equalsIgnoreCase(existing.getApprovalStatus())) {
+            existing.setApprovedBy(null);
+        }
         if (request.getLeaveStatus() != null) existing.setLeaveStatus(request.getLeaveStatus());
 
         return leaveRepository.save(existing);
+    }
+
+    public String resolveCurrentApproverName() {
+        String currentPrincipal = SecurityUtils.getCurrentUsername();
+        if (currentPrincipal == null || currentPrincipal.isBlank() || "system".equalsIgnoreCase(currentPrincipal)
+                || "anonymousUser".equalsIgnoreCase(currentPrincipal)) {
+            return "Akshit Ujjain";
+        }
+        if (appUserRepository != null) {
+            Optional<AppUser> userOpt =
+                    appUserRepository.findByUsernameIgnoreCaseOrEmailIgnoreCase(currentPrincipal.trim(), currentPrincipal.trim());
+            if (userOpt.isPresent() && userOpt.get().getDisplayName() != null && !userOpt.get().getDisplayName().isBlank()) {
+                return userOpt.get().getDisplayName();
+            }
+        }
+        String lower = currentPrincipal.toLowerCase(Locale.ROOT);
+        if (lower.contains("founder") || lower.contains("gaurav")) {
+            return "Gaurav Tripathy";
+        }
+        if (lower.contains("asbin") || lower.contains("aasbin")) {
+            return "Asbin T S";
+        }
+        if (lower.contains("akshit") || lower.contains("ujjain")) {
+            return "Akshit Ujjain";
+        }
+        return currentPrincipal;
     }
 
     @Transactional

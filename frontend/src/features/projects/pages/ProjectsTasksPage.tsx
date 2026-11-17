@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Folder, CheckCircle } from 'lucide-react';
+import { ReloadButton } from '@/components/ui/ReloadButton';
 import {
   Project,
   ProjectTask,
@@ -402,7 +403,8 @@ export const ProjectsTasksPage: React.FC = () => {
     totalContractValueFormatted: '₹ 4,8690',
     totalContractValueTrend: '↑ 14% vs last month',
   });
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Modals state
@@ -445,7 +447,8 @@ export const ProjectsTasksPage: React.FC = () => {
   // Fetch live data from backend API and master tables
   const fetchData = useCallback(async () => {
     try {
-            setErrorMessage(null);
+      setIsLoading(true);
+      setErrorMessage(null);
       const [pData, tData, kData, mClients, mEmps] = await Promise.all([
         projectService.getProjects().catch(() => []),
         projectService.getTasks().catch(() => []),
@@ -461,7 +464,8 @@ export const ProjectsTasksPage: React.FC = () => {
     } catch {
       // Don't wipe initialized design data on transient network hiccups
     } finally {
-          }
+      setIsLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -681,62 +685,71 @@ export const ProjectsTasksPage: React.FC = () => {
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
+          justifyContent: 'space-between',
           padding: '0px',
           gap: '12px',
           width: '100%',
-          height: '46px',
         }}
       >
-        {/* Green Badge Icon */}
-        <div
-          style={{
-            boxSizing: 'border-box',
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '40px',
-            height: '40px',
-            background: '#ECFDF5',
-            border: '1px solid #A7F3D0',
-            borderRadius: '12px',
-            flexShrink: 0,
-          }}
-        >
-          <Folder size={20} color="#059669" strokeWidth={1.75} />
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px' }}>
+          {/* Green Badge Icon */}
+          <div
+            style={{
+              boxSizing: 'border-box',
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '40px',
+              height: '40px',
+              background: '#ECFDF5',
+              border: '1px solid #A7F3D0',
+              borderRadius: '12px',
+              flexShrink: 0,
+            }}
+          >
+            <Folder size={20} color="#059669" strokeWidth={1.75} />
+          </div>
+
+          {/* Heading & Subtitle */}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              padding: '0px',
+            }}
+          >
+            <div
+              style={{
+                fontFamily: 'Inter',
+                fontWeight: 700,
+                fontSize: '24px',
+                lineHeight: '30px',
+                color: '#0F172A',
+              }}
+            >
+              Projects & Task
+            </div>
+            <div
+              style={{
+                fontFamily: 'Inter',
+                fontWeight: 400,
+                fontSize: '12px',
+                lineHeight: '16px',
+                color: '#64748B',
+              }}
+            >
+              Plan, track and deliver projects with tasks, milestones and financial performance.
+            </div>
+          </div>
         </div>
 
-        {/* Heading & Subtitle */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            padding: '0px',
-          }}
-        >
-          <div
-            style={{
-              fontFamily: 'Inter',
-              fontWeight: 700,
-              fontSize: '24px',
-              lineHeight: '30px',
-              color: '#0F172A',
-            }}
-          >
-            Projects & Task
-          </div>
-          <div
-            style={{
-              fontFamily: 'Inter',
-              fontWeight: 400,
-              fontSize: '12px',
-              lineHeight: '16px',
-              color: '#64748B',
-            }}
-          >
-            Plan, track and deliver projects with tasks, milestones and financial performance.
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <ReloadButton
+            onClick={fetchData}
+            title="Refresh projects and tasks"
+          />
         </div>
       </div>
 
@@ -779,10 +792,11 @@ export const ProjectsTasksPage: React.FC = () => {
       )}
 
       {/* 4 Metric KPI Cards */}
-      <ProjectKpiCards kpis={kpis} />
+      <ProjectKpiCards isLoading={isLoading} kpis={kpis} />
 
       {/* Section 1: Projects Table */}
       <ProjectsTable
+        isLoading={isLoading}
         projects={paginatedProjects}
         totalRecords={filteredProjects.length}
         currentPage={projectPage}
@@ -834,6 +848,7 @@ export const ProjectsTasksPage: React.FC = () => {
 
       {/* Section 2: Project Tasks Table */}
       <ProjectTasksTable
+        isLoading={isLoading}
         tasks={paginatedTasks}
         totalRecords={filteredTasks.length}
         currentPage={taskPage}

@@ -1,6 +1,7 @@
 import React from 'react';
-import { CreditCard, Download, Plus } from 'lucide-react';
+import { CreditCard, Plus } from 'lucide-react';
 import { ReloadButton } from '../../../../components/ui/ReloadButton';
+import { ExportButton } from '../../../../components/ui/ExportButton';
 
 interface PaymentsHeaderProps {
   lastUpdated?: string;
@@ -42,14 +43,7 @@ export const PaymentsHeader: React.FC<PaymentsHeaderProps> = ({
         />
 
         {/* Export Button */}
-        <button
-          type="button"
-          onClick={onExport}
-          className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors shadow-sm shrink-0 whitespace-nowrap cursor-pointer"
-        >
-          <Download className="w-4 h-4 text-slate-500" />
-          <span>Export</span>
-        </button>
+        <ExportButton onClick={onExport} />
 
         {/* Record Payment Button */}
         <button

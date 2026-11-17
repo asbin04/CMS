@@ -121,7 +121,7 @@ export const LogPaymentModal: React.FC<LogPaymentModalProps> = ({
 
     const newInvoice: Invoice = {
       id: invoiceId.trim().toUpperCase(),
-      clientId: `CL-${Math.floor(1000 + Math.random() * 9000)}`,
+      clientId: invoiceId.trim().replace(/^INV-?/i, 'CL-') || 'CL-CLIENT',
       client: client.trim(),
       invoiceDate: formatDateToDisplay(invoiceDate),
       dueDate: formatDateToDisplay(dueDate),

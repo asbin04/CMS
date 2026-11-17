@@ -37,10 +37,10 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
 
   useEffect(() => {
     if (task) {
-      setProjectId(task.projectId || (projectOptions[0] || 'PRJ-001'));
-      setMilestone(task.milestone || 'M1 - Planning');
+      setProjectId(task.projectId || (projectOptions[0] || ''));
+      setMilestone(task.milestone || '');
       setTaskName(task.taskName || '');
-      setAssignedTo(task.assignedTo || (assigneeOptions[0] || 'Amit Sharma'));
+      setAssignedTo(task.assignedTo || (assigneeOptions[0] || ''));
       setPriority(task.priority || 'Medium');
       setStartDate(task.startDate ? task.startDate.substring(0, 10) : '');
       setDueDate(task.dueDate ? task.dueDate.substring(0, 10) : '');

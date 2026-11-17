@@ -30,9 +30,6 @@ const CollectionsPage = lazy(() =>
 const EmployeeMasterPage = lazy(() =>
   import('../features/hr/pages/EmployeeMasterPage').then((m) => ({ default: m.EmployeeMasterPage }))
 );
-const HrDashboardPage = lazy(() =>
-  import('../features/hr/pages/HrDashboardPage').then((m) => ({ default: m.HrDashboardPage }))
-);
 const LeadsPage = lazy(() =>
   import('../features/sales/pages/LeadsPage').then((m) => ({ default: m.LeadsPage }))
 );
@@ -76,7 +73,7 @@ const InvoicesPage = lazy(() =>
   import('../features/invoices/pages/InvoicesPage').then((m) => ({ default: m.InvoicesPage }))
 );
 const TimesheetsRequirementsPage = lazy(() =>
-  import('../features/projects/pages/TimesheetsRequirementsPage').then((m) => ({
+  import('../features/timesheets-requirements/pages/TimesheetsRequirementsPage').then((m) => ({
     default: m.TimesheetsRequirementsPage,
   }))
 );
@@ -90,11 +87,8 @@ const ProjectDashboardPage = lazy(() =>
   import('../features/projects/pages/ProjectDashboardPage').then((m) => ({ default: m.ProjectDashboardPage }))
 );
 const FinanceDashboardPage = lazy(() =>
-  import('../features/finance/pages/FinanceDashboardPage').then((m) => ({ default: m.FinanceDashboardPage }))
-);
-const ReportsFinanceDashboardPage = lazy(() =>
-  import('../features/reports/pages/ReportsFinanceDashboardPage').then((m) => ({
-    default: m.ReportsFinanceDashboardPage,
+  import('../features/finance/pages/FinanceDashboardPage').then((m) => ({
+    default: m.FinanceDashboardPage,
   }))
 );
 const TransactionControlPage = lazy(() =>
@@ -111,10 +105,10 @@ const CashFlowPage = lazy(() =>
   import('../features/finance/cash-flow/pages/CashFlowPage').then((m) => ({ default: m.CashFlowPage }))
 );
 const SalesDashboardPage = lazy(() =>
-  import('../features/reports/sales-dashboard').then((m) => ({ default: m.SalesDashboardPage }))
+  import('../features/sales-dashboard').then((m) => ({ default: m.SalesDashboardPage }))
 );
 const HrReportsDashboardPage = lazy(() =>
-  import('../features/reports/hr-dashboard').then((m) => ({ default: m.HrDashboardPage }))
+  import('../features/hr-dashboard').then((m) => ({ default: m.HrDashboardPage }))
 );
 
 const CeoDashboardRoute: React.FC = () => {
@@ -154,31 +148,39 @@ export const AppRouter: React.FC = () => {
         <Route path="/management/collections" element={<CollectionsPage />} />
         <Route path="/finance/dashboard" element={<FinanceDashboardPage />} />
         <Route path="/finance" element={<Navigate to="/finance/dashboard" replace />} />
-        <Route path="/reports/finance-dashboard" element={<ReportsFinanceDashboardPage />} />
+        <Route path="/reports/finance-dashboard" element={<FinanceDashboardPage />} />
         <Route path="/reports/transaction-control" element={<TransactionControlPage />} />
         <Route path="/transaction-control" element={<Navigate to="/reports/transaction-control" replace />} />
         <Route path="/collections" element={<Navigate to="/management/collections" replace />} />
         <Route path="/finance/invoices" element={<InvoicesPage />} />
         <Route path="/invoices" element={<Navigate to="/finance/invoices" replace />} />
+        <Route path="/sales/dashboard" element={<SalesDashboardPage />} />
+        <Route path="/sales" element={<Navigate to="/sales/dashboard" replace />} />
         <Route path="/sales/leads" element={<LeadsPage />} />
         <Route path="/sales/opportunities" element={<OpportunitiesPage />} />
         <Route path="/sales/proposals" element={<ProposalsPage />} />
         <Route path="/sales/contracts" element={<ContractsPage />} />
         <Route path="/clients/list" element={<ClientsPage />} />
         <Route path="/clients" element={<Navigate to="/clients/list" replace />} />
-        <Route path="/hr/dashboard" element={<HrDashboardPage />} />
+        <Route path="/hr/dashboard" element={<HrReportsDashboardPage />} />
         <Route path="/hr" element={<Navigate to="/hr/dashboard" replace />} />
         <Route path="/hr/employee-master" element={<EmployeeMasterPage />} />
         <Route path="/hr/attendance" element={<AttendancePage />} />
         <Route path="/attendance" element={<Navigate to="/hr/attendance" replace />} />
         <Route path="/hr/leave" element={<LeaveManagementPage />} />
         <Route path="/leave" element={<Navigate to="/hr/leave" replace />} />
+        <Route path="/projects/dashboard" element={<ProjectDashboardPage />} />
         <Route path="/projects/tasks" element={<ProjectsTasksPage />} />
-        <Route path="/projects" element={<Navigate to="/projects/tasks" replace />} />
+        <Route path="/projects" element={<Navigate to="/projects/dashboard" replace />} />
         <Route path="/projects/ui-ux" element={<UiuxPage />} />
         <Route path="/ui-ux" element={<Navigate to="/projects/ui-ux" replace />} />
         <Route path="/projects/uat" element={<UatPage />} />
         <Route path="/uat" element={<Navigate to="/projects/uat" replace />} />
+        <Route path="/projects/deployment-go-live" element={<DeploymentPage />} />
+        <Route path="/projects/deployment" element={<Navigate to="/projects/deployment-go-live" replace />} />
+        <Route path="/deployment" element={<Navigate to="/projects/deployment-go-live" replace />} />
+        <Route path="/reports/project-dashboard" element={<Navigate to="/projects/dashboard" replace />} />
+        <Route path="/project-dashboard" element={<Navigate to="/projects/dashboard" replace />} />
         <Route path="/hr/employee-exit" element={<EmployeeExitPage />} />
         <Route path="/hr/payroll-salary" element={<PayrollSalaryPage />} />
         <Route path="/hr/payroll" element={<Navigate to="/hr/payroll-salary" replace />} />
@@ -194,6 +196,7 @@ export const AppRouter: React.FC = () => {
         <Route path="/projects/timesheets" element={<TimesheetsRequirementsPage />} />
         <Route path="/projects/timesheets-requirements" element={<Navigate to="/projects/timesheets" replace />} />
         <Route path="/projects/development" element={<DevelopmentPage />} />
+        <Route path="/development" element={<Navigate to="/projects/development" replace />} />
         <Route path="/finance/cash-flow" element={<CashFlowPage />} />
         <Route path="/reports/sales-dashboard" element={<SalesDashboardPage />} />
         <Route path="/sales-dashboard" element={<Navigate to="/reports/sales-dashboard" replace />} />
@@ -206,6 +209,12 @@ export const AppRouter: React.FC = () => {
           section.items
             .filter(
               (item) =>
+                item.path !== '/projects/dashboard' &&
+                item.path !== '/projects/tasks' &&
+                item.path !== '/projects/ui-ux' &&
+                item.path !== '/projects/uat' &&
+                item.path !== '/projects/deployment-go-live' &&
+                item.path !== '/projects/deployment' &&
                 item.path !== '/reports/project-dashboard' &&
                 item.path !== '/project-dashboard' &&
                 item.path !== '/management/ceo-dashboard' &&
@@ -213,6 +222,8 @@ export const AppRouter: React.FC = () => {
                 item.path !== '/management/follow-up-queue' &&
                 item.path !== '/management/collections' &&
                 item.path !== '/collections' &&
+                item.path !== '/sales/dashboard' &&
+                item.path !== '/sales' &&
                 item.path !== '/sales/leads' &&
                 item.path !== '/sales/opportunities' &&
                 item.path !== '/sales/proposals' &&
@@ -226,6 +237,8 @@ export const AppRouter: React.FC = () => {
                 item.path !== '/attendance' &&
                 item.path !== '/hr/leave' &&
                 item.path !== '/leave' &&
+                item.path !== '/hr/employee-exit' &&
+                item.path !== '/hr/payroll-salary' &&
                 item.path !== '/finance/dashboard' &&
                 item.path !== '/finance' &&
                 item.path !== '/reports/finance-dashboard' &&
@@ -233,11 +246,16 @@ export const AppRouter: React.FC = () => {
                 item.path !== '/transaction-control' &&
                 item.path !== '/finance/invoices' &&
                 item.path !== '/invoices' &&
+                item.path !== '/finance/payments' &&
+                item.path !== '/finance/expenses' &&
+                item.path !== '/support/tickets' &&
+                item.path !== '/support/amc-sla' &&
                 item.path !== '/projects/timesheets' &&
                 item.path !== '/projects/development' &&
                 item.path !== '/finance/cash-flow' &&
                 item.path !== '/reports/sales-dashboard' &&
-                item.path !== '/reports/hr-dashboard'
+                item.path !== '/reports/hr-dashboard' &&
+                item.path !== '/settings'
             )
             .map((item) => (
               <Route

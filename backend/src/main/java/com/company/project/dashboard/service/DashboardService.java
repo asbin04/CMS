@@ -9,6 +9,10 @@ import com.company.project.dashboard.dto.SidebarCountsDto;
 import com.company.project.dashboard.entity.*;
 import com.company.project.dashboard.repository.*;
 import com.company.project.notification.service.NotificationService;
+import com.company.project.projects.repository.ProjectRepository;
+import com.company.project.proposals.repository.ProposalRepository;
+import com.company.project.sales.repository.LeadRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +21,7 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -41,6 +46,15 @@ public class DashboardService {
     private final CollectionInvoiceRepository collectionInvoiceRepository;
     private final CollectionPaymentRepository collectionPaymentRepository;
     private final NotificationService notificationService;
+
+    @Autowired(required = false)
+    private LeadRepository leadRepository;
+    @Autowired(required = false)
+    private ProposalRepository proposalRepository;
+    @Autowired(required = false)
+    private ContractRepository contractRepository;
+    @Autowired(required = false)
+    private ProjectRepository projectRepository;
 
     public DashboardService(
             DashboardKpiCardRepository kpiCardRepository,
@@ -84,12 +98,84 @@ public class DashboardService {
     @Transactional(readOnly = true)
     public CeoDashboardResponse getCeoDashboard() {
         DashboardSettings settings = dashboardSettingsRepository.findAll().stream().findFirst().orElse(null);
+        if (settings == null) {
+            settings = new DashboardSettings(1L, "Kalpanaaa Software Solutions", "Admin Dashboard", "Overview & Live Business Analytics", "All Time", "Just now", null, null);
+        }
         List<DashboardKpiCard> kpis = kpiCardRepository.findAllByOrderBySortOrderAsc();
+        if (kpis.isEmpty()) {
+            kpis = new ArrayList<>(List.of(
+                    new DashboardKpiCard(1L, "revenue_invoice_value", "Total Invoice Value", BigDecimal.ZERO, "₹ 0.00", BigDecimal.ZERO, "neutral", "vs last month", "chart", "emerald", 1, null),
+                    new DashboardKpiCard(2L, "outstanding_receivables", "Outstanding Receivables", BigDecimal.ZERO, "₹ 0.00", BigDecimal.ZERO, "neutral", "vs last month", "trending-up", "rose", 2, null),
+                    new DashboardKpiCard(3L, "collected_payments", "Collected Payments", BigDecimal.ZERO, "₹ 0.00", BigDecimal.ZERO, "neutral", "vs last month", "check-circle", "emerald", 3, null),
+                    new DashboardKpiCard(4L, "weighted_sales_pipeline", "Weighted Pipeline", BigDecimal.ZERO, "₹ 0.00", BigDecimal.ZERO, "neutral", "vs last month", "briefcase", "indigo", 4, null),
+                    new DashboardKpiCard(5L, "active_projects", "Active Projects", BigDecimal.ZERO, "0", BigDecimal.ZERO, "neutral", "vs last month", "folder", "blue", 5, null),
+                    new DashboardKpiCard(6L, "active_employees", "Active Employees", BigDecimal.ZERO, "0", BigDecimal.ZERO, "neutral", "vs last month", "users", "violet", 6, null),
+                    new DashboardKpiCard(7L, "total_expenses", "Total Expenses", BigDecimal.ZERO, "₹ 0.00", BigDecimal.ZERO, "neutral", "vs last month", "receipt", "amber", 7, null),
+                    new DashboardKpiCard(8L, "net_payroll", "Net Payroll", BigDecimal.ZERO, "₹ 0.00", BigDecimal.ZERO, "neutral", "vs last month", "credit-card", "purple", 8, null)
+            ));
+        }
         List<FinanceMonthly> financeMonthly = financeMonthlyRepository.findAllByOrderBySortOrderAsc();
+        if (financeMonthly.isEmpty()) {
+            financeMonthly = new ArrayList<>(List.of(
+                    new FinanceMonthly(1L, "Oct", BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, 1),
+                    new FinanceMonthly(2L, "Nov", BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, 2),
+                    new FinanceMonthly(3L, "Dec", BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, 3),
+                    new FinanceMonthly(4L, "Jan", BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, 4),
+                    new FinanceMonthly(5L, "Feb", BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, 5),
+                    new FinanceMonthly(6L, "Mar", BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, 6)
+            ));
+        } else {
+            financeMonthly = new ArrayList<>(financeMonthly);
+        }
+
         List<ExpenseBreakdown> expenseBreakdown = expenseBreakdownRepository.findAllByOrderBySortOrderAsc();
+        if (expenseBreakdown.isEmpty()) {
+            expenseBreakdown = new ArrayList<>(List.of(
+                    new ExpenseBreakdown(1L, "Salaries", BigDecimal.ZERO, BigDecimal.ZERO, "#2563EB", 1),
+                    new ExpenseBreakdown(2L, "Operations", BigDecimal.ZERO, BigDecimal.ZERO, "#10B981", 2),
+                    new ExpenseBreakdown(3L, "Software & Tools", BigDecimal.ZERO, BigDecimal.ZERO, "#A855F7", 3),
+                    new ExpenseBreakdown(4L, "Travel & Admin", BigDecimal.ZERO, BigDecimal.ZERO, "#F97316", 4),
+                    new ExpenseBreakdown(5L, "Others", BigDecimal.ZERO, BigDecimal.ZERO, "#F43F5E", 5)
+            ));
+        } else {
+            expenseBreakdown = new ArrayList<>(expenseBreakdown);
+        }
         List<SalesPipelineStage> salesPipeline = salesPipelineStageRepository.findAllByOrderBySortOrderAsc();
+        if (salesPipeline.isEmpty()) {
+            salesPipeline = new ArrayList<>(List.of(
+                    new SalesPipelineStage(1L, "Leads", 0, 0, "#3B82F6", 1),
+                    new SalesPipelineStage(2L, "Opportunities", 0, 0, "#10B981", 2),
+                    new SalesPipelineStage(3L, "Proposals", 0, 0, "#F59E0B", 3),
+                    new SalesPipelineStage(4L, "Contracts", 0, 0, "#F97316", 4)
+            ));
+        } else {
+            salesPipeline = new ArrayList<>(salesPipeline);
+        }
         List<ProjectStatusDistribution> projectStatus = projectStatusDistributionRepository.findAllByOrderBySortOrderAsc();
+        if (projectStatus.isEmpty()) {
+            projectStatus = new ArrayList<>(List.of(
+                    new ProjectStatusDistribution(1L, "Planning", 0, 0, "#38BDF8", 1),
+                    new ProjectStatusDistribution(2L, "In Progress", 0, 0, "#10B981", 2),
+                    new ProjectStatusDistribution(3L, "UAT", 0, 0, "#F59E0B", 3),
+                    new ProjectStatusDistribution(4L, "Deployment", 0, 0, "#6366F1", 4),
+                    new ProjectStatusDistribution(5L, "On Hold", 0, 0, "#F43F5E", 5)
+            ));
+        } else {
+            projectStatus = new ArrayList<>(projectStatus);
+        }
         List<PeopleMonthly> peopleMonthly = peopleMonthlyRepository.findAllByOrderBySortOrderAsc();
+        if (peopleMonthly.isEmpty()) {
+            peopleMonthly = new ArrayList<>(List.of(
+                    new PeopleMonthly(1L, "Oct", 0, BigDecimal.ZERO, BigDecimal.ZERO, 1),
+                    new PeopleMonthly(2L, "Nov", 0, BigDecimal.ZERO, BigDecimal.ZERO, 2),
+                    new PeopleMonthly(3L, "Dec", 0, BigDecimal.ZERO, BigDecimal.ZERO, 3),
+                    new PeopleMonthly(4L, "Jan", 0, BigDecimal.ZERO, BigDecimal.ZERO, 4),
+                    new PeopleMonthly(5L, "Feb", 0, BigDecimal.ZERO, BigDecimal.ZERO, 5),
+                    new PeopleMonthly(6L, "Mar", 0, BigDecimal.ZERO, BigDecimal.ZERO, 6)
+            ));
+        } else {
+            peopleMonthly = new ArrayList<>(peopleMonthly);
+        }
         PeopleSummary peopleSummary = peopleSummaryRepository.findAll().stream().findFirst().orElse(null);
         List<ManagementAlert> alerts = managementAlertRepository.findAllByOrderBySortOrderAsc();
 
@@ -123,12 +209,82 @@ public class DashboardService {
         BigDecimal totalCollected = collectionPaymentRepository.sumTotalPayments();
         if (totalCollected == null) totalCollected = BigDecimal.ZERO;
 
-        // 4. Sales Pipeline: Derive weighted pipeline from opportunities table
+        if (!financeMonthly.isEmpty()) {
+            FinanceMonthly latestMonth = financeMonthly.get(financeMonthly.size() - 1);
+            latestMonth.setInvoiceValue(totalInvoiced);
+            latestMonth.setCollectedPayments(totalCollected);
+            latestMonth.setOutstandingReceivables(totalOutstanding);
+        }
+
+        // 4. Sales Pipeline: Derive weighted pipeline and stage counts from live tables
         BigDecimal sumWeightedPipeline = opportunityRepository.sumWeightedPipeline();
         if (sumWeightedPipeline == null) sumWeightedPipeline = BigDecimal.ZERO;
 
+        long liveLeads = leadRepository != null ? leadRepository.count() : 0;
+        long liveOpps = opportunityRepository != null ? opportunityRepository.count() : 0;
+        long liveProposals = proposalRepository != null ? proposalRepository.count() : 0;
+        long liveContracts = contractRepository != null ? contractRepository.count() : 0;
+
+        if (liveLeads > 0 || liveOpps > 0 || liveProposals > 0 || liveContracts > 0) {
+            long baseLeads = Math.max(liveLeads, 1);
+            for (SalesPipelineStage stage : salesPipeline) {
+                if ("Leads".equalsIgnoreCase(stage.getStageName())) {
+                    stage.setLeadCount((int) liveLeads);
+                    stage.setConversionRate(100);
+                } else if ("Opportunities".equalsIgnoreCase(stage.getStageName())) {
+                    stage.setLeadCount((int) liveOpps);
+                    stage.setConversionRate((int) Math.round(((double) liveOpps / baseLeads) * 100));
+                } else if ("Proposals".equalsIgnoreCase(stage.getStageName())) {
+                    stage.setLeadCount((int) liveProposals);
+                    stage.setConversionRate((int) Math.round(((double) liveProposals / baseLeads) * 100));
+                } else if ("Contracts".equalsIgnoreCase(stage.getStageName())) {
+                    stage.setLeadCount((int) liveContracts);
+                    stage.setConversionRate((int) Math.round(((double) liveContracts / baseLeads) * 100));
+                }
+            }
+        }
+
+        // Active Projects by Status: Derive dynamically from projects table
+        if (projectRepository != null) {
+            long planningCount = projectRepository.countByStatusIgnoreCase("Planning");
+            long inProgressCount = projectRepository.countByStatusIgnoreCase("In Progress");
+            long uatCount = projectRepository.countByStatusIgnoreCase("UAT");
+            long deploymentCount = projectRepository.countByStatusIgnoreCase("Deployment");
+            long onHoldCount = projectRepository.countByStatusIgnoreCase("On Hold");
+            long totalProj = planningCount + inProgressCount + uatCount + deploymentCount + onHoldCount;
+
+            if (totalProj > 0) {
+                for (ProjectStatusDistribution ps : projectStatus) {
+                    if ("Planning".equalsIgnoreCase(ps.getStatusName())) {
+                        ps.setProjectCount((int) planningCount);
+                        ps.setPercentage((int) Math.round(((double) planningCount / totalProj) * 100));
+                    } else if ("In Progress".equalsIgnoreCase(ps.getStatusName())) {
+                        ps.setProjectCount((int) inProgressCount);
+                        ps.setPercentage((int) Math.round(((double) inProgressCount / totalProj) * 100));
+                    } else if ("UAT".equalsIgnoreCase(ps.getStatusName())) {
+                        ps.setProjectCount((int) uatCount);
+                        ps.setPercentage((int) Math.round(((double) uatCount / totalProj) * 100));
+                    } else if ("Deployment".equalsIgnoreCase(ps.getStatusName())) {
+                        ps.setProjectCount((int) deploymentCount);
+                        ps.setPercentage((int) Math.round(((double) deploymentCount / totalProj) * 100));
+                    } else if ("On Hold".equalsIgnoreCase(ps.getStatusName())) {
+                        ps.setProjectCount((int) onHoldCount);
+                        ps.setPercentage((int) Math.round(((double) onHoldCount / totalProj) * 100));
+                    }
+                }
+            }
+        }
+
         // 5. Active Employees: Derive from employee_master table
         long activeEmployees = employeeMasterRepository.countByStatusIgnoreCase("Active");
+        long exitedEmployees = employeeMasterRepository.countByStatusIgnoreCase("Exited");
+        long resignedEmployees = employeeMasterRepository.countByStatusIgnoreCase("Resigned");
+        long terminatedEmployees = employeeMasterRepository.countByStatusIgnoreCase("Terminated");
+        int totalExits = (int) (exitedEmployees + resignedEmployees + terminatedEmployees);
+        int totalActive = (int) activeEmployees;
+
+        BigDecimal totalMonthlyCtc = employeeMasterRepository.sumTotalMonthlyCtc();
+        if (totalMonthlyCtc == null) totalMonthlyCtc = BigDecimal.ZERO;
 
         int totalActiveProjects = projectStatus.stream()
                 .mapToInt(p -> p.getProjectCount() != null ? p.getProjectCount() : 0)
@@ -139,36 +295,65 @@ public class DashboardService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         PeopleMonthly latestPeople = peopleMonthly.isEmpty() ? null : peopleMonthly.get(peopleMonthly.size() - 1);
+        if (latestPeople != null) {
+            if (totalActive > 0) {
+                latestPeople.setEmployeeCount(totalActive);
+            }
+            if (totalMonthlyCtc.compareTo(BigDecimal.ZERO) > 0) {
+                latestPeople.setEmployerPayrollCost(totalMonthlyCtc);
+                if (latestPeople.getNetPayroll() == null || latestPeople.getNetPayroll().compareTo(BigDecimal.ZERO) == 0) {
+                    latestPeople.setNetPayroll(totalMonthlyCtc.multiply(new BigDecimal("0.80")).setScale(2, java.math.RoundingMode.HALF_UP));
+                }
+            }
+        }
+
+        if (peopleSummary == null) {
+            peopleSummary = new PeopleSummary(1L, totalActive, 0, totalExits, -totalExits, java.time.OffsetDateTime.now());
+        } else {
+            peopleSummary.setActiveEmployees(totalActive);
+            if (peopleSummary.getExitsYtd() == null || peopleSummary.getExitsYtd() == 0) {
+                peopleSummary.setExitsYtd(totalExits);
+            }
+            int joiners = peopleSummary.getNewJoinersYtd() != null ? peopleSummary.getNewJoinersYtd() : 0;
+            int exits = peopleSummary.getExitsYtd() != null ? peopleSummary.getExitsYtd() : 0;
+            peopleSummary.setNetGrowth(joiners - exits);
+        }
 
         for (DashboardKpiCard card : kpis) {
-            if ("revenue_invoice_value".equalsIgnoreCase(card.getCardKey()) && totalInvoiced.compareTo(BigDecimal.ZERO) > 0) {
+            if ("revenue_invoice_value".equalsIgnoreCase(card.getCardKey())) {
                 card.setRawValue(totalInvoiced);
                 card.setFormattedValue(formatIndianCurrency(totalInvoiced));
-            } else if ("outstanding_receivables".equalsIgnoreCase(card.getCardKey()) && totalOutstanding.compareTo(BigDecimal.ZERO) > 0) {
+            } else if ("outstanding_receivables".equalsIgnoreCase(card.getCardKey())) {
                 card.setRawValue(totalOutstanding);
                 card.setFormattedValue(formatIndianCurrency(totalOutstanding));
-            } else if ("collected_payments".equalsIgnoreCase(card.getCardKey()) && totalCollected.compareTo(BigDecimal.ZERO) > 0) {
+            } else if ("collected_payments".equalsIgnoreCase(card.getCardKey())) {
                 card.setRawValue(totalCollected);
                 card.setFormattedValue(formatIndianCurrency(totalCollected));
             } else if ("weighted_sales_pipeline".equalsIgnoreCase(card.getCardKey())) {
                 card.setRawValue(sumWeightedPipeline);
                 card.setFormattedValue(formatIndianCurrency(sumWeightedPipeline));
-            } else if ("active_projects".equalsIgnoreCase(card.getCardKey()) && totalActiveProjects > 0) {
+            } else if ("active_projects".equalsIgnoreCase(card.getCardKey())) {
                 card.setRawValue(BigDecimal.valueOf(totalActiveProjects));
                 card.setFormattedValue(String.valueOf(totalActiveProjects));
             } else if ("active_employees".equalsIgnoreCase(card.getCardKey())) {
-                long empCount = activeEmployees > 0 ? activeEmployees : (peopleSummary != null ? peopleSummary.getActiveEmployees() : 0);
-                card.setRawValue(BigDecimal.valueOf(empCount));
-                card.setFormattedValue(String.valueOf(empCount));
-            } else if ("total_expenses".equalsIgnoreCase(card.getCardKey()) && sumExpenses.compareTo(BigDecimal.ZERO) > 0) {
+                card.setRawValue(BigDecimal.valueOf(activeEmployees));
+                card.setFormattedValue(String.valueOf(activeEmployees));
+            } else if ("total_expenses".equalsIgnoreCase(card.getCardKey())) {
                 card.setRawValue(sumExpenses);
                 card.setFormattedValue(formatIndianCurrency(sumExpenses));
-            } else if ("net_payroll".equalsIgnoreCase(card.getCardKey()) && latestPeople != null && latestPeople.getNetPayroll() != null) {
-                card.setRawValue(latestPeople.getNetPayroll());
-                card.setFormattedValue(formatIndianCurrency(latestPeople.getNetPayroll()));
-            } else if ("employer_payroll_cost".equalsIgnoreCase(card.getCardKey()) && latestPeople != null && latestPeople.getEmployerPayrollCost() != null) {
-                card.setRawValue(latestPeople.getEmployerPayrollCost());
-                card.setFormattedValue(formatIndianCurrency(latestPeople.getEmployerPayrollCost()));
+            } else if ("estimated_project_profit".equalsIgnoreCase(card.getCardKey())) {
+                BigDecimal contractVal = projectRepository != null ? projectRepository.sumTotalContractValue() : BigDecimal.ZERO;
+                if (contractVal == null) contractVal = BigDecimal.ZERO;
+                card.setRawValue(contractVal);
+                card.setFormattedValue(formatIndianCurrency(contractVal));
+            } else if ("net_payroll".equalsIgnoreCase(card.getCardKey())) {
+                BigDecimal net = (latestPeople != null && latestPeople.getNetPayroll() != null) ? latestPeople.getNetPayroll() : BigDecimal.ZERO;
+                card.setRawValue(net);
+                card.setFormattedValue(formatIndianCurrency(net));
+            } else if ("employer_payroll_cost".equalsIgnoreCase(card.getCardKey())) {
+                BigDecimal cost = (latestPeople != null && latestPeople.getEmployerPayrollCost() != null) ? latestPeople.getEmployerPayrollCost() : BigDecimal.ZERO;
+                card.setRawValue(cost);
+                card.setFormattedValue(formatIndianCurrency(cost));
             }
         }
 

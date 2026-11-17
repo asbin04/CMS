@@ -26,12 +26,3 @@ BEFORE UPDATE ON public.hr_candidates
 FOR EACH ROW
 EXECUTE FUNCTION update_collections_updated_at_column();
 
--- Seed initial recruitment pipeline candidates
-INSERT INTO public.hr_candidates (id, name, email, role, department, status, created_date)
-VALUES
-    ('CAN-001', 'Ananya Deshmukh', 'ananya.d@gmail.com', 'Senior Full Stack Engineer', 'Engineering', 'Interviewing', CURRENT_DATE - INTERVAL '12 days'),
-    ('CAN-002', 'Vikramaditya Roy', 'vikram.roy@outlook.com', 'DevOps Specialist', 'Engineering', 'Offered', CURRENT_DATE - INTERVAL '35 days'),
-    ('CAN-003', 'Tanvi Mathur', 'tanvi.m@yahoo.com', 'Lead Product Designer', 'Design', 'Open', CURRENT_DATE - INTERVAL '5 days'),
-    ('CAN-004', 'Siddharth Menon', 'siddharth.m@gmail.com', 'Account Executive', 'Sales', 'Interviewing', CURRENT_DATE - INTERVAL '42 days'),
-    ('CAN-005', 'Kavita Pillai', 'kavita.p@gmail.com', 'Talent Acquisition Partner', 'HR', 'Hired', CURRENT_DATE - INTERVAL '18 days')
-ON CONFLICT (id) DO NOTHING;

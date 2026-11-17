@@ -34,6 +34,9 @@ import { collectionsApiService } from '../services/collectionsApiService';
 import { apiClient } from '../../../services/api/apiClient';
 import { ToastNotification, useToast } from '../../../components/ui/ToastNotification';
 import { Skeleton } from '../../../components/ui/Skeleton';
+import { SkeletonCard } from '../../../components/ui/SkeletonCard';
+import { SkeletonChart } from '../../../components/ui/SkeletonChart';
+import { SkeletonTable } from '../../../components/ui/SkeletonTable';
 import { ErrorBanner } from '../../../components/ui/ErrorBanner';
 import { EmptyState } from '../../../components/ui/EmptyState';
 
@@ -298,19 +301,33 @@ export const CollectionsPage: React.FC = () => {
 
       {/* Skeletons while initial loading */}
       {isLoading && invoices.length === 0 ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
-            <Skeleton variant="card" height={100} />
-            <Skeleton variant="card" height={100} />
-            <Skeleton variant="card" height={100} />
-            <Skeleton variant="card" height={100} />
+        <div className="flex flex-col gap-5 w-full select-none" role="status" aria-label="Loading collections..." aria-busy="true">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <SkeletonCard key={i} variant="kpi" height={105} />
+            ))}
           </div>
-          <Skeleton variant="card" height={80} />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-            <Skeleton variant="card" height={260} />
-            <Skeleton variant="card" height={260} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-white border border-[#F1F5F9] rounded-xl p-4 flex items-center justify-between shadow-xs">
+              <div className="space-y-1.5 flex-1">
+                <div className="h-3.5 w-32 rounded animate-shimmer" />
+                <div className="h-3 w-48 rounded animate-shimmer" />
+              </div>
+              <div className="h-8 w-14 rounded-lg animate-shimmer" />
+            </div>
+            <div className="bg-white border border-[#F1F5F9] rounded-xl p-4 flex items-center justify-between shadow-xs">
+              <div className="space-y-1.5 flex-1">
+                <div className="h-3.5 w-32 rounded animate-shimmer" />
+                <div className="h-3 w-48 rounded animate-shimmer" />
+              </div>
+              <div className="h-8 w-14 rounded-lg animate-shimmer" />
+            </div>
           </div>
-          <Skeleton variant="card" height={320} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <SkeletonChart type="bar" height={260} title="Collections Trend" />
+            <SkeletonChart type="donut" height={260} title="Collections Status" />
+          </div>
+          <SkeletonTable rows={5} columns={7} hasFilters={false} className="border-[#F1F5F9]" />
         </div>
       ) : invoices.length === 0 && !isLoading && !errorMessage ? (
         <EmptyState

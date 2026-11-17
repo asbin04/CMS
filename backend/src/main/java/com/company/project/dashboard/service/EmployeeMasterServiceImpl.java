@@ -13,8 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -109,15 +112,37 @@ public class EmployeeMasterServiceImpl implements EmployeeMasterService {
     @Transactional
     public EmployeeMasterDto createEmployee(CreateEmployeeRequest request) {
         String empId = request.getEmployeeId();
+        if (empId != null && !empId.isBlank()) {
+            Optional<EmployeeMaster> existing = employeeRepository.findByEmployeeId(empId.trim());
+            if (existing.isPresent()) {
+                return updateEmployee(existing.get().getId(), request);
+            }
+        }
+
         if (empId == null || empId.isBlank()) {
             long count = employeeRepository.count() + 1;
             empId = String.format("EMP-%03d", count);
+            while (employeeRepository.existsByEmployeeId(empId)) {
+                count++;
+                empId = String.format("EMP-%03d", count);
+            }
         }
 
         String empCode = request.getEmployeeCode();
         if (empCode == null || empCode.isBlank()) {
             long count = employeeRepository.count() + 1;
             empCode = String.format("E-%03d", count);
+            while (employeeRepository.existsByEmployeeCode(empCode)) {
+                count++;
+                empCode = String.format("E-%03d", count);
+            }
+        } else if (employeeRepository.existsByEmployeeCode(empCode.trim())) {
+            long count = employeeRepository.count() + 1;
+            empCode = String.format("E-%03d", count);
+            while (employeeRepository.existsByEmployeeCode(empCode)) {
+                count++;
+                empCode = String.format("E-%03d", count);
+            }
         }
 
         String initials = request.getAvatarInitials();
@@ -156,7 +181,7 @@ public class EmployeeMasterServiceImpl implements EmployeeMasterService {
                 .employmentType(request.getEmploymentType() != null ? request.getEmploymentType() : "Full Time")
                 .status(request.getStatus() != null ? request.getStatus() : "Active")
                 .location(request.getLocation() != null ? request.getLocation() : "Bangalore")
-                .reportingManager(request.getReportingManager() != null ? request.getReportingManager() : "Akshit Ujjain")
+                .reportingManager(request.getReportingManager() != null && !request.getReportingManager().isBlank() ? request.getReportingManager() : "")
                 .joiningDate(request.getJoiningDate())
                 .tenureStatus(request.getTenureStatus() != null ? request.getTenureStatus() : "1-3 Years")
                 .monthlyCtc(request.getMonthlyCtc())
@@ -177,6 +202,19 @@ public class EmployeeMasterServiceImpl implements EmployeeMasterService {
 
         EmployeeMaster saved = employeeRepository.save(entity);
         return mapToDto(saved);
+    }
+
+    @Override
+    @Transactional
+    public List<EmployeeMasterDto> createEmployees(List<CreateEmployeeRequest> requests) {
+        if (requests == null || requests.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<EmployeeMasterDto> result = new ArrayList<>(requests.size());
+        for (CreateEmployeeRequest req : requests) {
+            result.add(createEmployee(req));
+        }
+        return result;
     }
 
     @Override

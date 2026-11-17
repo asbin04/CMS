@@ -41,9 +41,9 @@ export const HrEmployeeTable: React.FC<HrEmployeeTableProps> = ({
       className="overflow-x-auto w-full scrollbar-thin scrollbar-thumb-slate-200"
       style={{ WebkitOverflowScrolling: 'touch' }}
     >
-      <table className="w-full text-left border-collapse min-w-[1200px]">
+      <table className="w-full text-left border-collapse min-w-[1200px] whitespace-nowrap">
         <thead>
-          <tr className="border-y border-slate-100 bg-[#FAFCFF] text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+          <tr className="border-y border-slate-100 bg-[#FAFCFF] text-[11px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
             <th className="py-3 px-4 min-w-[130px] whitespace-nowrap">
               EMPLOYEE ID
             </th>

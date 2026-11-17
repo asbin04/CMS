@@ -75,11 +75,11 @@ public class UiuxDesignServiceImpl implements UiuxDesignService {
         List<String> designers = repository.findDistinctDesigners();
 
         return UiuxFilterOptionsResponse.builder()
-                .projects(projects.isEmpty() ? Arrays.asList("PRJ-001", "PRJ-002", "PRJ-003", "PRJ-004", "PRJ-005") : projects)
-                .designTypes(designTypes.isEmpty() ? Arrays.asList("UI Design", "UI/UX") : designTypes)
-                .approvalStatuses(approvalStatuses.isEmpty() ? Arrays.asList("Pending", "Approved") : approvalStatuses)
-                .statuses(statuses.isEmpty() ? Arrays.asList("In Progress", "Completed") : statuses)
-                .designers(designers.isEmpty() ? Arrays.asList("Amit Sharma", "Sneha Nair", "Divya Patel", "Rohan Verma", "Vikram Shah") : designers)
+                .projects(projects)
+                .designTypes(designTypes)
+                .approvalStatuses(approvalStatuses)
+                .statuses(statuses)
+                .designers(designers)
                 .build();
     }
 

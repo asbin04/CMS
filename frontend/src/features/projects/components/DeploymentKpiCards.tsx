@@ -1,6 +1,7 @@
 import React from 'react';
 import { Layers, CheckCircle2, AlertTriangle, Rocket, Users } from 'lucide-react';
 import { DeploymentKpis } from '../types/deployment';
+import { Skeleton } from '../../../components/ui/Skeleton';
 
 interface DeploymentKpiCardsProps {
   kpis: DeploymentKpis;
@@ -79,7 +80,11 @@ export const DeploymentKpiCards: React.FC<DeploymentKpiCardsProps> = ({ kpis, is
                 {card.label}
               </span>
               <span className="font-bold text-[24px] leading-[30px] text-[#0F172A]">
-                {isLoading ? '...' : card.value}
+                {isLoading ? (
+                  <Skeleton variant="text" width={55} height={26} className="rounded" />
+                ) : (
+                  card.value
+                )}
               </span>
               <span
                 style={{ color: card.trendColor }}

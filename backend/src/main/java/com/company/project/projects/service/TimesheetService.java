@@ -195,7 +195,7 @@ public class TimesheetService {
                 ? request.getAssignedApprover().trim()
                 : (request.getApprovedBy() != null && !request.getApprovedBy().isBlank()
                         ? request.getApprovedBy().trim()
-                        : "Akshit Ujjain");
+                        : "Admin");
         String assignedApprover = normalizeAssignedApprover(rawAssigned);
 
         String approvedBy = null;
@@ -544,7 +544,7 @@ public class TimesheetService {
                 .laborCostOverrideAt(entity.getLaborCostOverrideAt())
                 .laborCostOverrideReason(entity.getLaborCostOverrideReason())
                 .assignedApprover(
-                        entity.getAssignedApprover() != null ? entity.getAssignedApprover() : "Admin – Akshit Ujjain")
+                        entity.getAssignedApprover() != null ? entity.getAssignedApprover() : "")
                 .approvalStatus(entity.getApprovalStatus())
                 .clientApprovalStatus(entity.getClientApprovalStatus())
                 .approvedBy(entity.getApprovedBy())
@@ -597,42 +597,20 @@ public class TimesheetService {
 
     public String normalizeAssignedApprover(String input) {
         if (input == null || input.isBlank()) {
-            return "Admin – Akshit Ujjain";
+            return null;
         }
-        String trimmed = input.trim();
-        String lower = trimmed.toLowerCase();
-        if (lower.contains("gaurav")) {
-            return trimmed.contains("–") || trimmed.contains("-") ? trimmed : "MD – Gaurav Tripathy";
-        }
-        if (lower.contains("akshit")) {
-            return trimmed.contains("–") || trimmed.contains("-") ? trimmed : "Admin – Akshit Ujjain";
-        }
-        return trimmed;
+        return input.trim();
     }
 
     public String resolveApproverDisplayName(String assignedApprover, String username) {
         if (assignedApprover != null && !assignedApprover.isBlank()) {
-            String lower = assignedApprover.toLowerCase();
-            if (lower.contains("gaurav")) {
-                return "Gaurav Tripathy";
-            }
-            if (lower.contains("akshit")) {
-                return "Akshit Ujjain";
-            }
             return assignedApprover.trim();
         }
         if (username != null && !username.isBlank() && !"system".equalsIgnoreCase(username)
                 && !"anonymousUser".equalsIgnoreCase(username)) {
-            String lower = username.toLowerCase();
-            if (lower.contains("gaurav")) {
-                return "Gaurav Tripathy";
-            }
-            if (lower.contains("akshit")) {
-                return "Akshit Ujjain";
-            }
             return resolveApproverDisplayName(username);
         }
-        return "Akshit Ujjain";
+        return "Admin";
     }
 
     public String resolveApproverDisplayName(String username, ProjectTimesheetEntity entity) {
@@ -643,37 +621,16 @@ public class TimesheetService {
     public String resolveApproverDisplayName(String username) {
         if (username == null || username.isBlank() || "system".equalsIgnoreCase(username)
                 || "anonymousUser".equalsIgnoreCase(username)) {
-            return "Akshit Ujjain";
-        }
-        if ("akshit.ujjain".equalsIgnoreCase(username) || "akshit".equalsIgnoreCase(username)) {
-            return "Akshit Ujjain";
-        }
-        if ("gaurav.tripathy".equalsIgnoreCase(username) || "gaurav".equalsIgnoreCase(username)) {
-            return "Gaurav Tripathy";
+            return "Admin";
         }
         java.util.Optional<EmployeeMaster> empOpt = employeeMasterRepository.findByEmployeeId(username);
         if (empOpt.isPresent() && empOpt.get().getFullName() != null && !empOpt.get().getFullName().isBlank()) {
             return empOpt.get().getFullName();
         }
         for (EmployeeMaster emp : employeeMasterRepository.findAll()) {
-            if (emp.getWorkEmail() != null && emp.getWorkEmail().toLowerCase().startsWith(username.toLowerCase())) {
+            if (emp.getWorkEmail() != null && emp.getWorkEmail().equalsIgnoreCase(username)) {
                 return emp.getFullName();
             }
-            if (emp.getFullName() != null && emp.getFullName().equalsIgnoreCase(username)) {
-                return emp.getFullName();
-            }
-        }
-        if (username.contains(".")) {
-            String[] parts = username.split("\\.");
-            StringBuilder sb = new StringBuilder();
-            for (String part : parts) {
-                if (!part.isEmpty()) {
-                    if (sb.length() > 0)
-                        sb.append(" ");
-                    sb.append(Character.toUpperCase(part.charAt(0))).append(part.substring(1));
-                }
-            }
-            return sb.toString();
         }
         return username;
     }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { ReloadButton } from '../../../components/ui/ReloadButton';
+import { ExportButton } from '../../../components/ui/ExportButton';
 import {
   AlertTriangle,
   RotateCcw,
@@ -22,6 +23,8 @@ import {
 import { PriorityCard, PriorityLevel } from '@/components/ui/PriorityCard';
 import { PriorityBadge } from '@/components/ui/PriorityBadge';
 import { HealthBadge } from '@/components/ui/HealthBadge';
+import { TablePagination } from '@/components/ui/TablePagination';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { followUpService } from '@/services/followUpService';
 import {
   FollowUpItemData,
@@ -100,7 +103,8 @@ export const FollowUpQueuePage: React.FC<FollowUpQueuePageProps> = (props) => {
   const [activeModalItem, setActiveModalItem] = useState<FollowUpItemData | null>(null);
   const [actionNote, setActionNote] = useState<string>('');
   const [isSubmittingAction, setIsSubmittingAction] = useState<boolean>(false);
-  const [lastRefreshed, setLastRefreshed] = useState<string>('Just now');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -124,7 +128,6 @@ export const FollowUpQueuePage: React.FC<FollowUpQueuePageProps> = (props) => {
 
       setItems(fetchedItems);
       setSummary(fetchedSummary);
-      setLastRefreshed(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
 
       if (isRefreshAction) {
         showToast('Queue data refreshed successfully from database');
@@ -287,6 +290,24 @@ export const FollowUpQueuePage: React.FC<FollowUpQueuePageProps> = (props) => {
       return matchesFilter && matchesSearch;
     });
   }, [items, selectedFilter, searchQuery]);
+
+  // Reset pagination on filter or search change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedFilter, searchQuery]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const paginatedItems = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredItems.slice(start, start + pageSize);
+  }, [filteredItems, currentPage, pageSize]);
 
   // Priority counts calculation: dynamically derived from backend summary or live items
   const highCount = useMemo(() => {
@@ -514,43 +535,12 @@ export const FollowUpQueuePage: React.FC<FollowUpQueuePageProps> = (props) => {
         {/* Right: Refresh Button */}
         <div className="flex flex-row items-center p-0 gap-3 h-[30px]">
           <div className="flex flex-row items-center p-0 gap-1.5 h-4">
-            <span
-              className="font-normal text-xs leading-4 text-[#94A3B8]"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
-              Last Refreshed: {lastRefreshed}
-            </span>
-            <button
-              type="button"
+            <ReloadButton
               onClick={handleRefresh}
-              aria-label="Refresh timestamp"
-              className="hover:text-slate-700 transition-colors"
-            >
-              <RefreshCw
-                className={`w-3.5 h-3.5 text-[#64748B] stroke-[1.17] ${
-                  isRefreshing ? 'animate-spin' : ''
-                }`}
-              />
-            </button>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleRefresh}
-            className="box-border flex flex-row items-center px-3 py-1.5 gap-1.5 h-[30px] w-[90.98px] bg-white border border-[#E2E8F0] rounded-lg hover:bg-slate-50 transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.02)] justify-center"
-          >
-            <RefreshCw
-              className={`w-3.5 h-3.5 text-[#64748B] stroke-[1.17] ${
-                isRefreshing ? 'animate-spin' : ''
-              }`}
+              isRefreshing={isRefreshing}
+              title="Refresh follow-up queue"
             />
-            <span
-              className="font-semibold text-xs leading-4 text-[#334155] text-center"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
-              Refresh
-            </span>
-          </button>
+          </div>
         </div>
       </div>
 
@@ -668,19 +658,7 @@ export const FollowUpQueuePage: React.FC<FollowUpQueuePageProps> = (props) => {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleExport}
-              className="box-border flex flex-row items-center px-3 py-2 gap-1.5 h-[34px] w-[79px] bg-white border border-[#E2E8F0] rounded-lg hover:bg-slate-50 transition-colors shadow-sm justify-center"
-            >
-              <Upload className="w-4 h-4 text-[#6366F1] stroke-[1.33]" />
-              <span
-                className="font-medium text-xs leading-4 text-[#334155] text-center"
-                style={{ fontFamily: "'Inter', sans-serif" }}
-              >
-                Export
-              </span>
-            </button>
+            <ExportButton onClick={handleExport} />
           </div>
         </div>
 
@@ -703,46 +681,46 @@ export const FollowUpQueuePage: React.FC<FollowUpQueuePageProps> = (props) => {
 
             {/* Table Header Row: 46px height */}
             <thead>
-              <tr className="box-border h-[46px] bg-[#FAFBFC] border-b border-[#F1F5F9]">
+              <tr className="box-border h-[46px] bg-[#FAFBFC] border-b border-[#F1F5F9] whitespace-nowrap">
                 <th
                   style={{ width: '240.06px' }}
-                  className="py-3.5 pl-6 pr-4 font-bold text-[11px] leading-4 tracking-[0.55px] uppercase text-[#64748B] text-left select-none"
+                  className="py-3.5 pl-6 pr-4 font-bold text-[11px] leading-4 tracking-[0.55px] uppercase text-[#64748B] text-left select-none whitespace-nowrap"
                 >
                   MODULE
                 </th>
                 <th
                   style={{ width: '75.14px' }}
-                  className="py-3.5 px-4 font-bold text-[11px] leading-4 tracking-[0.55px] uppercase text-[#64748B] text-center select-none"
+                  className="py-3.5 px-4 font-bold text-[11px] leading-4 tracking-[0.55px] uppercase text-[#64748B] text-center select-none whitespace-nowrap"
                 >
                   COUNT
                 </th>
                 <th
                   style={{ width: '248.58px' }}
-                  className="py-3.5 px-4 font-bold text-[11px] leading-4 tracking-[0.55px] uppercase text-[#64748B] text-left select-none"
+                  className="py-3.5 px-4 font-bold text-[11px] leading-4 tracking-[0.55px] uppercase text-[#64748B] text-left select-none whitespace-nowrap"
                 >
                   KEY INFORMATION
                 </th>
                 <th
                   style={{ width: '106.47px' }}
-                  className="py-3.5 px-4 font-bold text-[11px] leading-4 tracking-[0.55px] uppercase text-[#64748B] text-left select-none"
+                  className="py-3.5 px-4 font-bold text-[11px] leading-4 tracking-[0.55px] uppercase text-[#64748B] text-left select-none whitespace-nowrap"
                 >
                   PRIORITY
                 </th>
                 <th
                   style={{ width: '153.84px' }}
-                  className="py-3.5 px-4 font-bold text-[11px] leading-4 tracking-[0.55px] uppercase text-[#64748B] text-left select-none"
+                  className="py-3.5 px-4 font-bold text-[11px] leading-4 tracking-[0.55px] uppercase text-[#64748B] text-left select-none whitespace-nowrap"
                 >
                   FOLLOW-UP HEALTH
                 </th>
                 <th
                   style={{ width: '212.41px' }}
-                  className="py-3.5 px-4 font-bold text-[11px] leading-4 tracking-[0.55px] uppercase text-[#64748B] text-left select-none"
+                  className="py-3.5 px-4 font-bold text-[11px] leading-4 tracking-[0.55px] uppercase text-[#64748B] text-left select-none whitespace-nowrap"
                 >
                   DAYS SINCE LAST FOLLOW-UP
                 </th>
                 <th
                   style={{ width: '369.73px' }}
-                  className="py-3.5 pl-4 pr-6 font-bold text-[11px] leading-4 tracking-[0.55px] uppercase text-[#64748B] text-left select-none"
+                  className="py-3.5 pl-4 pr-6 font-bold text-[11px] leading-4 tracking-[0.55px] uppercase text-[#64748B] text-left select-none whitespace-nowrap"
                 >
                   ACTIONS
                 </th>
@@ -752,16 +730,30 @@ export const FollowUpQueuePage: React.FC<FollowUpQueuePageProps> = (props) => {
             {/* Table Body Rows: 61px to 62px each */}
             <tbody className="divide-y divide-[#F1F5F9] text-xs">
               {isLoading ? (
-                <tr>
-                  <td colSpan={7} className="py-16 text-center text-slate-400">
-                    <div className="flex flex-col items-center justify-center gap-3">
-                      <RefreshCw className="w-6 h-6 text-blue-600 animate-spin" />
-                      <p className="font-semibold text-xs text-slate-500 m-0">
-                        Loading live queue items from database...
-                      </p>
-                    </div>
-                  </td>
-                </tr>
+                Array.from({ length: 6 }).map((_, idx) => (
+                  <tr key={idx} className="h-[62px] border-b border-[#F1F5F9] hover:bg-slate-50/50">
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center gap-3">
+                        <Skeleton variant="circular" width={32} height={32} rounded="lg" />
+                        <div className="space-y-1">
+                          <Skeleton variant="text" width={120} height={13} />
+                          <Skeleton variant="text" width={90} height={10} />
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-5 py-3.5"><Skeleton variant="badge" width={28} height={20} rounded="full" /></td>
+                    <td className="px-5 py-3.5">
+                      <div className="space-y-1">
+                        <Skeleton variant="text" width={160} height={13} />
+                        <Skeleton variant="text" width={110} height={10} />
+                      </div>
+                    </td>
+                    <td className="px-5 py-3.5"><Skeleton variant="badge" width={60} height={20} rounded="full" /></td>
+                    <td className="px-5 py-3.5"><Skeleton variant="badge" width={75} height={20} rounded="full" /></td>
+                    <td className="px-5 py-3.5"><Skeleton variant="text" width={55} height={12} /></td>
+                    <td className="px-5 py-3.5"><Skeleton variant="button" width={115} height={28} rounded="lg" /></td>
+                  </tr>
+                ))
               ) : filteredItems.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="py-16 text-center text-slate-400">
@@ -801,7 +793,7 @@ export const FollowUpQueuePage: React.FC<FollowUpQueuePageProps> = (props) => {
                   </td>
                 </tr>
               ) : (
-                filteredItems.map((item) => {
+                paginatedItems.map((item) => {
                   const isDone = Boolean(item.isDone);
                   const effectiveCountVariant =
                     item.countVariant ||
@@ -978,6 +970,20 @@ export const FollowUpQueuePage: React.FC<FollowUpQueuePageProps> = (props) => {
             </tbody>
           </table>
         </div>
+
+        {/* Table Footer / Pagination */}
+        <TablePagination
+          currentPage={currentPage}
+          totalItems={filteredItems.length}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={(newSize) => {
+            setPageSize(newSize);
+            setCurrentPage(1);
+          }}
+          pageSizeOptions={[5, 10, 20, 50]}
+          itemLabel="requests"
+        />
       </div>
     </div>
   );

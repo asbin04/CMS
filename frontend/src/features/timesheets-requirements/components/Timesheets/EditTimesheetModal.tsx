@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Clock, AlertCircle } from 'lucide-react';
 import { TimesheetRecord, BillableOption } from '../../types';
-import { MASTER_TASKS } from '../../mockData';
 import { calculateBillableAmount } from '../../utils/calculations';
 import { formatRupee, parseRupee } from '../../utils/formatters';
 
@@ -19,10 +18,10 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   onSave,
 }) => {
   const [taskId, setTaskId] = useState('');
-  const [hours, setHours] = useState<number | string>(8);
+  const [hours, setHours] = useState<number | string>(0);
   const [billable, setBillable] = useState<BillableOption>('Yes');
-  const [billableRate, setBillableRate] = useState<number | string>(1500);
-  const [assignedApprover, setAssignedApprover] = useState('Admin – Akshit Ujjain');
+  const [billableRate, setBillableRate] = useState<number | string>(0);
+  const [assignedApprover, setAssignedApprover] = useState('');
   const [notes, setNotes] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -31,8 +30,8 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
       setTaskId(timesheet.taskId);
       setHours(timesheet.hours);
       setBillable(timesheet.billable);
-      setBillableRate(parseRupee(timesheet.billableRate) || 1500);
-      setAssignedApprover(timesheet.assignedApprover || 'Admin – Akshit Ujjain');
+      setBillableRate(parseRupee(timesheet.billableRate) || 0);
+      setAssignedApprover(timesheet.assignedApprover || '');
       setNotes(timesheet.notes || '');
       setError(null);
     }
@@ -209,7 +208,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
               onChange={(e) => setAssignedApprover(e.target.value)}
               className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 font-medium focus:outline-hidden focus:ring-1 focus:ring-indigo-400 transition-colors h-[38px] cursor-pointer"
             >
-              <option value="Admin – Akshit Ujjain">Admin – Akshit Ujjain</option>
+              <option value="">Admin – Akshit Ujjain</option>
               <option value="MD – Gaurav Tripathy">MD – Gaurav Tripathy</option>
             </select>
           </div>

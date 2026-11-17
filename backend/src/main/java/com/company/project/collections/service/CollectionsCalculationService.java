@@ -13,8 +13,6 @@ import java.util.Locale;
 @Service
 public class CollectionsCalculationService {
 
-    public static final LocalDate SIMULATION_BASELINE_DATE = LocalDate.of(2025, 3, 21);
-
     private static final DateTimeFormatter DISPLAY_FORMATTER = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH);
 
     private static final DateTimeFormatter FLEXIBLE_FORMATTER = new DateTimeFormatterBuilder()
@@ -54,16 +52,12 @@ public class CollectionsCalculationService {
     }
 
     public LocalDate getReferenceDate(LocalDate targetDate) {
-        if (targetDate != null && targetDate.getYear() <= 2025) {
-            return SIMULATION_BASELINE_DATE;
-        }
-        return LocalDate.now();
+        return targetDate != null ? targetDate : LocalDate.now();
     }
 
     public Integer calculateDaysOverdue(LocalDate dueDate) {
         if (dueDate == null) return null;
-        LocalDate refDate = getReferenceDate(dueDate);
-        long days = ChronoUnit.DAYS.between(dueDate, refDate);
+        long days = ChronoUnit.DAYS.between(dueDate, LocalDate.now());
         return days > 0 ? (int) days : null;
     }
 

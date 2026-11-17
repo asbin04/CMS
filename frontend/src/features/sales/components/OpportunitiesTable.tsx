@@ -1,5 +1,6 @@
 import React from 'react';
-import { ChevronDown, Download, ChevronLeft, ChevronRight, Target } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, Target } from 'lucide-react';
+import { ExportButton } from '@/components/ui/ExportButton';
 import { OpportunityData } from '@/types/opportunity';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -71,14 +72,7 @@ export const OpportunitiesTable: React.FC<OpportunitiesTableProps> = ({
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={onExport}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold transition-colors shadow-2xs cursor-pointer active:scale-98"
-          >
-            <Download size={14} className="text-slate-500" />
-            <span>Export</span>
-          </button>
+          <ExportButton onClick={onExport} />
         </div>
       </div>
 

@@ -72,13 +72,7 @@ export const AddDevelopmentModal: React.FC<AddDevelopmentModalProps> = ({
     { id: 'TSK-00128', name: 'TSK-00128 - Login Module' },
     { id: 'TSK-00129', name: 'TSK-00129 - API Integration' },
   ]);
-  const [employeeOptions, setEmployeeOptions] = useState<{ id: string; name: string }[]>([
-    { id: 'EMP-001', name: 'Amit Sharma' },
-    { id: 'EMP-002', name: 'Pooja Verma' },
-    { id: 'EMP-003', name: 'Rahul Nair' },
-    { id: 'EMP-004', name: 'Sneha Patel' },
-    { id: 'EMP-005', name: 'Vikram Rao' },
-  ]);
+  const [employeeOptions, setEmployeeOptions] = useState<{ id: string; name: string }[]>([]);
 
   // Reset form and load options when modal opens
   useEffect(() => {
@@ -122,25 +116,13 @@ export const AddDevelopmentModal: React.FC<AddDevelopmentModalProps> = ({
           if (employees.length > 0) {
             setEmployeeOptions(employees.map((e) => ({ id: e.id, name: e.name })));
           } else {
-            setEmployeeOptions([
-              { id: 'EMP-001', name: 'Amit Sharma' },
-              { id: 'EMP-002', name: 'Pooja Verma' },
-              { id: 'EMP-003', name: 'Rahul Nair' },
-              { id: 'EMP-004', name: 'Sneha Patel' },
-              { id: 'EMP-005', name: 'Vikram Rao' },
-            ]);
+            setEmployeeOptions([]);
           }
         }
       } catch {
         if (isMounted) {
           setProjectOptions(PROJECT_OPTIONS.filter((p) => p !== 'All Projects'));
-          setEmployeeOptions([
-            { id: 'EMP-001', name: 'Amit Sharma' },
-            { id: 'EMP-002', name: 'Pooja Verma' },
-            { id: 'EMP-003', name: 'Rahul Nair' },
-            { id: 'EMP-004', name: 'Sneha Patel' },
-            { id: 'EMP-005', name: 'Vikram Rao' },
-          ]);
+          setEmployeeOptions([]);
         }
       }
     };

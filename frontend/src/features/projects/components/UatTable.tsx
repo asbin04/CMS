@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MoreVertical, Edit2, Trash2 } from 'lucide-react';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { UatItem } from '../types/uat';
 
 interface UatTableProps {
@@ -11,6 +12,7 @@ interface UatTableProps {
   pageSize: number;
   onPageSizeChange: (size: number) => void;
   totalElements: number;
+  isLoading?: boolean;
 }
 
 // Format date to "28 Oct 2026"
@@ -51,6 +53,7 @@ export const UatTable: React.FC<UatTableProps> = ({
   pageSize,
   onPageSizeChange,
   totalElements,
+  isLoading = false,
 }) => {
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -101,6 +104,7 @@ export const UatTable: React.FC<UatTableProps> = ({
             minWidth: '1750px',
             borderCollapse: 'collapse',
             textAlign: 'left',
+            whiteSpace: 'nowrap',
           }}
         >
           {/* Table Header */}
@@ -131,7 +135,26 @@ export const UatTable: React.FC<UatTableProps> = ({
 
           {/* Table Body */}
           <tbody>
-            {uats.length === 0 ? (
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, idx) => (
+                <tr key={idx} style={{ height: '52px', borderBottom: '1px solid #F1F5F9' }}>
+                  <td style={{ padding: '12px 16px 12px 20px' }}><Skeleton variant="text" width={75} height={13} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="text" width={60} height={13} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="text" width={70} height={13} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="text" width={75} height={12} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="text" width={110} height={12} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="text" width={100} height={12} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="text" width={100} height={12} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="badge" width={65} height={18} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="avatar" width={24} height={24} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="text" width={75} height={12} /></td>
+                  <td style={{ padding: '12px 16px', textAlign: 'center' }}><Skeleton variant="text" width={25} height={12} className="mx-auto" /></td>
+                  <td style={{ padding: '12px 16px', textAlign: 'center' }}><Skeleton variant="text" width={25} height={12} className="mx-auto" /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="badge" width={70} height={18} /></td>
+                  <td style={{ padding: '12px 16px', textAlign: 'center' }}><Skeleton variant="circular" width={20} height={20} className="mx-auto" /></td>
+                </tr>
+              ))
+            ) : uats.length === 0 ? (
               <tr>
                 <td
                   colSpan={14}
@@ -244,6 +267,7 @@ export const UatTable: React.FC<UatTableProps> = ({
                         fontSize: '12px',
                         lineHeight: '16px',
                         color: '#334155',
+                        whiteSpace: 'nowrap',
                       }}
                     >
                       {uat.expectedResult}
@@ -258,6 +282,7 @@ export const UatTable: React.FC<UatTableProps> = ({
                         fontSize: '12px',
                         lineHeight: '16px',
                         color: '#334155',
+                        whiteSpace: 'nowrap',
                       }}
                     >
                       {uat.actualResult}

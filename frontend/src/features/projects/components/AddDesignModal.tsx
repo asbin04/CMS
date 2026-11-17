@@ -15,14 +15,14 @@ export const AddDesignModal: React.FC<AddDesignModalProps> = ({
   onSubmit,
   projectOptions,
 }) => {
-  const [projectId, setProjectId] = useState(projectOptions[0] || 'PRJ-001');
-  const [requirementId, setRequirementId] = useState('REQ-2026-0186');
+  const [projectId, setProjectId] = useState(projectOptions[0] || '');
+  const [requirementId, setRequirementId] = useState('');
   const [screenFeature, setScreenFeature] = useState('');
   const [designType, setDesignType] = useState('UI Design');
   const [version, setVersion] = useState('v1.0');
-  const [designer, setDesigner] = useState('Amit Sharma');
+  const [designer, setDesigner] = useState('');
   const [tool, setTool] = useState('Figma');
-  const [prototypeUrl, setPrototypeUrl] = useState('https://www.figma.com');
+  const [prototypeUrl, setPrototypeUrl] = useState('');
   const [clientFeedback, setClientFeedback] = useState('');
   const [approvalStatus, setApprovalStatus] = useState('Pending');
   const [approvedBy, setApprovedBy] = useState('-');
@@ -169,17 +169,13 @@ export const AddDesignModal: React.FC<AddDesignModalProps> = ({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-slate-700 mb-1">Designer</label>
-              <select
+              <input
+                type="text"
                 value={designer}
                 onChange={(e) => setDesigner(e.target.value)}
+                placeholder="Enter designer name"
                 className="w-full h-9 px-3 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              >
-                <option value="Amit Sharma">Amit Sharma</option>
-                <option value="Sneha Nair">Sneha Nair</option>
-                <option value="Divya Patel">Divya Patel</option>
-                <option value="Rohan Verma">Rohan Verma</option>
-                <option value="Vikram Shah">Vikram Shah</option>
-              </select>
+              />
             </div>
 
             <div>

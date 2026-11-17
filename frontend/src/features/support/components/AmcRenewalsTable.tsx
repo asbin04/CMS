@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Search, ChevronDown, MoreVertical, AlertTriangle, Edit, Trash2 } from 'lucide-react';
 import { AmcSlaContract } from '../types/amcSla';
+import { Skeleton } from '../../../components/ui/Skeleton';
 
 interface AmcRenewalsTableProps {
   contracts: AmcSlaContract[];
@@ -487,9 +488,9 @@ export const AmcRenewalsTable: React.FC<AmcRenewalsTableProps> = ({
 
       {/* Table Container */}
       <div className="w-full overflow-x-auto">
-        <table className="w-full border-collapse text-left font-['Inter']">
+        <table className="w-full min-w-[972px] border-collapse text-left font-['Inter'] whitespace-nowrap">
           <thead>
-            <tr className="bg-[rgba(248,250,252,0.75)] border-b border-[#E2E8F0] text-[11px] font-bold uppercase tracking-[0.55px] text-[#475569] h-[41px]">
+            <tr className="bg-[rgba(248,250,252,0.75)] border-b border-[#E2E8F0] text-[11px] font-bold uppercase tracking-[0.55px] text-[#475569] h-[41px] whitespace-nowrap">
               <th style={{ width: '120px', padding: '12px 16px' }}>AMC / SLA ID</th>
               <th style={{ width: '100px', padding: '12px 16px' }}>CLIENT ID</th>
               <th style={{ width: '105px', padding: '12px 16px' }}>PROJECT ID</th>
@@ -502,11 +503,18 @@ export const AmcRenewalsTable: React.FC<AmcRenewalsTableProps> = ({
           </thead>
           <tbody>
             {isLoading ? (
-              <tr>
-                <td colSpan={8} className="py-12 text-center text-[13px] text-[#64748B]">
-                  Loading renewals &amp; alerts...
-                </td>
-              </tr>
+              Array.from({ length: 5 }).map((_, idx) => (
+                <tr key={idx} className="h-[48px] border-b border-[#F1F5F9] hover:bg-slate-50/50">
+                  <td className="px-4 py-3"><Skeleton variant="text" width={75} height={12} /></td>
+                  <td className="px-4 py-3"><Skeleton variant="text" width={80} height={12} /></td>
+                  <td className="px-4 py-3"><Skeleton variant="text" width={110} height={12} /></td>
+                  <td className="px-4 py-3"><Skeleton variant="text" width={90} height={12} /></td>
+                  <td className="px-4 py-3"><Skeleton variant="text" width={80} height={12} /></td>
+                  <td className="px-4 py-3"><Skeleton variant="text" width={80} height={12} /></td>
+                  <td className="px-4 py-3"><Skeleton variant="text" width={70} height={12} /></td>
+                  <td className="px-4 py-3 text-center"><Skeleton variant="badge" width={80} height={20} className="mx-auto" /></td>
+                </tr>
+              ))
             ) : paginatedContracts.length === 0 ? (
               <tr>
                 <td colSpan={8} className="py-12 text-center text-[13px] text-[#64748B]">
@@ -538,7 +546,7 @@ export const AmcRenewalsTable: React.FC<AmcRenewalsTableProps> = ({
                 return (
                   <tr
                     key={c.id}
-                    className="h-[53px] border-t border-[#F1F5F9] hover:bg-[#F8FAFC] transition-colors text-[12px]"
+                    className="h-[53px] border-t border-[#F1F5F9] hover:bg-[#F8FAFC] transition-colors text-[12px] whitespace-nowrap"
                   >
                     {/* 1. AMC / SLA ID */}
                     <td style={{ width: '120px', padding: '18px 16px 19px' }}>

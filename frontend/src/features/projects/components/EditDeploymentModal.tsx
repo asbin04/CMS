@@ -17,7 +17,7 @@ export const EditDeploymentModal: React.FC<EditDeploymentModalProps> = ({
   deployment,
   projectOptions,
 }) => {
-  const [projectId, setProjectId] = useState('PRJ-001');
+  const [projectId, setProjectId] = useState(deployment?.projectId || projectOptions[0] || '');
   const [releaseVersion, setReleaseVersion] = useState('');
   const [deploymentDate, setDeploymentDate] = useState('');
   const [environment, setEnvironment] = useState('Production');

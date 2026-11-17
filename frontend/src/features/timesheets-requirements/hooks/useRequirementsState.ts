@@ -6,7 +6,6 @@ import {
   RequirementPriority,
   AddRequirementFormData,
 } from '../types';
-import { getInitialRequirementRecords } from '../mockData';
 import { calculateRequirementKpis } from '../utils/calculations';
 import { generateNextRequirementId } from '../utils/idGenerators';
 import { exportRequirementsToCsv } from '../utils/csvExport';
@@ -14,7 +13,7 @@ import { formatDateForDisplay } from '../utils/formatters';
 import { requirementsApiService } from '../services/requirementsApiService';
 
 export const useRequirementsState = (initialList?: RequirementRecord[]) => {
-  const [records, setRecords] = useState<RequirementRecord[]>(() => initialList || getInitialRequirementRecords());
+  const [records, setRecords] = useState<RequirementRecord[]>(() => initialList || []);
   const [backendKpis, setBackendKpis] = useState<RequirementKpis | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -213,10 +212,10 @@ export const useRequirementsState = (initialList?: RequirementRecord[]) => {
         ownerId: formData.ownerId,
         status: formData.status,
         scopeFreeze: formData.scopeFreeze,
-        assignedApprover: formData.assignedApprover || 'Akshit Ujjain',
+        assignedApprover: formData.assignedApprover || '',
         approvedBy:
           formData.status === 'Completed'
-            ? (formData.assignedApprover?.includes('Gaurav') ? 'Gaurav Tripathy' : 'Akshit Ujjain')
+            ? (formData.assignedApprover?.includes('Gaurav') ? '' : '')
             : '-',
         approvalDate:
           formData.status === 'Completed'
@@ -251,7 +250,7 @@ export const useRequirementsState = (initialList?: RequirementRecord[]) => {
           scopeFreeze: formData.scopeFreeze === 'Yes',
           completionPercentage: formData.completionPercentage,
           requirementDate: formData.requirementDate,
-          assignedApprover: formData.assignedApprover || 'Admin – Akshit Ujjain',
+          assignedApprover: formData.assignedApprover || '',
           approvedBy: formData.approvedBy,
           approvalDate: formData.approvalDate,
         });
@@ -280,8 +279,8 @@ export const useRequirementsState = (initialList?: RequirementRecord[]) => {
       prev.map((r) => {
         if (r.requirementId === id) {
           const updated = { ...r, ...updates };
-          const assigned = updated.assignedApprover || r.assignedApprover || 'Akshit Ujjain';
-          const designatedName = assigned.toLowerCase().includes('gaurav') ? 'Gaurav Tripathy' : 'Akshit Ujjain';
+          const assigned = updated.assignedApprover || r.assignedApprover || '';
+          const designatedName = assigned.toLowerCase().includes('gaurav') ? '' : '';
           if (isCompleted) {
             updated.completionPercentage = 100;
             updated.approvedBy = designatedName;
@@ -339,8 +338,8 @@ export const useRequirementsState = (initialList?: RequirementRecord[]) => {
     setRecords((prev) =>
       prev.map((r) => {
         if (r.requirementId === id) {
-          const assigned = r.assignedApprover || 'Akshit Ujjain';
-          const designatedName = assigned.toLowerCase().includes('gaurav') ? 'Gaurav Tripathy' : 'Akshit Ujjain';
+          const assigned = r.assignedApprover || '';
+          const designatedName = assigned.toLowerCase().includes('gaurav') ? '' : '';
           return {
             ...r,
             status: newStatus,

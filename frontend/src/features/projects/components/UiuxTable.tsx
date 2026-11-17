@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ExternalLink, MoreVertical, Edit2, Trash2 } from 'lucide-react';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { UiuxDesignItem } from '../types/uiux';
 
 interface UiuxTableProps {
@@ -11,6 +12,7 @@ interface UiuxTableProps {
   pageSize: number;
   onPageSizeChange: (size: number) => void;
   totalElements: number;
+  isLoading?: boolean;
 }
 
 // Format date to "28 Oct 2026"
@@ -96,6 +98,7 @@ export const UiuxTable: React.FC<UiuxTableProps> = ({
   pageSize,
   onPageSizeChange,
   totalElements,
+  isLoading = false,
 }) => {
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -140,6 +143,7 @@ export const UiuxTable: React.FC<UiuxTableProps> = ({
             width: '1925.97px',
             borderCollapse: 'collapse',
             textAlign: 'left',
+            whiteSpace: 'nowrap',
           }}
         >
           <thead>
@@ -149,6 +153,7 @@ export const UiuxTable: React.FC<UiuxTableProps> = ({
                 background: 'rgba(248, 250, 252, 0.8)',
                 borderBottom: '1px solid #E2E8F0',
                 boxSizing: 'border-box',
+                whiteSpace: 'nowrap',
               }}
             >
               <th style={{ width: '124.64px', padding: '12px 16px', fontSize: '11px', fontWeight: 700, color: '#475569', letterSpacing: '-0.275px' }}>
@@ -205,7 +210,29 @@ export const UiuxTable: React.FC<UiuxTableProps> = ({
             </tr>
           </thead>
           <tbody>
-            {designs.length === 0 ? (
+            {isLoading && designs.length === 0 ? (
+              Array.from({ length: 5 }).map((_, idx) => (
+                <tr key={idx} style={{ height: '46px', borderBottom: '1px solid #F1F5F9' }}>
+                  <td style={{ width: '124.64px', padding: '13.5px 16px' }}><Skeleton variant="text" width={75} height={12} /></td>
+                  <td style={{ width: '75.3px', padding: '13.5px 12px' }}><Skeleton variant="text" width={55} height={12} /></td>
+                  <td style={{ width: '117.23px', padding: '13.5px 12px' }}><Skeleton variant="text" width={70} height={12} /></td>
+                  <td style={{ width: '155.89px', padding: '13.5px 16px' }}><Skeleton variant="text" width={110} height={12} /></td>
+                  <td style={{ width: '87.78px', padding: '13.5px 12px' }}><Skeleton variant="text" width={60} height={12} /></td>
+                  <td style={{ width: '60px', padding: '13.5px 12px', textAlign: 'center' }}><Skeleton variant="text" width={25} height={12} className="mx-auto" /></td>
+                  <td style={{ width: '110px', padding: '13.5px 12px' }}><Skeleton variant="avatar" width={22} height={22} /></td>
+                  <td style={{ width: '90px', padding: '13.5px 12px' }}><Skeleton variant="badge" width={55} height={16} /></td>
+                  <td style={{ width: '95px', padding: '13.5px 12px' }}><Skeleton variant="text" width={70} height={12} /></td>
+                  <td style={{ width: '95px', padding: '13.5px 12px' }}><Skeleton variant="text" width={70} height={12} /></td>
+                  <td style={{ width: '75px', padding: '13.5px 12px', textAlign: 'center' }}><Skeleton variant="text" width={30} height={12} className="mx-auto" /></td>
+                  <td style={{ width: '115px', padding: '13.5px 12px' }}><Skeleton variant="badge" width={75} height={18} /></td>
+                  <td style={{ width: '105px', padding: '13.5px 12px' }}><Skeleton variant="badge" width={70} height={18} /></td>
+                  <td style={{ width: '95px', padding: '13.5px 12px' }}><Skeleton variant="text" width={65} height={12} /></td>
+                  <td style={{ width: '90px', padding: '13.5px 12px' }}><Skeleton variant="text" width={60} height={12} /></td>
+                  <td style={{ width: '100px', padding: '13.5px 12px' }}><Skeleton variant="text" width={65} height={12} /></td>
+                  <td style={{ width: '63.28px', padding: '12px', textAlign: 'center' }}><Skeleton variant="circular" width={20} height={20} className="mx-auto" /></td>
+                </tr>
+              ))
+            ) : designs.length === 0 ? (
               <tr>
                 <td colSpan={17} style={{ textAlign: 'center', padding: '48px', color: '#94A3B8', fontSize: '14px' }}>
                   No design deliverables found matching your criteria.

@@ -30,6 +30,7 @@ export interface UniversalDonutChartProps {
   strokeWidth?: number;
   activeId?: string | null;
   className?: string;
+  legendVariant?: 'default' | 'compact';
   onSegmentHover?: (item: DonutDataItem | null) => void;
   onSegmentClick?: (item: DonutDataItem) => void;
 }
@@ -48,6 +49,7 @@ export const UniversalDonutChart: React.FC<UniversalDonutChartProps> = ({
   strokeWidth = 2,
   activeId,
   className = '',
+  legendVariant = 'default',
   onSegmentHover,
   onSegmentClick
 }) => {
@@ -87,48 +89,65 @@ export const UniversalDonutChart: React.FC<UniversalDonutChartProps> = ({
     if (onSegmentHover) onSegmentHover(null);
   };
 
+  const isAllZero = data.length === 0 || data.every((d) => (Number(d.value) || 0) === 0);
+
   return (
     <div className={`flex flex-col sm:flex-row items-center gap-4 w-full select-none ${className}`}>
       {/* Donut Chart with Gapped Slices & Steady Center Text */}
       <div className="relative shrink-0 flex items-center justify-center" style={{ width: `${size}px`, height: `${size}px` }}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
-            <Pie
-              data={data}
-              dataKey="value"
-              nameKey="label"
-              cx="50%"
-              cy="50%"
-              innerRadius={calculatedInner}
-              outerRadius={calculatedOuter}
-              paddingAngle={paddingAngle}
-              stroke="#FFFFFF"
-              strokeWidth={strokeWidth}
-              animationDuration={800}
-              onMouseEnter={(_, index) => handleMouseEnter(index, data[index])}
-              onMouseLeave={handleMouseLeave}
-              onClick={(_, index) => onSegmentClick && onSegmentClick(data[index])}
-            >
-              {data.map((entry, index) => {
-                const isHovered = currentHoveredIndex === index;
-                const isAnyHovered = currentHoveredIndex !== null && currentHoveredIndex >= 0;
+            {isAllZero ? (
+              <Pie
+                data={[{ value: 1 }]}
+                dataKey="value"
+                cx="50%"
+                cy="50%"
+                innerRadius={calculatedInner}
+                outerRadius={calculatedOuter}
+                fill="#F1F5F9"
+                stroke="#E2E8F0"
+                strokeWidth={1}
+                isAnimationActive={false}
+              />
+            ) : (
+              <Pie
+                data={data}
+                dataKey="value"
+                nameKey="label"
+                cx="50%"
+                cy="50%"
+                innerRadius={calculatedInner}
+                outerRadius={calculatedOuter}
+                paddingAngle={paddingAngle}
+                stroke="#FFFFFF"
+                strokeWidth={strokeWidth}
+                animationDuration={800}
+                onMouseEnter={(_, index) => handleMouseEnter(index, data[index])}
+                onMouseLeave={handleMouseLeave}
+                onClick={(_, index) => onSegmentClick && onSegmentClick(data[index])}
+              >
+                {data.map((entry, index) => {
+                  const isHovered = currentHoveredIndex === index;
+                  const isAnyHovered = currentHoveredIndex !== null && currentHoveredIndex >= 0;
 
-                return (
-                  <Cell
-                    key={`donut-cell-${entry.id ?? entry.label ?? index}`}
-                    fill={entry.color}
-                    style={{
-                      cursor: 'pointer',
-                      transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-                      opacity: isAnyHovered && !isHovered ? 0.65 : 1,
-                      transform: isHovered ? 'scale(1.05)' : 'scale(1)',
-                      transformOrigin: 'center center',
-                      filter: isHovered ? 'drop-shadow(0 2px 6px rgba(0,0,0,0.18))' : 'none'
-                    }}
-                  />
-                );
-              })}
-            </Pie>
+                  return (
+                    <Cell
+                      key={`donut-cell-${entry.id ?? entry.label ?? index}`}
+                      fill={entry.color}
+                      style={{
+                        cursor: 'pointer',
+                        transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                        opacity: isAnyHovered && !isHovered ? 0.65 : 1,
+                        transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+                        transformOrigin: 'center center',
+                        filter: isHovered ? 'drop-shadow(0 2px 6px rgba(0,0,0,0.18))' : 'none'
+                      }}
+                    />
+                  );
+                })}
+              </Pie>
+            )}
           </PieChart>
         </ResponsiveContainer>
 
@@ -136,7 +155,13 @@ export const UniversalDonutChart: React.FC<UniversalDonutChartProps> = ({
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none px-1">
           <span
             className={`font-bold text-slate-900 tracking-tight leading-tight transition-all duration-200 ${
-              size >= 140 ? 'text-[22px]' : size >= 120 ? 'text-[18px]' : 'text-[16px]'
+              size >= 140
+                ? 'text-[22px]'
+                : size >= 120
+                ? legendVariant === 'compact'
+                  ? 'text-[12px]'
+                  : 'text-[18px]'
+                : 'text-[16px]'
             }`}
           >
             {displayPrimary}
@@ -144,7 +169,9 @@ export const UniversalDonutChart: React.FC<UniversalDonutChartProps> = ({
           {displaySecondary && (
             <span
               className={`font-medium transition-all duration-200 leading-[12px] mt-0.5 text-center break-words ${
-                hoveredItem && interactiveCenterHover ? 'text-[10px] font-semibold text-indigo-600' : 'text-[10px] text-slate-500'
+                hoveredItem && interactiveCenterHover
+                  ? 'text-[9px] font-semibold text-indigo-600'
+                  : 'text-[9px] text-slate-400'
               }`}
               style={{
                 maxWidth: `${Math.max(calculatedInner * 1.9, 68)}px`,
@@ -159,48 +186,82 @@ export const UniversalDonutChart: React.FC<UniversalDonutChartProps> = ({
 
       {/* Legend Column with Interactive 2-Way Hover Synchronization */}
       {showLegend && (
-        <div className="flex flex-col gap-1.5 flex-1 min-w-0 w-full text-xs">
-          {data.map((item, idx) => {
-            const isHovered = currentHoveredIndex === idx;
-            const pct = item.percentage !== undefined ? item.percentage : Math.round((item.value / total) * 100);
+        legendVariant === 'compact' ? (
+          <div className="flex flex-col gap-1.5 flex-1 min-w-0 w-full">
+            {data.map((item, idx) => {
+              const isHovered = currentHoveredIndex === idx;
+              const pct = item.percentage !== undefined ? item.percentage : Math.round((item.value / total) * 100);
 
-            return (
-              <div
-                key={item.id ?? item.label ?? idx}
-                onMouseEnter={() => handleMouseEnter(idx, item)}
-                onMouseLeave={handleMouseLeave}
-                onClick={() => onSegmentClick && onSegmentClick(item)}
-                className={`flex items-center justify-between text-[12px] leading-[18px] px-2.5 py-1 rounded-lg cursor-pointer transition-all duration-200 ${
-                  isHovered ? 'bg-slate-100/90 shadow-xs font-medium' : 'hover:bg-slate-50'
-                }`}
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <span
-                    className={`w-2.5 h-2.5 rounded-full shrink-0 transition-transform duration-200 ${isHovered ? 'scale-125' : ''}`}
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <span className={`truncate text-[12px] leading-[18px] ${isHovered ? 'text-slate-950 font-semibold' : 'text-slate-600 font-normal'}`}>
-                    {item.label}
+              return (
+                <div
+                  key={item.id ?? item.label ?? idx}
+                  onMouseEnter={() => handleMouseEnter(idx, item)}
+                  onMouseLeave={handleMouseLeave}
+                  onClick={() => onSegmentClick && onSegmentClick(item)}
+                  className={`flex items-center justify-between text-[10px] leading-[15px] cursor-pointer transition-all duration-150 py-0.5 ${
+                    isHovered ? 'opacity-100 font-semibold' : 'opacity-90 hover:opacity-100'
+                  }`}
+                >
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span
+                      className={`w-2 h-2 rounded-full shrink-0 transition-transform duration-150 ${isHovered ? 'scale-125' : ''}`}
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span className={`truncate text-[10px] leading-[15px] ${isHovered ? 'text-slate-950 font-semibold' : 'text-[#475569] font-normal'}`}>
+                      {item.label}
+                    </span>
+                  </div>
+                  <span className={`text-[10px] font-semibold leading-[15px] shrink-0 ml-2 ${isHovered ? 'text-slate-950' : 'text-[#1E293B]'}`}>
+                    {pct}%
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 shrink-0 ml-1">
-                  {item.formatted ? (
-                    <span className="text-[12px] leading-[18px] font-semibold text-slate-900">{item.formatted}</span>
-                  ) : (
-                    <>
-                      {item.secondaryInfo && (
-                        <span className="text-[12px] leading-[18px] font-semibold text-slate-900">{item.secondaryInfo}</span>
-                      )}
-                      <span className={`text-[12px] leading-[18px] ${isHovered ? 'text-slate-900 font-semibold' : item.secondaryInfo ? 'text-slate-400 font-normal' : 'text-slate-500 font-normal'}`}>
-                        {item.secondaryInfo ? `(${pct}%)` : `${pct}%`}
-                      </span>
-                    </>
-                  )}
+              );
+            })}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-1.5 flex-1 min-w-0 w-full text-xs">
+            {data.map((item, idx) => {
+              const isHovered = currentHoveredIndex === idx;
+              const pct = item.percentage !== undefined ? item.percentage : Math.round((item.value / total) * 100);
+
+              return (
+                <div
+                  key={item.id ?? item.label ?? idx}
+                  onMouseEnter={() => handleMouseEnter(idx, item)}
+                  onMouseLeave={handleMouseLeave}
+                  onClick={() => onSegmentClick && onSegmentClick(item)}
+                  className={`flex items-center justify-between text-[12px] leading-[18px] px-2.5 py-1 rounded-lg cursor-pointer transition-all duration-200 ${
+                    isHovered ? 'bg-slate-100/90 shadow-xs font-medium' : 'hover:bg-slate-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span
+                      className={`w-2.5 h-2.5 rounded-full shrink-0 transition-transform duration-200 ${isHovered ? 'scale-125' : ''}`}
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span className={`truncate text-[12px] leading-[18px] ${isHovered ? 'text-slate-950 font-semibold' : 'text-slate-600 font-normal'}`}>
+                      {item.label}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0 ml-1">
+                    {item.formatted ? (
+                      <span className="text-[12px] leading-[18px] font-semibold text-slate-900">{item.formatted}</span>
+                    ) : (
+                      <>
+                        {item.secondaryInfo && (
+                          <span className="text-[12px] leading-[18px] font-semibold text-slate-900">{item.secondaryInfo}</span>
+                        )}
+                        <span className={`text-[12px] leading-[18px] ${isHovered ? 'text-slate-900 font-semibold' : item.secondaryInfo ? 'text-slate-400 font-normal' : 'text-slate-500 font-normal'}`}>
+                          {item.secondaryInfo ? `(${pct}%)` : `${pct}%`}
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )
       )}
     </div>
   );

@@ -30,7 +30,6 @@ import {
   PhoneCall,
   Ticket,
   ShieldCheck,
-  Database,
   Sliders,
   HelpCircle,
   Crown,
@@ -57,6 +56,7 @@ export const navigationSections: NavSection[] = [
     icon: TrendingUp,
     defaultExpanded: false,
     items: [
+      { id: 'sales-dashboard', label: 'Sales Dashboard', path: '/sales/dashboard', icon: TrendingUp },
       { id: 'leads', label: 'Leads', path: '/sales/leads', icon: Users },
       { id: 'opportunities', label: 'Opportunities', path: '/sales/opportunities', icon: Target },
       { id: 'proposals', label: 'Proposals', path: '/sales/proposals', icon: FileText },
@@ -92,6 +92,7 @@ export const navigationSections: NavSection[] = [
     icon: Briefcase,
     defaultExpanded: false,
     items: [
+      { id: 'project-dashboard', label: 'Project Dashboard', path: '/projects/dashboard', icon: LayoutDashboard },
       { id: 'projects-tasks', label: 'Projects & Tasks', path: '/projects/tasks', icon: Folder },
       { id: 'timesheets-requirements', label: 'Timesheets & Requirements', path: '/projects/timesheets', icon: Clock },
       { id: 'ui-ux', label: 'UI / UX', path: '/projects/ui-ux', icon: PenTool },
@@ -137,16 +138,11 @@ export const navigationSections: NavSection[] = [
     ],
   },
   {
-    id: 'reports-control',
-    title: 'Reports & Control',
-    icon: BarChart3,
+    id: 'transaction-control',
+    title: 'Transaction Control',
+    icon: Sliders,
     defaultExpanded: false,
     items: [
-      { id: 'sales-dashboard', label: 'Sales Dashboard', path: '/reports/sales-dashboard', icon: TrendingUp },
-      { id: 'project-dashboard', label: 'Project Dashboard', path: '/reports/project-dashboard', icon: LayoutDashboard },
-      { id: 'finance-dashboard-rep', label: 'Finance Dashboard', path: '/reports/finance-dashboard', icon: Clock },
-      { id: 'hr-dashboard-rep', label: 'HR Dashboard', path: '/reports/hr-dashboard', icon: Users },
-      { id: 'data-quality', label: 'Data Quality', path: '/reports/data-quality', icon: Database },
       { id: 'transaction-control', label: 'Transaction Control', path: '/reports/transaction-control', icon: Sliders },
     ],
   },

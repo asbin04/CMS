@@ -18,6 +18,7 @@ import {
   TransactionControlCheck,
   TransactionControlRecord,
 } from '../types/transactionControl';
+import { Skeleton } from '../../../components/ui/Skeleton';
 
 const WORKBOOK_CONTROL_DEFINITIONS: TransactionControlCheck[] = [
   {
@@ -91,8 +92,8 @@ const WORKBOOK_CONTROL_DEFINITIONS: TransactionControlCheck[] = [
     description: 'Client, invoice, or payment records missing required identifiers or non-positive amounts.',
     classification: 'REVIEW',
     count: 0,
-    actionLabel: 'Open Data Quality',
-    actionPath: '/reports/data-quality',
+    actionLabel: 'Review records',
+    actionPath: '/reports/transaction-control',
     nested: false,
     statusFilterLabel: 'Status',
     statusOptions: [],
@@ -439,9 +440,9 @@ export const TransactionControlPage: React.FC = () => {
 
         {/* Transaction Checks Table */}
         <div className="border-t border-[#F1F5F9] overflow-x-auto">
-          <table className="w-full border-collapse text-left">
+          <table className="w-full border-collapse text-left whitespace-nowrap">
             <thead>
-              <tr className="h-[37px] bg-[rgba(248,250,252,0.7)] border-b border-[#F1F5F9]">
+              <tr className="h-[37px] bg-[rgba(248,250,252,0.7)] border-b border-[#F1F5F9] whitespace-nowrap">
                 <th className="px-[20px] py-[10px] font-semibold text-[11px] leading-[16px] tracking-[0.55px] uppercase text-[#94A3B8]">
                   CONTROL
                 </th>
@@ -621,9 +622,9 @@ export const TransactionControlPage: React.FC = () => {
 
         {/* Records Table */}
         <div className="border-t border-[#F1F5F9] overflow-x-auto">
-          <table className="w-full border-collapse text-left">
+          <table className="w-full border-collapse text-left whitespace-nowrap">
             <thead>
-              <tr className="h-[37px] bg-[rgba(248,250,252,0.7)] border-b border-[#F1F5F9]">
+              <tr className="h-[37px] bg-[rgba(248,250,252,0.7)] border-b border-[#F1F5F9] whitespace-nowrap">
                 {activeColumns.map((col, idx) => (
                   <th
                     key={col}
@@ -640,7 +641,22 @@ export const TransactionControlPage: React.FC = () => {
                 ))}
               </tr>
             </thead>
-            {paginatedRecords.length > 0 && !isLoading && (
+            {isLoading ? (
+              <tbody className="divide-y divide-[#F1F5F9]">
+                {Array.from({ length: 5 }).map((_, idx) => (
+                  <tr key={idx} className="h-12 hover:bg-[#F8FAFC]/90">
+                    <td className="pl-[20px] pr-[16px] py-[12px]"><Skeleton variant="text" width={80} height={13} /></td>
+                    <td className="px-[16px] py-[12px]"><Skeleton variant="text" width={75} height={13} /></td>
+                    <td className="px-[16px] py-[12px]"><Skeleton variant="text" width={70} height={13} /></td>
+                    <td className="px-[16px] py-[12px]"><Skeleton variant="text" width={85} height={13} /></td>
+                    <td className="px-[16px] py-[12px]"><Skeleton variant="text" width={90} height={13} /></td>
+                    <td className="px-[16px] py-[12px]"><Skeleton variant="text" width={110} height={13} /></td>
+                    <td className="px-[16px] py-[12px]"><Skeleton variant="text" width={140} height={13} /></td>
+                    <td className="pl-[16px] pr-[20px] py-[12px] text-right"><Skeleton variant="text" width={60} height={13} className="ml-auto" /></td>
+                  </tr>
+                ))}
+              </tbody>
+            ) : paginatedRecords.length > 0 ? (
               <tbody className="divide-y divide-[#F1F5F9]">
                 {paginatedRecords.map((record) => {
                   const statusBadge = getRecordStatusBadgeStyle(record.status);
@@ -716,11 +732,11 @@ export const TransactionControlPage: React.FC = () => {
                   );
                 })}
               </tbody>
-            )}
+            ) : null}
           </table>
 
-          {/* Empty State / Loading State Container */}
-          {(isLoading || filteredRecords.length === 0) && (
+          {/* Empty State Container */}
+          {!isLoading && filteredRecords.length === 0 && (
             <div className="min-h-[246px] flex flex-col justify-center items-center px-4 py-[40px]">
               <div className="w-full max-w-[384px] flex flex-col items-center text-center">
                 <div className="pb-[12px]">
@@ -817,9 +833,6 @@ export const TransactionControlPage: React.FC = () => {
                 </div>
               </div>
             )}
-            <span className="font-normal text-[11px] leading-[16px] text-[#94A3B8]">
-              Amounts keep their source currency when available
-            </span>
           </div>
         </div>
       </section>

@@ -14,7 +14,11 @@ public interface EmployeeMasterRepository extends JpaRepository<EmployeeMaster, 
 
     Optional<EmployeeMaster> findByEmployeeId(String employeeId);
 
+    Optional<EmployeeMaster> findByEmployeeCode(String employeeCode);
+
     boolean existsByEmployeeId(String employeeId);
+
+    boolean existsByEmployeeCode(String employeeCode);
 
     long countByStatusIgnoreCase(String status);
 

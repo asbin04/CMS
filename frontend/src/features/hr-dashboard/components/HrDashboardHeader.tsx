@@ -1,5 +1,7 @@
 import React from 'react';
-import { User, RotateCw, Download } from 'lucide-react';
+import { User } from 'lucide-react';
+import { ReloadButton } from '@/components/ui/ReloadButton';
+import { ExportButton } from '@/components/ui/ExportButton';
 
 interface HrDashboardHeaderProps {
   onRefresh?: () => void;
@@ -34,25 +36,14 @@ export const HrDashboardHeader: React.FC<HrDashboardHeaderProps> = ({
       {/* Action buttons */}
       <div className="flex items-center gap-2.5 self-start sm:self-auto shrink-0">
         {/* Refresh button */}
-        <button
-          type="button"
+        <ReloadButton
           onClick={onRefresh}
+          isRefreshing={isRefreshing}
           title="Refresh HR Data"
-          disabled={isRefreshing}
-          className="w-9 h-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-[#64748B] flex items-center justify-center transition-all shadow-2xs cursor-pointer disabled:opacity-50"
-        >
-          <RotateCw className={`w-4 h-4 text-[#64748B] ${isRefreshing ? 'animate-spin' : ''}`} />
-        </button>
+        />
 
         {/* Export button */}
-        <button
-          type="button"
-          onClick={onExport}
-          className="h-9 px-3.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer"
-        >
-          <Download className="w-4 h-4 text-slate-600" />
-          <span>Export</span>
-        </button>
+        <ExportButton onClick={onExport} />
       </div>
     </div>
   );

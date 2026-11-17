@@ -23,17 +23,17 @@ export const ProcessPayrollModal: React.FC<ProcessPayrollModalProps> = ({
   filterOptions,
   isSubmitting = false,
 }) => {
-  const [payrollMonth, setPayrollMonth] = useState('Oct 2026');
-  const [employeeId, setEmployeeId] = useState('EMP-001');
-  const [employeeName, setEmployeeName] = useState('Amit Sharma');
+  const [payrollMonth, setPayrollMonth] = useState('');
+  const [employeeId, setEmployeeId] = useState('');
+  const [employeeName, setEmployeeName] = useState('');
   const [employmentType, setEmploymentType] = useState<EmploymentType>('Full Time');
-  const [monthlyCtc, setMonthlyCtc] = useState<number>(600000);
+  const [monthlyCtc, setMonthlyCtc] = useState<number>(0);
   const [workingDays, setWorkingDays] = useState<number>(22);
   const [lopDays, setLopDays] = useState<number>(0);
   const [paymentStatus, setPaymentStatus] = useState<PayrollStatus>('Paid');
-  const [bankName, setBankName] = useState('HDFC Bank');
-  const [bankAccount, setBankAccount] = useState('XXXXXXXX4589');
-  const [panNumber, setPanNumber] = useState('ABCDE1234F');
+  const [bankName, setBankName] = useState('');
+  const [bankAccount, setBankAccount] = useState('');
+  const [panNumber, setPanNumber] = useState('');
   const [notes, setNotes] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -163,8 +163,10 @@ export const ProcessPayrollModal: React.FC<ProcessPayrollModalProps> = ({
               <select
                 value={employeeId}
                 onChange={handleEmployeeChange}
+                required
                 className="h-9 px-3 text-xs rounded-lg border border-[#E2E8F0] focus:ring-1 focus:ring-indigo-500 focus:outline-none bg-white"
               >
+                <option value="">Select an employee...</option>
                 {filterOptions.employees?.map((emp) => (
                   <option key={emp.employeeId} value={emp.employeeId}>
                     {emp.employeeName} ({emp.employeeId})

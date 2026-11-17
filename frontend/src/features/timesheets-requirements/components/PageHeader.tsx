@@ -1,7 +1,28 @@
-import React from 'react';
-import { Layers, RefreshCw } from 'lucide-react';
+import React, { useState } from 'react';
+import { Layers } from 'lucide-react';
+import { ReloadButton } from '@/components/ui/ReloadButton';
 
-export const PageHeader: React.FC = () => {
+interface PageHeaderProps {
+  onRefresh?: () => void;
+  isRefreshing?: boolean;
+}
+
+export const PageHeader: React.FC<PageHeaderProps> = ({
+  onRefresh,
+  isRefreshing = false,
+}) => {
+  const [internalRefreshing, setInternalRefreshing] = useState(false);
+
+  const handleRefresh = () => {
+    if (onRefresh) {
+      onRefresh();
+    } else {
+      setInternalRefreshing(true);
+      window.dispatchEvent(new Event('refresh_timesheets_requirements'));
+      setTimeout(() => setInternalRefreshing(false), 500);
+    }
+  };
+
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2 w-full">
       <div className="flex items-center gap-3.5">
@@ -17,16 +38,14 @@ export const PageHeader: React.FC = () => {
           </p>
         </div>
       </div>
-      <button
-        type="button"
-        onClick={() => window.location.reload()}
-        title="Refresh"
-        aria-label="Refresh"
-        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer self-end sm:self-auto"
-      >
-        <RefreshCw className="w-4 h-4 text-slate-500" />
-      </button>
+
+      <div className="flex items-center gap-2 self-end sm:self-center">
+        <ReloadButton
+          onClick={handleRefresh}
+          isRefreshing={isRefreshing || internalRefreshing}
+          title="Refresh timesheets and requirements"
+        />
+      </div>
     </div>
   );
 };
-

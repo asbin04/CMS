@@ -1,6 +1,6 @@
 import React from 'react';
 import { MonthlyTrendData } from '../../types';
-import { formatIndianCurrency, MOCK_MONTHLY_TRENDS } from '../../mockData';
+import { formatIndianCurrency } from '../../mockData';
 import { UniversalComposedChart } from '@/components/charts/UniversalComposedChart';
 
 interface CashFlowTrendChartProps {
@@ -8,7 +8,18 @@ interface CashFlowTrendChartProps {
 }
 
 export const CashFlowTrendChart: React.FC<CashFlowTrendChartProps> = ({ data }) => {
-  const chartData = data && data.length > 0 ? data : MOCK_MONTHLY_TRENDS;
+  const chartData = data && data.length > 0 ? data : [];
+
+  if (chartData.length === 0) {
+    return (
+      <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-col justify-between min-h-[340px]">
+        <h3 className="text-sm font-bold text-slate-900 tracking-tight mb-3">Cash Flow Trend</h3>
+        <div className="flex-1 flex items-center justify-center text-slate-400 text-xs">
+          No cash flow trend data available for this period.
+        </div>
+      </div>
+    );
+  }
 
   const formattedData = chartData.map((d) => ({
     label: d.period,

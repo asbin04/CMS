@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import {
-  Download,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
+import { ExportButton } from '@/components/ui/ExportButton';
 import { Client, ClientSortOption } from '../types/clients';
 import { TableActionMenu } from '../../../components/ui/TableActionMenu';
 
@@ -147,14 +147,7 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
           </div>
 
           {/* Export Button */}
-          <button
-            type="button"
-            onClick={onExport}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold transition-colors shadow-2xs cursor-pointer active:scale-98"
-          >
-            <Download size={14} className="text-slate-500" />
-            <span>Export</span>
-          </button>
+          <ExportButton onClick={onExport} />
         </div>
       </div>
 
@@ -170,6 +163,7 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
             borderCollapse: 'collapse',
             textAlign: 'left',
             fontFamily: "'Inter', sans-serif",
+            whiteSpace: 'nowrap',
           }}
         >
           {/* Header Row */}
@@ -179,6 +173,7 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
                 height: '42px',
                 backgroundColor: 'rgba(248, 250, 252, 0.8)',
                 borderBottom: '1px solid #E2E8F0',
+                whiteSpace: 'nowrap',
               }}
             >
               <th style={{ width: '90.45px', padding: '12px 16px', fontSize: '11px', fontWeight: 700, color: '#94A3B8', letterSpacing: '0.55px', textTransform: 'uppercase' }}>

@@ -1,6 +1,7 @@
 import React from 'react';
-import { CreditCard, Download, Plus } from 'lucide-react';
+import { CreditCard, Plus } from 'lucide-react';
 import { ReloadButton } from '../../../../components/ui/ReloadButton';
+import { ExportButton } from '../../../../components/ui/ExportButton';
 
 interface PayrollHeaderProps {
   lastUpdated: string;
@@ -41,18 +42,10 @@ export const PayrollHeader: React.FC<PayrollHeaderProps> = ({
           onClick={onRefresh}
           isRefreshing={isRefreshing}
           title="Refresh payroll data"
-          className="w-9 h-9 rounded-lg border border-[#E2E8F0] bg-white hover:bg-slate-50 active:bg-slate-100 text-[#64748B] flex items-center justify-center transition-all cursor-pointer shadow-2xs disabled:opacity-60"
         />
 
         {/* Export Button */}
-        <button
-          type="button"
-          onClick={onExport}
-          className="inline-flex items-center gap-1.5 px-3.5 h-9 rounded-lg border border-[#E2E8F0] bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 text-xs font-semibold transition-all cursor-pointer shadow-2xs whitespace-nowrap"
-        >
-          <Download className="w-3.5 h-3.5" />
-          <span>Export</span>
-        </button>
+        <ExportButton onClick={onExport} />
 
         {/* Process Payroll Button */}
         <button

@@ -17,10 +17,10 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
   projectOptions,
   assigneeOptions,
 }) => {
-  const [projectId, setProjectId] = useState(projectOptions[0] || 'PRJ-001');
-  const [milestone, setMilestone] = useState('M1 - Planning');
+  const [projectId, setProjectId] = useState(projectOptions[0] || '');
+  const [milestone, setMilestone] = useState('');
   const [taskName, setTaskName] = useState('');
-  const [assignedTo, setAssignedTo] = useState(assigneeOptions[0] || 'Amit Sharma');
+  const [assignedTo, setAssignedTo] = useState(assigneeOptions[0] || '');
   const [priority, setPriority] = useState('Medium');
   const [startDate, setStartDate] = useState('');
   const [dueDate, setDueDate] = useState('');

@@ -134,7 +134,7 @@ export const ViewTimesheetModal: React.FC<ViewTimesheetModalProps> = ({ isOpen, 
             <div>
               <span className="block text-[11px] font-medium text-slate-400">Assigned Approver</span>
               <span className="block text-xs font-semibold text-slate-800 mt-1">
-                {timesheet.assignedApprover || 'Admin – Akshit Ujjain'}
+                {timesheet.assignedApprover || ''}
               </span>
             </div>
             <div>

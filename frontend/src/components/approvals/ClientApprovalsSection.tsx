@@ -5,13 +5,14 @@ import {
   Calendar,
   RotateCcw,
   Plus,
-  Download,
   ChevronDown,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
+import { ExportButton } from '../ui/ExportButton';
 import { ClientApproval, ApprovalStatus } from '../../types/approvals';
 import { DetailItemType } from './ApprovalDetailModal';
+import { TablePagination } from '../ui/TablePagination';
 
 function getDynamicPastMonths(count = 3): string[] {
   const months: string[] = [];
@@ -237,20 +238,14 @@ export const ClientApprovalsSection: React.FC<ClientApprovalsSectionProps> = ({
                 <span>Add Client</span>
               </button>
 
-              <button
-                onClick={handleExport}
-                className="box-border flex flex-row items-center justify-center px-4 h-[40px] gap-1.5 bg-white border border-[#E2E8F0] hover:bg-slate-50 text-[#334155] rounded-xl text-xs sm:text-[13px] font-semibold transition-colors cursor-pointer shadow-2xs"
-              >
-                <Download size={15} className="text-[#64748B]" />
-                <span>Export</span>
-              </button>
+              <ExportButton onClick={handleExport} />
             </div>
           </div>
 
-          {/* Filters Row 1: Request Type, Status, Request Date Range, Due Date Range */}
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2.5 text-xs">
+          {/* Filters: Single row with compact boxes */}
+          <div className="flex items-center gap-x-2.5 overflow-x-auto custom-scrollbar pb-1 text-xs whitespace-nowrap">
             {/* Request Type */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1 shrink-0">
               <span className="text-[#64748B] font-medium text-xs whitespace-nowrap">Request Type</span>
               <div className="relative">
                 <select
@@ -259,7 +254,7 @@ export const ClientApprovalsSection: React.FC<ClientApprovalsSectionProps> = ({
                     setSelectedType(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="h-[30px] px-2.5 pr-7 bg-white border border-[#E2E8F0] rounded-lg text-xs text-[#334155] font-medium outline-none appearance-none cursor-pointer hover:border-slate-300"
+                  className="h-[28px] pl-2 pr-5 max-w-[140px] bg-white border border-[#E2E8F0] rounded-md text-[11px] text-[#334155] font-medium outline-none appearance-none cursor-pointer hover:border-slate-300 truncate"
                 >
                   <option value="All">All</option>
                   <option value="Client Onboarding">Client Onboarding</option>
@@ -269,14 +264,14 @@ export const ClientApprovalsSection: React.FC<ClientApprovalsSectionProps> = ({
                   <option value="Client Change Request">Client Change Request</option>
                 </select>
                 <ChevronDown
-                  size={13}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[#6B7280] pointer-events-none"
+                  size={12}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#6B7280] pointer-events-none"
                 />
               </div>
             </div>
 
             {/* Status */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1 shrink-0">
               <span className="text-[#64748B] font-medium text-xs whitespace-nowrap">Status</span>
               <div className="relative">
                 <select
@@ -285,7 +280,7 @@ export const ClientApprovalsSection: React.FC<ClientApprovalsSectionProps> = ({
                     setSelectedStatus(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="h-[30px] px-2.5 pr-7 bg-white border border-[#E2E8F0] rounded-lg text-xs text-[#334155] font-medium outline-none appearance-none cursor-pointer hover:border-slate-300"
+                  className="h-[28px] pl-2 pr-5 bg-white border border-[#E2E8F0] rounded-md text-[11px] text-[#334155] font-medium outline-none appearance-none cursor-pointer hover:border-slate-300"
                 >
                   <option value="All">All</option>
                   <option value="Pending">Pending</option>
@@ -293,14 +288,14 @@ export const ClientApprovalsSection: React.FC<ClientApprovalsSectionProps> = ({
                   <option value="Rejected">Rejected</option>
                 </select>
                 <ChevronDown
-                  size={13}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[#6B7280] pointer-events-none"
+                  size={12}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#6B7280] pointer-events-none"
                 />
               </div>
             </div>
 
             {/* Request Date Range */}
-            <div ref={requestDateRef} className="flex items-center gap-1.5 relative">
+            <div ref={requestDateRef} className="flex items-center gap-1 shrink-0 relative">
               <span className="text-[#64748B] font-medium text-xs whitespace-nowrap">Request Date Range</span>
               <button
                 type="button"
@@ -308,11 +303,11 @@ export const ClientApprovalsSection: React.FC<ClientApprovalsSectionProps> = ({
                   setShowRequestDatePicker(!showRequestDatePicker);
                   setShowDueDatePicker(false);
                 }}
-                className={`h-[30px] px-2.5 flex items-center gap-2 bg-white border rounded-lg text-xs transition-colors whitespace-nowrap ${
+                className={`h-[28px] px-2 flex items-center gap-1.5 bg-white border rounded-md text-[11px] transition-colors whitespace-nowrap ${
                   requestDateRange ? 'border-indigo-400 text-indigo-700 font-semibold' : 'border-[#E2E8F0] text-[#64748B] hover:border-slate-300'
                 }`}
               >
-                <Calendar size={13} className={requestDateRange ? 'text-indigo-600' : 'text-[#94A3B8]'} />
+                <Calendar size={12} className={requestDateRange ? 'text-indigo-600' : 'text-[#94A3B8]'} />
                 <span>{requestDateRange || 'Select date range'}</span>
               </button>
 
@@ -337,7 +332,7 @@ export const ClientApprovalsSection: React.FC<ClientApprovalsSectionProps> = ({
             </div>
 
             {/* Due Date Range */}
-            <div ref={dueDateRef} className="flex items-center gap-1.5 relative">
+            <div ref={dueDateRef} className="flex items-center gap-1 shrink-0 relative">
               <span className="text-[#64748B] font-medium text-xs whitespace-nowrap">Due Date Range</span>
               <button
                 type="button"
@@ -345,11 +340,11 @@ export const ClientApprovalsSection: React.FC<ClientApprovalsSectionProps> = ({
                   setShowDueDatePicker(!showDueDatePicker);
                   setShowRequestDatePicker(false);
                 }}
-                className={`h-[30px] px-2.5 flex items-center gap-2 bg-white border rounded-lg text-xs transition-colors whitespace-nowrap ${
+                className={`h-[28px] px-2 flex items-center gap-1.5 bg-white border rounded-md text-[11px] transition-colors whitespace-nowrap ${
                   dueDateRange ? 'border-indigo-400 text-indigo-700 font-semibold' : 'border-[#E2E8F0] text-[#64748B] hover:border-slate-300'
                 }`}
               >
-                <Calendar size={13} className={dueDateRange ? 'text-indigo-600' : 'text-[#94A3B8]'} />
+                <Calendar size={12} className={dueDateRange ? 'text-indigo-600' : 'text-[#94A3B8]'} />
                 <span>{dueDateRange || 'Select date range'}</span>
               </button>
 
@@ -372,12 +367,9 @@ export const ClientApprovalsSection: React.FC<ClientApprovalsSectionProps> = ({
                 </div>
               )}
             </div>
-          </div>
 
-          {/* Filters Row 2: Approver & Clear Filters */}
-          <div className="flex items-center gap-3 text-xs">
             {/* Approver */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1 shrink-0">
               <span className="text-[#64748B] font-medium text-xs whitespace-nowrap">Approver</span>
               <div className="relative">
                 <select
@@ -386,7 +378,7 @@ export const ClientApprovalsSection: React.FC<ClientApprovalsSectionProps> = ({
                     setSelectedApprover(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="h-[30px] px-2.5 pr-7 bg-white border border-[#E2E8F0] rounded-lg text-xs text-[#334155] font-medium outline-none appearance-none cursor-pointer hover:border-slate-300"
+                  className="h-[28px] pl-2 pr-5 bg-white border border-[#E2E8F0] rounded-md text-[11px] text-[#334155] font-medium outline-none appearance-none cursor-pointer hover:border-slate-300"
                 >
                   <option value="All">All</option>
                   <option value="Rahul K">Rahul K</option>
@@ -396,8 +388,8 @@ export const ClientApprovalsSection: React.FC<ClientApprovalsSectionProps> = ({
                   <option value="Manoj J">Manoj J</option>
                 </select>
                 <ChevronDown
-                  size={13}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[#6B7280] pointer-events-none"
+                  size={12}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#6B7280] pointer-events-none"
                 />
               </div>
             </div>
@@ -405,9 +397,9 @@ export const ClientApprovalsSection: React.FC<ClientApprovalsSectionProps> = ({
             {/* Clear Filters */}
             <button
               onClick={handleClearFilters}
-              className="flex items-center gap-1.5 px-2 py-1 text-xs font-semibold text-[#2563EB] hover:text-blue-800 transition-colors"
+              className="flex items-center gap-1 px-1.5 py-1 text-xs font-semibold text-[#2563EB] hover:text-blue-800 transition-colors shrink-0 cursor-pointer ml-auto"
             >
-              <RotateCcw size={13} className="text-[#2563EB]" />
+              <RotateCcw size={12} className="text-[#2563EB]" />
               <span>Clear Filters</span>
             </button>
           </div>
@@ -416,9 +408,9 @@ export const ClientApprovalsSection: React.FC<ClientApprovalsSectionProps> = ({
 
       {/* Table Container */}
       <div className="w-full overflow-x-auto custom-scrollbar">
-        <table className="w-full text-left border-collapse min-w-[1050px]">
+        <table className="w-full text-left border-collapse min-w-[1050px] whitespace-nowrap">
           <thead>
-            <tr className="bg-[#F8FAFC]/75 border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.55px]">
+            <tr className="bg-[#F8FAFC]/75 border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.55px] whitespace-nowrap">
               <th className="py-3 px-4">APPROVAL ID</th>
               <th className="py-3 px-4">CLIENT NAME</th>
               <th className="py-3 px-4">REQUEST TYPE</th>
@@ -576,62 +568,18 @@ export const ClientApprovalsSection: React.FC<ClientApprovalsSectionProps> = ({
       </div>
 
       {/* Table Footer / Pagination */}
-      <div className="box-border flex flex-row flex-wrap items-center justify-between p-3 px-5 w-full border-t border-[#F1F5F9] gap-3 text-xs text-[#64748B]">
-        <span>Showing 1 – {Math.min(pageSize, displayItems.length)} of {totalItems} requests</span>
-
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-              className="w-6 h-6 flex items-center justify-center border border-[#E2E8F0] rounded hover:bg-slate-100 disabled:opacity-40 transition-colors"
-            >
-              <ChevronLeft size={13} className="text-[#94A3B8]" />
-            </button>
-
-            {[1, 2, 3, 4, 5].map((pageNum) => (
-              <button
-                key={pageNum}
-                onClick={() => setCurrentPage(pageNum)}
-                className={`w-7 h-7 flex items-center justify-center rounded text-xs transition-colors ${
-                  currentPage === pageNum
-                    ? 'bg-[#4F46E5] text-white font-semibold'
-                    : 'border border-[#E2E8F0] text-[#475569] hover:bg-slate-100 font-medium'
-                }`}
-              >
-                {pageNum}
-              </button>
-            ))}
-
-            <button
-              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-              disabled={currentPage >= totalPages}
-              className="w-6 h-6 flex items-center justify-center border border-[#E2E8F0] rounded hover:bg-slate-100 disabled:opacity-40 transition-colors"
-            >
-              <ChevronRight size={13} className="text-[#475569]" />
-            </button>
-          </div>
-
-          <div className="relative">
-            <select
-              value={pageSize}
-              onChange={(e) => {
-                setPageSize(Number(e.target.value));
-                setCurrentPage(1);
-              }}
-              className="h-[26px] px-2 pr-6 bg-white border border-[#E2E8F0] rounded text-xs text-[#475569] font-medium outline-none appearance-none cursor-pointer"
-            >
-              <option value={5}>5 per page</option>
-              <option value={10}>10 per page</option>
-              <option value={20}>20 per page</option>
-            </select>
-            <ChevronDown
-              size={12}
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#6B7280] pointer-events-none"
-            />
-          </div>
-        </div>
-      </div>
+      <TablePagination
+        currentPage={currentPage}
+        totalItems={totalItems}
+        pageSize={pageSize}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={(newSize) => {
+          setPageSize(newSize);
+          setCurrentPage(1);
+        }}
+        pageSizeOptions={[5, 10, 20]}
+        itemLabel="requests"
+      />
     </div>
   );
 };

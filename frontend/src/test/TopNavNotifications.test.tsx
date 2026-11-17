@@ -164,4 +164,28 @@ describe('TopNav Notification System', () => {
     expect(screen.queryByRole('button', { name: 'Settings' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Log out' })).not.toBeInTheDocument();
   });
+
+  it('renders exact real current date and time by default and avoids hardcoded Apr 2024 - Mar 2025', async () => {
+    vi.mocked(notificationService.getNotifications).mockResolvedValue({
+      unreadCount: 0,
+      notifications: [],
+    });
+
+    render(
+      <BrowserRouter>
+        <TopNav selectedDateRange="Apr 2024 - Mar 2025" />
+      </BrowserRouter>
+    );
+
+    // Stale 'Apr 2024 - Mar 2025' should be replaced by live current exact date/time
+    expect(screen.queryByText('Apr 2024 - Mar 2025')).not.toBeInTheDocument();
+
+    const now = new Date();
+    const expectedDate = now.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
+    expect(screen.getByText(new RegExp(expectedDate, 'i'))).toBeInTheDocument();
+  });
 });

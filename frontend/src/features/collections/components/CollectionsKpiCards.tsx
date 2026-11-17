@@ -8,6 +8,33 @@ interface CollectionsKpiCardsProps {
 }
 
 export const CollectionsKpiCards: React.FC<CollectionsKpiCardsProps> = ({ kpis }) => {
+  const renderTrend = (trendPct: number) => {
+    const isDown = trendPct < 0;
+    const isUp = trendPct > 0;
+    // If it's up: green (#166534 / text-emerald-700); if down: red (#991B1B / text-rose-700); neutral: #64748B
+    const color = isUp ? '#166534' : isDown ? '#991B1B' : '#64748B';
+    const Icon = isDown ? ArrowDownRight : ArrowUpRight;
+
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '4px',
+          marginTop: '14px',
+          fontSize: '11px',
+          fontWeight: 600,
+          lineHeight: '16px',
+          color,
+          fontFamily: "'Inter', sans-serif",
+        }}
+      >
+        <Icon size={14} />
+        <span>{Math.abs(trendPct)}% vs last month</span>
+      </div>
+    );
+  };
+
   return (
     <div
       style={{
@@ -84,22 +111,7 @@ export const CollectionsKpiCards: React.FC<CollectionsKpiCardsProps> = ({ kpis }
             <Wallet size={18} color="#16A34A" />
           </div>
         </div>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            marginTop: '14px',
-            fontSize: '11px',
-            fontWeight: 600,
-            lineHeight: '16px',
-            color: '#166534',
-            fontFamily: "'Inter', sans-serif",
-          }}
-        >
-          <ArrowUpRight size={14} />
-          <span>{kpis.totalOutstanding.trendPct}% vs last month</span>
-        </div>
+        {renderTrend(kpis.totalOutstanding.trendPct)}
       </div>
 
       {/* Card 2: Overdue amount */}
@@ -168,22 +180,7 @@ export const CollectionsKpiCards: React.FC<CollectionsKpiCardsProps> = ({ kpis }
             <FileText size={18} color="#EF4444" />
           </div>
         </div>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            marginTop: '14px',
-            fontSize: '11px',
-            fontWeight: 600,
-            lineHeight: '16px',
-            color: '#991B1B',
-            fontFamily: "'Inter', sans-serif",
-          }}
-        >
-          <ArrowUpRight size={14} />
-          <span>{kpis.overdueAmount.trendPct}% vs last month</span>
-        </div>
+        {renderTrend(kpis.overdueAmount.trendPct)}
       </div>
 
       {/* Card 3: Due soon invoices */}
@@ -252,22 +249,7 @@ export const CollectionsKpiCards: React.FC<CollectionsKpiCardsProps> = ({ kpis }
             <Clock size={18} color="#F59E0B" />
           </div>
         </div>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            marginTop: '14px',
-            fontSize: '11px',
-            fontWeight: 600,
-            lineHeight: '16px',
-            color: '#166534',
-            fontFamily: "'Inter', sans-serif",
-          }}
-        >
-          <ArrowDownRight size={14} />
-          <span>{Math.abs(kpis.dueSoon.trendPct)}% vs last month</span>
-        </div>
+        {renderTrend(kpis.dueSoon.trendPct)}
       </div>
 
       {/* Card 4: Collected this month */}
@@ -336,22 +318,7 @@ export const CollectionsKpiCards: React.FC<CollectionsKpiCardsProps> = ({ kpis }
             <CreditCard size={18} color="#0284C7" />
           </div>
         </div>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            marginTop: '14px',
-            fontSize: '11px',
-            fontWeight: 600,
-            lineHeight: '16px',
-            color: '#166534',
-            fontFamily: "'Inter', sans-serif",
-          }}
-        >
-          <ArrowUpRight size={14} />
-          <span>{kpis.collectedThisMonth.trendPct}% vs last month</span>
-        </div>
+        {renderTrend(kpis.collectedThisMonth.trendPct)}
       </div>
     </div>
   );

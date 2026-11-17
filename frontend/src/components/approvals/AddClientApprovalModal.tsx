@@ -16,7 +16,7 @@ export const AddClientApprovalModal: React.FC<AddClientApprovalModalProps> = ({
   const [clientName, setClientName] = useState('');
   const [requestType, setRequestType] = useState('Proposal Approval');
   const [referenceId, setReferenceId] = useState('');
-  const [requester, setRequester] = useState('Akshit Ujjain');
+  const [requester, setRequester] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [amount, setAmount] = useState('');
 
@@ -45,7 +45,7 @@ export const AddClientApprovalModal: React.FC<AddClientApprovalModalProps> = ({
       client_name: clientName.trim(),
       request_type: requestType,
       reference_id: referenceId.trim(),
-      requester: requester.trim() || 'Akshit Ujjain',
+      requester: requester.trim(),
       due_date: dueDate || new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
       amount: amount.trim() || '-'
     });

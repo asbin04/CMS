@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, ChevronDown, Download, Plus } from 'lucide-react';
-import { MASTER_PROJECTS, MASTER_EMPLOYEES } from '../../mockData';
+import { Search, ChevronDown, RotateCcw } from 'lucide-react';
 import { projectLookupService } from '../../services/projectLookupService';
 import { ProjectOption, EmployeeOption } from '../../types';
 
@@ -34,8 +33,8 @@ export const TimesheetsFilterBar: React.FC<TimesheetsFilterBarProps> = ({
   onExport,
   onLogTime,
 }) => {
-  const [projectOptions, setProjectOptions] = useState<ProjectOption[]>(MASTER_PROJECTS);
-  const [employeeOptions, setEmployeeOptions] = useState<EmployeeOption[]>(MASTER_EMPLOYEES);
+  const [projectOptions, setProjectOptions] = useState<ProjectOption[]>([]);
+  const [employeeOptions, setEmployeeOptions] = useState<EmployeeOption[]>([]);
 
   useEffect(() => {
     projectLookupService.getProjects().then(setProjectOptions).catch(() => {});

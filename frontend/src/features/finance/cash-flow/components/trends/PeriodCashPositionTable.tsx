@@ -1,6 +1,6 @@
 import React from 'react';
 import { PeriodPositionData } from '../../types';
-import { formatIndianCurrency, MOCK_PERIOD_POSITIONS } from '../../mockData';
+import { formatIndianCurrency } from '../../mockData';
 
 interface PeriodCashPositionTableProps {
   data?: PeriodPositionData[];
@@ -11,7 +11,7 @@ export const PeriodCashPositionTable: React.FC<PeriodCashPositionTableProps> = (
   data,
   positions,
 }) => {
-  const rows = (data && data.length > 0 ? data : positions) || MOCK_PERIOD_POSITIONS;
+  const rows = (data && data.length > 0 ? data : positions) || [];
 
   return (
     <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-col justify-between">
@@ -21,9 +21,9 @@ export const PeriodCashPositionTable: React.FC<PeriodCashPositionTableProps> = (
         </h3>
 
         <div className="overflow-x-auto w-full">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-[550px] whitespace-nowrap">
             <thead>
-              <tr className="border-b border-slate-100 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              <tr className="border-b border-slate-100 text-[11px] font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">
                 <th className="py-2.5 px-3">Period</th>
                 <th className="py-2.5 px-3">Inflows</th>
                 <th className="py-2.5 px-3">Outflows</th>
@@ -32,7 +32,14 @@ export const PeriodCashPositionTable: React.FC<PeriodCashPositionTableProps> = (
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {rows.map((row) => (
+              {rows.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-8 text-center text-xs text-slate-400">
+                    No period cash positions recorded.
+                  </td>
+                </tr>
+              ) : (
+                rows.map((row) => (
                 <tr key={row.period} className="hover:bg-slate-50/60 transition-colors">
                   <td className="py-3 px-3 text-xs font-semibold text-slate-800">
                     {row.period}
@@ -50,7 +57,7 @@ export const PeriodCashPositionTable: React.FC<PeriodCashPositionTableProps> = (
                     {formatIndianCurrency(row.closingCash)}
                   </td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>

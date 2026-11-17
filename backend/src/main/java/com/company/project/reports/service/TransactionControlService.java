@@ -137,8 +137,8 @@ public class TransactionControlService {
                         "Data quality issues",
                         "Client, invoice, or payment records missing required identifiers or non-positive amounts.",
                         "REVIEW",
-                        "Open Data Quality",
-                        "/reports/data-quality",
+                        "Review records",
+                        "/reports/transaction-control",
                         false,
                         "Status",
                         dataQualityRecords

@@ -1,5 +1,6 @@
 import React from 'react';
 import { FileText, RotateCw, Calendar, AlertTriangle } from 'lucide-react';
+import { Skeleton } from '../../../components/ui/Skeleton';
 
 interface AmcRenewalsKpiCardsProps {
   total: number;
@@ -45,7 +46,7 @@ export const AmcRenewalsKpiCards: React.FC<AmcRenewalsKpiCardsProps> = ({
             Total Contracts
           </span>
           <span className="font-bold text-[24px] leading-[30px] text-[#0F172A]">
-            {isLoading ? '...' : total}
+            {isLoading ? <Skeleton variant="text" width={45} height={26} className="rounded" /> : total}
           </span>
         </div>
       </div>
@@ -74,7 +75,7 @@ export const AmcRenewalsKpiCards: React.FC<AmcRenewalsKpiCardsProps> = ({
             Renewal Due (≤ 30 Days)
           </span>
           <span className="font-bold text-[24px] leading-[30px] text-[#0F172A]">
-            {isLoading ? '...' : dueSoon30}
+            {isLoading ? <Skeleton variant="text" width={45} height={26} className="rounded" /> : dueSoon30}
           </span>
         </div>
       </div>
@@ -103,7 +104,7 @@ export const AmcRenewalsKpiCards: React.FC<AmcRenewalsKpiCardsProps> = ({
             Upcoming (31 – 90 Days)
           </span>
           <span className="font-bold text-[24px] leading-[30px] text-[#0F172A]">
-            {isLoading ? '...' : upcoming31to90}
+            {isLoading ? <Skeleton variant="text" width={45} height={26} className="rounded" /> : upcoming31to90}
           </span>
         </div>
       </div>
@@ -132,7 +133,7 @@ export const AmcRenewalsKpiCards: React.FC<AmcRenewalsKpiCardsProps> = ({
             Overdue Renewals
           </span>
           <span className="font-bold text-[24px] leading-[30px] text-[#0F172A]">
-            {isLoading ? '...' : overdue}
+            {isLoading ? <Skeleton variant="text" width={45} height={26} className="rounded" /> : overdue}
           </span>
         </div>
       </div>

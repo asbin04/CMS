@@ -61,8 +61,7 @@ public class ProjectRequirementEntity {
     private String scopeFrozenBy;
 
     @Column(name = "assigned_approver", length = 100)
-    @Builder.Default
-    private String assignedApprover = "Admin – Akshit Ujjain";
+    private String assignedApprover;
 
     @Column(name = "approved_by", length = 100)
     private String approvedBy;

@@ -10,105 +10,166 @@ export const SalesPerformanceCards: React.FC<SalesPerformanceCardsProps> = ({ da
   const { leads, opportunities, proposals, contracts } = data;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full items-stretch">
       {/* 1. Leads Performance */}
-      <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 shadow-2xs flex flex-col transition-all hover:border-slate-300">
-        <div className="flex items-center gap-2 pb-4 text-[#7C3AED]">
-          <Users className="w-4 h-4 stroke-[2.2]" />
-          <h2 className="text-sm font-bold tracking-tight">Leads Performance</h2>
+      <div className="box-border flex flex-col p-4 bg-white border border-[#E2E8F0]/90 rounded-[12px] h-[214px] shadow-none">
+        <div className="flex items-center pb-3 border-b border-[#F1F5F9]">
+          <Users className="w-4 h-4 stroke-[#7C3AED] stroke-[1.8]" />
+          <h2 className="ml-2 font-['Inter'] font-bold text-[14px] leading-5 text-[#6D28D9]">
+            Leads Performance
+          </h2>
         </div>
-        <div className="space-y-3.5 flex-1">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-600 font-normal">Total Leads</span>
-            <span className="text-slate-900 font-bold">{leads.formattedTotalLeads}</span>
+        <div className="flex flex-col gap-2.5 pt-3 flex-1">
+          <div className="flex items-center justify-between">
+            <span className="font-['Inter'] font-normal text-[12px] leading-4 text-[#475569]">
+              Total Leads
+            </span>
+            <span className="font-['Inter'] font-bold text-[12px] leading-4 text-[#0F172A]">
+              {leads.formattedTotalLeads}
+            </span>
           </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-600 font-normal">Open Leads</span>
-            <span className="text-slate-900 font-bold">{leads.formattedOpenLeads}</span>
+          <div className="flex items-center justify-between">
+            <span className="font-['Inter'] font-normal text-[12px] leading-4 text-[#475569]">
+              Open Leads
+            </span>
+            <span className="font-['Inter'] font-bold text-[12px] leading-4 text-[#1E293B]">
+              {leads.formattedOpenLeads}
+            </span>
           </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-600 font-normal">Won Leads</span>
-            <span className="text-slate-900 font-bold">{leads.formattedWonLeads}</span>
+          <div className="flex items-center justify-between">
+            <span className="font-['Inter'] font-normal text-[12px] leading-4 text-[#475569]">
+              Won Leads
+            </span>
+            <span className="font-['Inter'] font-bold text-[12px] leading-4 text-[#1E293B]">
+              {leads.formattedWonLeads}
+            </span>
           </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-600 font-normal">Lead → Won %</span>
-            <span className="text-slate-900 font-bold">{leads.formattedLeadWonPct}</span>
+          <div className="flex items-center justify-between border-t border-[#F8FAFC] pt-1">
+            <span className="font-['Inter'] font-normal text-[12px] leading-4 text-[#475569]">
+              Lead → Won %
+            </span>
+            <span className="font-['Inter'] font-bold text-[12px] leading-4 text-[#0F172A]">
+              {leads.formattedLeadWonPct}
+            </span>
           </div>
         </div>
       </div>
 
       {/* 2. Opportunities Performance */}
-      <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 shadow-2xs flex flex-col transition-all hover:border-slate-300">
-        <div className="flex items-center gap-2 pb-4 text-[#0284C7]">
-          <Target className="w-4 h-4 stroke-[2.2]" />
-          <h2 className="text-sm font-bold tracking-tight leading-tight">
+      <div className="box-border flex flex-col p-4 bg-white border border-[#E2E8F0]/90 rounded-[12px] h-[214px] shadow-none">
+        <div className="flex items-center pb-3 border-b border-[#F1F5F9]">
+          <Target className="w-4 h-4 stroke-[#0284C7] stroke-[1.8]" />
+          <h2 className="ml-2 font-['Inter'] font-bold text-[14px] leading-5 text-[#0369A1]">
             Opportunities Performance
           </h2>
         </div>
-        <div className="space-y-3.5 flex-1">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-600 font-normal">Total Opportunities</span>
-            <span className="text-slate-900 font-bold">{opportunities.formattedTotalOpportunities}</span>
+        <div className="flex flex-col gap-2 pt-3 flex-1">
+          <div className="flex items-center justify-between">
+            <span className="font-['Inter'] font-normal text-[12px] leading-4 text-[#475569]">
+              Total Opportunities
+            </span>
+            <span className="font-['Inter'] font-bold text-[12px] leading-4 text-[#0F172A]">
+              {opportunities.formattedTotalOpportunities}
+            </span>
           </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-600 font-normal">Open Opportunities</span>
-            <span className="text-slate-900 font-bold">{opportunities.formattedOpenOpportunities}</span>
+          <div className="flex items-center justify-between">
+            <span className="font-['Inter'] font-normal text-[12px] leading-4 text-[#475569]">
+              Open Opportunities
+            </span>
+            <span className="font-['Inter'] font-bold text-[12px] leading-4 text-[#0F172A]">
+              {opportunities.formattedOpenOpportunities}
+            </span>
           </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-600 font-normal">Pipeline Value</span>
-            <span className="text-slate-900 font-bold">{opportunities.formattedPipelineValue}</span>
+          <div className="flex items-center justify-between">
+            <span className="font-['Inter'] font-normal text-[12px] leading-4 text-[#475569]">
+              Pipeline Value
+            </span>
+            <span className="font-['Inter'] font-bold text-[12px] leading-4 text-[#1E293B]">
+              {opportunities.formattedPipelineValue}
+            </span>
           </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-600 font-normal">Weighted Pipeline</span>
-            <span className="text-slate-900 font-bold">{opportunities.formattedWeightedPipeline}</span>
+          <div className="flex items-center justify-between">
+            <span className="font-['Inter'] font-normal text-[12px] leading-4 text-[#475569]">
+              Weighted Pipeline
+            </span>
+            <span className="font-['Inter'] font-bold text-[12px] leading-4 text-[#1E293B]">
+              {opportunities.formattedWeightedPipeline}
+            </span>
           </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-600 font-normal">Won Opportunity Value</span>
-            <span className="text-slate-900 font-bold">{opportunities.formattedWonOpportunityValue}</span>
+          <div className="flex items-center justify-between border-t border-[#F8FAFC] pt-0.5">
+            <span className="font-['Inter'] font-normal text-[12px] leading-4 text-[#475569]">
+              Won Opportunity Value
+            </span>
+            <span className="font-['Inter'] font-bold text-[12px] leading-4 text-[#1E293B]">
+              {opportunities.formattedWonOpportunityValue}
+            </span>
           </div>
         </div>
       </div>
 
       {/* 3. Proposal Performance */}
-      <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 shadow-2xs flex flex-col transition-all hover:border-slate-300">
-        <div className="flex items-center gap-2 pb-4 text-[#D97706]">
-          <FileText className="w-4 h-4 stroke-[2.2]" />
-          <h2 className="text-sm font-bold tracking-tight">Proposal Performance</h2>
+      <div className="box-border flex flex-col p-4 bg-white border border-[#E2E8F0]/90 rounded-[12px] h-[214px] shadow-none">
+        <div className="flex items-center pb-3 border-b border-[#F1F5F9]">
+          <FileText className="w-4 h-4 stroke-[#D97706] stroke-[1.8]" />
+          <h2 className="ml-2 font-['Inter'] font-bold text-[14px] leading-5 text-[#B45309]">
+            Proposal Performance
+          </h2>
         </div>
-        <div className="space-y-3.5 flex-1">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-600 font-normal">Total Proposal Value</span>
-            <span className="text-slate-900 font-bold">{proposals.formattedTotalProposalValue}</span>
+        <div className="flex flex-col gap-2.5 pt-3 flex-1">
+          <div className="flex items-center justify-between">
+            <span className="font-['Inter'] font-normal text-[12px] leading-4 text-[#475569]">
+              Total Proposal Value
+            </span>
+            <span className="font-['Inter'] font-bold text-[12px] leading-4 text-[#0F172A]">
+              {proposals.formattedTotalProposalValue}
+            </span>
           </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-600 font-normal">Accepted Proposal Value</span>
-            <span className="text-slate-900 font-bold">{proposals.formattedAcceptedProposalValue}</span>
+          <div className="flex items-center justify-between">
+            <span className="font-['Inter'] font-normal text-[12px] leading-4 text-[#475569]">
+              Accepted Proposal Value
+            </span>
+            <span className="font-['Inter'] font-bold text-[12px] leading-4 text-[#0F172A]">
+              {proposals.formattedAcceptedProposalValue}
+            </span>
           </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-600 font-normal">Proposal Win Rate</span>
-            <span className="text-slate-900 font-bold">{proposals.formattedProposalWinRate}</span>
+          <div className="flex items-center justify-between border-t border-[#F8FAFC] pt-1">
+            <span className="font-['Inter'] font-normal text-[12px] leading-4 text-[#475569]">
+              Proposal Win Rate
+            </span>
+            <span className="font-['Inter'] font-bold text-[12px] leading-4 text-[#0F172A]">
+              {proposals.formattedProposalWinRate}
+            </span>
           </div>
         </div>
       </div>
 
       {/* 4. Contract Performance */}
-      <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 shadow-2xs flex flex-col transition-all hover:border-slate-300">
-        <div className="flex items-center gap-2 pb-4 text-[#16A34A]">
-          <ThumbsUp className="w-4 h-4 stroke-[2.2]" />
-          <h2 className="text-sm font-bold tracking-tight">Contract Performance</h2>
+      <div className="box-border flex flex-col p-4 bg-white border border-[#E2E8F0]/90 rounded-[12px] h-[214px] shadow-none">
+        <div className="flex items-center pb-3 border-b border-[#F1F5F9]">
+          <ThumbsUp className="w-4 h-4 stroke-[#059669] stroke-[1.8]" />
+          <h2 className="ml-2 font-['Inter'] font-bold text-[14px] leading-5 text-[#047857]">
+            Contract Performance
+          </h2>
         </div>
-        <div className="space-y-3.5 flex-1">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-600 font-normal">Active Contracts</span>
-            <span className="text-slate-900 font-bold">{contracts.formattedActiveContracts}</span>
+        <div className="flex flex-col gap-4 pt-3 flex-1">
+          <div className="flex items-center justify-between">
+            <span className="font-['Inter'] font-normal text-[12px] leading-4 text-[#475569]">
+              Active Contracts
+            </span>
+            <span className="font-['Inter'] font-bold text-[12px] leading-4 text-[#0F172A]">
+              {contracts.formattedActiveContracts}
+            </span>
           </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-600 font-normal">Contracted Value</span>
-            <span className="text-slate-900 font-bold">{contracts.formattedContractedValue}</span>
+          <div className="flex items-center justify-between border-t border-[#F8FAFC] pt-2">
+            <span className="font-['Inter'] font-normal text-[12px] leading-4 text-[#475569]">
+              Contracted Value
+            </span>
+            <span className="font-['Inter'] font-bold text-[12px] leading-4 text-[#0F172A]">
+              {contracts.formattedContractedValue}
+            </span>
           </div>
         </div>
       </div>
     </div>
   );
 };
-

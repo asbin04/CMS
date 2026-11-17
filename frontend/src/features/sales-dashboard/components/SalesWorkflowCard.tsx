@@ -12,129 +12,107 @@ import {
 import { WorkflowStageData } from '../types';
 
 interface SalesWorkflowCardProps {
-  stages: WorkflowStageData[];
+  stages?: WorkflowStageData[];
   onNavigateFollowUpQueue: () => void;
 }
 
-interface StageStyleConfig {
-  cardBg: string;
-  cardBorder: string;
-  badgeBg: string;
-  badgeColor: string;
-  icon: React.ReactNode;
-}
-
-const STAGE_CONFIGS: Record<string, StageStyleConfig> = {
-  lead: {
-    cardBg: '#F8F5FF',
-    cardBorder: '#EDE4FF',
-    badgeBg: '#F1E8FE',
-    badgeColor: '#8B5CF6',
-    icon: <Users className="w-4 h-4 stroke-[2.2]" />,
-  },
-  opportunity: {
-    cardBg: '#F0F8FF',
-    cardBorder: '#E1F0FD',
-    badgeBg: '#E2F1FE',
-    badgeColor: '#0284C7',
-    icon: <Target className="w-4 h-4 stroke-[2.2]" />,
-  },
-  proposal: {
-    cardBg: '#FFFDF0',
-    cardBorder: '#FDF0B5',
-    badgeBg: '#FEF3C7',
-    badgeColor: '#D97706',
-    icon: <FileText className="w-4 h-4 stroke-[2.2]" />,
-  },
-  contract: {
-    cardBg: '#F0FBF5',
-    cardBorder: '#D5F5E3',
-    badgeBg: '#D7F7E6',
-    badgeColor: '#059669',
-    icon: <ThumbsUp className="w-4 h-4 stroke-[2.2]" />,
-  },
-};
-
 export const SalesWorkflowCard: React.FC<SalesWorkflowCardProps> = ({
-  stages,
   onNavigateFollowUpQueue,
 }) => {
   return (
-    <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 sm:p-6 shadow-2xs flex flex-col justify-between transition-all hover:border-slate-300 h-full">
-      {/* Card Header with Inbox Tray Icon */}
-      <div className="flex items-center gap-2.5 pb-5 text-slate-900">
-        <Inbox className="w-5 h-5 text-[#4F46E5] stroke-[2.2]" />
-        <h2 className="text-base font-bold tracking-tight text-slate-900">Sales Workflow</h2>
-      </div>
+    <div className="box-border flex flex-col justify-between p-5 bg-white border border-[#E2E8F0]/90 rounded-[12px] h-[335.5px] shadow-none w-full">
+      {/* Top Container */}
+      <div className="flex flex-col gap-2 w-full">
+        {/* Header */}
+        <div className="flex items-center pb-4 text-slate-900 border-b border-[#F1F5F9]/60">
+          <Inbox className="w-5 h-5 stroke-[#4F46E5] stroke-[2]" />
+          <h2 className="ml-2 font-['Inter'] font-bold text-[14px] leading-5 text-[#0F172A]">
+            Sales Workflow
+          </h2>
+        </div>
 
-      {/* Workflow Horizontal Steps */}
-      <div className="flex flex-col md:flex-row items-stretch gap-3 flex-1">
-        {stages.map((stage, idx) => {
-          const config = STAGE_CONFIGS[stage.id] || {
-            cardBg: stage.cardBg?.startsWith('#') ? stage.cardBg : '#F8FAFC',
-            cardBorder: stage.cardBorder?.startsWith('#') ? stage.cardBorder : '#E2E8F0',
-            badgeBg: stage.badgeBg?.startsWith('#') ? stage.badgeBg : '#EEF2FF',
-            badgeColor: stage.badgeText?.startsWith('#') ? stage.badgeText : '#4F46E5',
-            icon: <Users className="w-4 h-4 stroke-[2.2]" />,
-          };
+        {/* Workflow Process Steps Container */}
+        <div className="flex flex-row items-center justify-center gap-2 w-full h-[150.5px]">
+          {/* Step 1: Lead */}
+          <div className="box-border flex-1 h-[150px] min-h-[140px] bg-[#F4F0FF] border border-[#F3E8FF] rounded-[12px] flex flex-col items-center justify-center p-2 text-center transition-all hover:-translate-y-0.5">
+            <div className="w-8 h-8 rounded-full bg-[rgba(233,213,255,0.5)] flex items-center justify-center mb-2 shrink-0">
+              <Users className="w-4 h-4 stroke-[#7E22CE] stroke-[1.8]" />
+            </div>
+            <span className="font-['Inter'] font-bold text-[12px] leading-4 text-[#0F172A] mb-1">
+              Lead
+            </span>
+            <p className="font-['Inter'] font-normal text-[11px] leading-[15px] text-[#64748B] text-center max-w-[150px] px-1">
+              Capture and qualify potential customers.
+            </p>
+          </div>
 
-          const cardBg = stage.cardBg?.startsWith('#') ? stage.cardBg : config.cardBg;
-          const cardBorder = stage.cardBorder?.startsWith('#') ? stage.cardBorder : config.cardBorder;
-          const badgeBg = stage.badgeBg?.startsWith('#') ? stage.badgeBg : config.badgeBg;
-          const badgeColor = stage.badgeText?.startsWith('#') ? stage.badgeText : config.badgeColor;
+          {/* Step Arrow 1 */}
+          <div className="flex items-center justify-center shrink-0">
+            <ArrowRight className="w-3.5 h-3.5 stroke-[#4F46E5] stroke-[1.8]" />
+          </div>
 
-          return (
-            <React.Fragment key={stage.id}>
-              <div
-                className="flex-1 min-w-0 rounded-2xl p-4 sm:p-5 flex flex-col items-center text-center justify-start transition-all hover:-translate-y-0.5"
-                style={{
-                  backgroundColor: cardBg,
-                  borderColor: cardBorder,
-                  borderWidth: '1px',
-                }}
-              >
-                {/* Colored Circle Badge with Stage Icon */}
-                <div
-                  className="w-10 h-10 rounded-full shadow-2xs flex items-center justify-center mb-3 shrink-0"
-                  style={{
-                    backgroundColor: badgeBg,
-                    color: badgeColor,
-                  }}
-                >
-                  {config.icon}
-                </div>
+          {/* Step 2: Opportunity */}
+          <div className="box-border flex-1 h-[150.5px] min-h-[140px] bg-[#F0F6FF] border border-[#E0F2FE] rounded-[12px] flex flex-col items-center justify-center p-2 text-center transition-all hover:-translate-y-0.5">
+            <div className="w-8 h-8 rounded-full bg-[rgba(186,230,253,0.5)] flex items-center justify-center mb-2 shrink-0">
+              <Target className="w-4 h-4 stroke-[#0369A1] stroke-[1.8]" />
+            </div>
+            <span className="font-['Inter'] font-bold text-[12px] leading-4 text-[#0F172A] mb-1">
+              Opportunity
+            </span>
+            <p className="font-['Inter'] font-normal text-[11px] leading-[15px] text-[#64748B] text-center max-w-[150px] px-1">
+              Develop and pursue qualified business opportunities.
+            </p>
+          </div>
 
-                {/* Title & Description */}
-                <h3 className="text-sm font-bold text-slate-900 mb-1.5 tracking-tight truncate w-full">
-                  {stage.title}
-                </h3>
-                <p className="text-xs text-slate-500 leading-relaxed max-w-[155px] break-words">
-                  {stage.description}
-                </p>
-              </div>
+          {/* Step Arrow 2 */}
+          <div className="flex items-center justify-center shrink-0">
+            <ArrowRight className="w-3.5 h-3.5 stroke-[#4F46E5] stroke-[1.8]" />
+          </div>
 
-              {/* Right Arrow between stages */}
-              {idx < stages.length - 1 && (
-                <div className="hidden md:flex items-center justify-center text-[#6366F1] shrink-0 px-0.5 self-center">
-                  <ArrowRight className="w-4 h-4 stroke-[2] text-[#6366F1]" />
-                </div>
-              )}
-            </React.Fragment>
-          );
-        })}
+          {/* Step 3: Proposal */}
+          <div className="box-border flex-1 h-[150.5px] min-h-[140px] bg-[#FFFBEB] border border-[#FEF3C7] rounded-[12px] flex flex-col items-center justify-center p-2 text-center transition-all hover:-translate-y-0.5">
+            <div className="w-8 h-8 rounded-full bg-[rgba(253,230,138,0.5)] flex items-center justify-center mb-2 shrink-0">
+              <FileText className="w-4 h-4 stroke-[#B45309] stroke-[1.8]" />
+            </div>
+            <span className="font-['Inter'] font-bold text-[12px] leading-4 text-[#0F172A] mb-1">
+              Proposal
+            </span>
+            <p className="font-['Inter'] font-normal text-[11px] leading-[15px] text-[#64748B] text-center max-w-[150px] px-1">
+              Create and share commercial proposals with clients.
+            </p>
+          </div>
+
+          {/* Step Arrow 3 */}
+          <div className="flex items-center justify-center shrink-0">
+            <ArrowRight className="w-3.5 h-3.5 stroke-[#4F46E5] stroke-[1.8]" />
+          </div>
+
+          {/* Step 4: Contract */}
+          <div className="box-border flex-1 h-[150px] min-h-[140px] bg-[#ECFDF5] border border-[#D1FAE5] rounded-[12px] flex flex-col items-center justify-center p-2 text-center transition-all hover:-translate-y-0.5">
+            <div className="w-8 h-8 rounded-full bg-[rgba(167,243,208,0.5)] flex items-center justify-center mb-2 shrink-0">
+              <ThumbsUp className="w-4 h-4 stroke-[#047857] stroke-[1.8]" />
+            </div>
+            <span className="font-['Inter'] font-bold text-[12px] leading-4 text-[#0F172A] mb-1">
+              Contract
+            </span>
+            <p className="font-['Inter'] font-normal text-[11px] leading-[15px] text-[#64748B] text-center max-w-[150px] px-1">
+              Convert accepted proposals into active contracts.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Bottom Banner: Daily Sales Activities */}
-      <div className="mt-5 sm:mt-6 bg-[#F8FAFF] border border-[#E9EDFD] rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-xl bg-white border border-[#DCE4FD] flex items-center justify-center text-[#4F46E5] shrink-0 shadow-2xs">
-            <Calendar className="w-5 h-5 stroke-[2] text-[#4F46E5]" />
+      <div className="box-border w-full h-[79px] bg-[rgba(237,233,254,0.45)] border border-[#E0E7FF] rounded-[12px] p-3.5 flex flex-row items-center justify-between gap-3 mt-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="box-border w-10 h-10 bg-[#EEF2FF] border border-[rgba(199,210,254,0.6)] rounded-[8px] flex items-center justify-center shrink-0">
+            <Calendar className="w-5 h-5 stroke-[#4F46E5] stroke-[2]" />
           </div>
-          <div>
-            <h4 className="text-sm font-bold text-slate-900 tracking-tight">
+          <div className="min-w-0 flex flex-col">
+            <h4 className="font-['Inter'] font-bold text-[12px] leading-4 text-[#0F172A] truncate">
               Daily Sales Activities
             </h4>
-            <p className="text-xs text-slate-500 mt-0.5 leading-normal">
+            <p className="font-['Inter'] font-normal text-[11px] leading-4 text-[#64748B] truncate">
               Use the Follow-Up Queue for your daily lead and opportunity follow-ups.
             </p>
           </div>
@@ -143,10 +121,12 @@ export const SalesWorkflowCard: React.FC<SalesWorkflowCardProps> = ({
         <button
           type="button"
           onClick={onNavigateFollowUpQueue}
-          className="h-10 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs shrink-0 self-start sm:self-auto"
+          className="box-border h-8 px-4 bg-[#4F46E5] hover:bg-[#4338CA] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] flex items-center gap-1.5 text-white transition-all cursor-pointer shrink-0"
         >
-          <span>View Follow-Up Queue</span>
-          <ExternalLink className="w-4 h-4 stroke-[2.2] text-white" />
+          <span className="font-['Inter'] font-semibold text-[12px] leading-4 text-white text-center">
+            View Follow-Up Queue
+          </span>
+          <ExternalLink className="w-3.5 h-3.5 stroke-white stroke-[2]" />
         </button>
       </div>
     </div>

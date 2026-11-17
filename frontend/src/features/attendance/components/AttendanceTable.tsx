@@ -279,11 +279,12 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
             borderCollapse: 'collapse',
             textAlign: 'left',
             fontFamily: "'Inter', sans-serif",
+            whiteSpace: 'nowrap',
           }}
         >
           {/* Header Row - Matching Exact Image Headers */}
           <thead>
-            <tr className="h-[42px] bg-[#F8FAFC]/80 border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.55px] select-none">
+            <tr className="h-[42px] bg-[#F8FAFC]/80 border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.55px] select-none whitespace-nowrap">
               <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
                 ATTENDANCE ID
               </th>

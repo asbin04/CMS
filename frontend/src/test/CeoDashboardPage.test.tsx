@@ -12,14 +12,14 @@ describe('CeoDashboardPage Component', () => {
 
   it('renders skeleton loader while loading data', async () => {
     // Hang promise to test loading state
-    vi.spyOn(dashboardService, 'getDashboardData').mockImplementation(() => new Promise(() => {}));
+    vi.spyOn(dashboardService, 'getDashboardData').mockImplementation(() => new Promise(() => { }));
 
     render(
       <BrowserRouter>
         <CeoDashboardPage
           dateRange="Apr 2024 - Mar 2025"
           isEditModalOpen={false}
-          onCloseEditModal={() => {}}
+          onCloseEditModal={() => { }}
         />
       </BrowserRouter>
     );
@@ -39,7 +39,7 @@ describe('CeoDashboardPage Component', () => {
           <CeoDashboardPage
             dateRange="Apr 2024 - Mar 2025"
             isEditModalOpen={false}
-            onCloseEditModal={() => {}}
+            onCloseEditModal={() => { }}
           />
         </BrowserRouter>
       );
@@ -75,7 +75,7 @@ describe('CeoDashboardPage Component', () => {
           <CeoDashboardPage
             dateRange="Apr 2024 - Mar 2025"
             isEditModalOpen={false}
-            onCloseEditModal={() => {}}
+            onCloseEditModal={() => { }}
           />
         </BrowserRouter>
       );
@@ -101,13 +101,14 @@ describe('CeoDashboardPage Component', () => {
           <CeoDashboardPage
             dateRange="Apr 2024 - Mar 2025"
             isEditModalOpen={false}
-            onCloseEditModal={() => {}}
+            onCloseEditModal={() => { }}
           />
         </BrowserRouter>
       );
     });
 
     expect(screen.getByText('Executive CEO Dashboard Live')).toBeInTheDocument();
+    expect(screen.queryByText(/Last Updated:/i)).not.toBeInTheDocument();
   });
 
   it('handles rollback and error toast on failed dashboard update mutation', async () => {
@@ -120,7 +121,7 @@ describe('CeoDashboardPage Component', () => {
           <CeoDashboardPage
             dateRange="Apr 2024 - Mar 2025"
             isEditModalOpen={true}
-            onCloseEditModal={() => {}}
+            onCloseEditModal={() => { }}
           />
         </BrowserRouter>
       );

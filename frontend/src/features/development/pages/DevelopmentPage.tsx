@@ -26,6 +26,7 @@ export const DevelopmentPage: React.FC = () => {
     pageSize,
     totalPages,
     totalElements,
+    isLoading,
     isAddModalOpen,
     isViewModalOpen,
     isEditModalOpen,
@@ -93,7 +94,7 @@ export const DevelopmentPage: React.FC = () => {
         />
 
         {/* 5 KPI Metric Cards */}
-        <DevelopmentKpiCards kpis={kpis} />
+        <DevelopmentKpiCards kpis={kpis} isLoading={isLoading} />
 
         {/* Main Table Card (Search, Filter, Table, Pagination) */}
         <div className="bg-white rounded-2xl border border-[#DCE3ED] shadow-2xs overflow-hidden">
@@ -115,6 +116,7 @@ export const DevelopmentPage: React.FC = () => {
 
           {/* Table */}
           <DevelopmentTable
+            isLoading={isLoading}
             records={paginatedRecords}
             onViewDetails={openViewModal}
             onEdit={openEditModal}

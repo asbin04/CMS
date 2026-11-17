@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Receipt, Download, Plus } from 'lucide-react';
+import { Receipt, Plus } from 'lucide-react';
 import { ReloadButton } from '../../../components/ui/ReloadButton';
+import { ExportButton } from '../../../components/ui/ExportButton';
 
 interface InvoicesHeaderProps {
   onRefresh?: () => void;
@@ -53,20 +54,11 @@ export const InvoicesHeader: React.FC<InvoicesHeaderProps> = ({
             onClick={handleRefreshClick}
             isRefreshing={isRefreshing}
             title="Refresh invoices"
-            className="p-1.5 rounded-[12px] text-[#64748B] hover:text-[#0F172A] hover:bg-slate-50 transition-colors cursor-pointer border border-[#E2E8F0] bg-[#FFFFFF]"
           />
         </div>
 
         {/* Export Button (Secondary) */}
-        <button
-          type="button"
-          onClick={onExport}
-          className="inline-flex items-center gap-2 px-3.5 py-2 bg-[#FFFFFF] hover:bg-slate-50 active:bg-slate-100 border border-[#E2E8F0] text-slate-700 text-xs font-semibold leading-4 rounded-[12px] shadow-2xs transition-colors cursor-pointer h-[38px]"
-          style={{ border: '1px solid #E2E8F0', borderRadius: '12px', background: '#FFFFFF' }}
-        >
-          <Download className="w-4 h-4 text-slate-600 stroke-[2]" />
-          <span>Export</span>
-        </button>
+        <ExportButton onClick={onExport} />
 
         {/* Primary + Create Invoice Button */}
         <button

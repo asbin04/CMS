@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import { ReportsFinanceDashboardPage } from '../features/reports/pages/ReportsFinanceDashboardPage';
+import { ReportsFinanceDashboardPage } from '../features/finance/pages/FinanceDashboardPage';
 import { financeService } from '../features/finance/services/financeService';
 import { invoicesApiService } from '../features/invoices/invoicesApiService';
 import { paymentsService } from '../features/finance/payments/services/paymentsService';
@@ -204,6 +204,23 @@ describe('ReportsFinanceDashboardPage', () => {
 
     render(
       <MemoryRouter initialEntries={['/reports/finance-dashboard']}>
+        <AppRouter />
+      </MemoryRouter>
+    );
+
+    expect(
+      await screen.findByRole('heading', { level: 2, name: 'Finance Dashboard' }, { timeout: 5000 })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Track invoices, collections, receivables, expenses and cash position.')
+    ).toBeInTheDocument();
+  });
+
+  it('routes to ReportsFinanceDashboardPage from /finance/dashboard in Finance module', async () => {
+    localStorage.setItem('auth_token', 'mock-token');
+
+    render(
+      <MemoryRouter initialEntries={['/finance/dashboard']}>
         <AppRouter />
       </MemoryRouter>
     );

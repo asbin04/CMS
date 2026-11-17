@@ -18,7 +18,6 @@ import {
   ClientOption,
   EmployeeOption,
 } from '../../types';
-import { MASTER_PROJECTS, MASTER_CLIENTS, MASTER_EMPLOYEES } from '../../mockData';
 import { projectLookupService } from '../../services/projectLookupService';
 import { formatDateForInput, formatDateForDisplay } from '../../utils/formatters';
 
@@ -35,27 +34,27 @@ export const AddRequirementModal: React.FC<AddRequirementModalProps> = ({
   onSave,
   nextId,
 }) => {
-  const [projectOptions, setProjectOptions] = useState<ProjectOption[]>(MASTER_PROJECTS);
-  const [clientOptions, setClientOptions] = useState<ClientOption[]>(MASTER_CLIENTS);
-  const [employeeOptions, setEmployeeOptions] = useState<EmployeeOption[]>(MASTER_EMPLOYEES);
+  const [projectOptions, setProjectOptions] = useState<ProjectOption[]>([]);
+  const [clientOptions, setClientOptions] = useState<ClientOption[]>([]);
+  const [employeeOptions, setEmployeeOptions] = useState<EmployeeOption[]>([]);
 
-  const [requirementIdDisplay, setRequirementIdDisplay] = useState(nextId || 'REQ-2026-0187');
-  const [projectId, setProjectId] = useState('PRJ-005');
-  const [clientId, setClientId] = useState('CL-006');
-  const [requirementDate, setRequirementDate] = useState('2026-10-29');
+  const [requirementIdDisplay, setRequirementIdDisplay] = useState(nextId || '');
+  const [projectId, setProjectId] = useState('');
+  const [clientId, setClientId] = useState('');
+  const [requirementDate, setRequirementDate] = useState(formatDateForInput(new Date()));
   const [type, setType] = useState('Feature');
   const [requirementFeature, setRequirementFeature] = useState('');
   const [priority, setPriority] = useState<RequirementPriority>('High');
   const [scopeFreeze, setScopeFreeze] = useState<BillableOption>('Yes');
 
-  const [ownerId, setOwnerId] = useState('EMP-004');
+  const [ownerId, setOwnerId] = useState('');
   const [status, setStatus] = useState<RequirementStatus>('In Progress');
-  const [assignedApprover, setAssignedApprover] = useState('Admin – Akshit Ujjain');
-  const [approvedBy, setApprovedBy] = useState('EMP-007');
-  const [approvalDate, setApprovalDate] = useState('2026-10-28');
-  const [completionPercentage, setCompletionPercentage] = useState<number | string>(55);
+  const [assignedApprover, setAssignedApprover] = useState('');
+  const [approvedBy, setApprovedBy] = useState('');
+  const [approvalDate, setApprovalDate] = useState(formatDateForInput(new Date()));
+  const [completionPercentage, setCompletionPercentage] = useState<number | string>(0);
 
-  const [notes, setNotes] = useState('Approved for development. UI changes will be shared by the design team.');
+  const [notes, setNotes] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -97,36 +96,32 @@ export const AddRequirementModal: React.FC<AddRequirementModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      setRequirementIdDisplay(nextId || 'REQ-2026-0187');
-      const hasPrj005 = projectOptions.some((p) => p.id === 'PRJ-005');
-      const defProj = hasPrj005 ? 'PRJ-005' : (projectOptions[0]?.id || 'PRJ-001');
+      setRequirementIdDisplay(nextId || '');
+      const defProj = projectOptions[0]?.id || '';
       setProjectId(defProj);
 
       const matchedProj = projectOptions.find((p) => p.id === defProj);
       if (matchedProj?.clientId) {
         setClientId(matchedProj.clientId);
       } else {
-        const hasCl006 = clientOptions.some((c) => c.id === 'CL-006');
-        setClientId(hasCl006 ? 'CL-006' : (clientOptions[0]?.id || 'CL-001'));
+        setClientId(clientOptions[0]?.id || '');
       }
 
-      setRequirementDate('2026-10-29');
+      setRequirementDate(formatDateForInput(new Date()));
       setType('Feature');
       setRequirementFeature('');
       setPriority('High');
       setScopeFreeze('Yes');
 
-      const hasEmp004 = employeeOptions.some((e) => e.id === 'EMP-004');
-      setOwnerId(hasEmp004 ? 'EMP-004' : (employeeOptions[0]?.id || 'EMP-001'));
+      setOwnerId(employeeOptions[0]?.id || '');
       setStatus('In Progress');
-      setAssignedApprover('Admin – Akshit Ujjain');
+      setAssignedApprover('');
 
-      const hasEmp007 = employeeOptions.some((e) => e.id === 'EMP-007');
-      setApprovedBy(hasEmp007 ? 'EMP-007' : (employeeOptions[1]?.id || 'EMP-002'));
-      setApprovalDate('2026-10-28');
-      setCompletionPercentage(55);
+      setApprovedBy(employeeOptions[1]?.id || employeeOptions[0]?.id || '');
+      setApprovalDate(formatDateForInput(new Date()));
+      setCompletionPercentage(0);
 
-      setNotes('Approved for development. UI changes will be shared by the design team.');
+      setNotes('');
       setError(null);
       setIsSubmitting(false);
     }
@@ -187,7 +182,7 @@ export const AddRequirementModal: React.FC<AddRequirementModalProps> = ({
       scopeFreeze,
       assignedApprover,
       completionPercentage: status === 'Completed' ? 100 : completionNum,
-      approvedBy: status === 'Completed' ? (assignedApprover.includes('Gaurav') ? 'Gaurav Tripathy' : 'Akshit Ujjain') : undefined,
+      approvedBy: status === 'Completed' ? (assignedApprover.includes('Gaurav') ? '' : '') : undefined,
       approvalDate: status === 'Completed' ? formatDateForInput(new Date()) : undefined,
     };
 
@@ -536,7 +531,7 @@ export const AddRequirementModal: React.FC<AddRequirementModalProps> = ({
                     onChange={(e) => setAssignedApprover(e.target.value)}
                     className="w-full h-[30px] px-2.5 bg-white border border-[#CBD5E1] rounded-[8px] text-xs font-normal text-[#0F172A] focus:outline-none focus:ring-1 focus:ring-[#4F46E5] appearance-none pr-7 cursor-pointer"
                   >
-                    <option value="Admin – Akshit Ujjain">Admin – Akshit Ujjain</option>
+                    <option value="">Admin – Akshit Ujjain</option>
                     <option value="MD – Gaurav Tripathy">MD – Gaurav Tripathy</option>
                   </select>
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />

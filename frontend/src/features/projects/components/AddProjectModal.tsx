@@ -19,8 +19,8 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
 }) => {
   const [projectCode, setProjectCode] = useState('');
   const [projectName, setProjectName] = useState('');
-  const [clientId, setClientId] = useState(clientOptions[0] || 'CL-001');
-  const [projectManager, setProjectManager] = useState(managerOptions[0] || 'Amit Sharma');
+  const [clientId, setClientId] = useState(clientOptions[0] || '');
+  const [projectManager, setProjectManager] = useState(managerOptions[0] || '');
   const [startDate, setStartDate] = useState('');
   const [plannedEndDate, setPlannedEndDate] = useState('');
   const [status, setStatus] = useState('In Progress');
@@ -242,7 +242,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
                 type="text"
                 value={projectManager}
                 onChange={(e) => setProjectManager(e.target.value)}
-                placeholder="e.g. Amit Sharma"
+                placeholder="Enter project manager name"
                 required
                 style={{
                   boxSizing: 'border-box',

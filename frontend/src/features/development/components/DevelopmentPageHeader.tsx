@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Code2, Download, Plus } from 'lucide-react';
+import { Code2, Plus } from 'lucide-react';
 import { ReloadButton } from '../../../components/ui/ReloadButton';
+import { ExportButton } from '../../../components/ui/ExportButton';
 
 interface DevelopmentPageHeaderProps {
   onRefresh?: () => void;
@@ -51,14 +52,7 @@ export const DevelopmentPageHeader: React.FC<DevelopmentPageHeaderProps> = ({
           />
         </div>
 
-        <button
-          type="button"
-          onClick={onExport}
-          className="px-3.5 py-1.5 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-semibold shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer h-[36px]"
-        >
-          <Download className="w-3.5 h-3.5 text-slate-500" />
-          <span>Export</span>
-        </button>
+        <ExportButton onClick={onExport} />
 
         <button
           type="button"
