@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, ChevronDown, RotateCcw } from 'lucide-react';
+import { Search, ChevronDown, RotateCcw, Download, Plus } from 'lucide-react';
 import { projectLookupService } from '../../services/projectLookupService';
 import { ProjectOption, EmployeeOption } from '../../types';
 

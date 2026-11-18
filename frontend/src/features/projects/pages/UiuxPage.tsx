@@ -309,7 +309,7 @@ export const UiuxPage: React.FC = () => {
             <RefreshCw size={15} color="#64748B" className={isLoading ? 'animate-spin' : ''} />
           </button>
         </div>
-      )}
+      </div>
 
       {/* Section - KPI Metric Cards */}
       <UiuxKpiCards kpis={kpis} isLoading={isLoading} />

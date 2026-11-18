@@ -15,6 +15,7 @@ export const CalendarDateRangePicker: React.FC<CalendarDateRangePickerProps> = (
   onChange,
   isOpen,
   onClose,
+  align = 'auto',
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [computedAlign, setComputedAlign] = useState<'left' | 'right'>(

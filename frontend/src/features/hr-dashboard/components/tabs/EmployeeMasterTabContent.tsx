@@ -14,6 +14,7 @@ import { employeeService } from '@/services/employeeService';
 import { AddEmployeeModal } from '@/features/hr/components/AddEmployeeModal';
 import { EmployeeDetailModal } from '@/features/hr/components/EmployeeDetailModal';
 import { StatusDropdownMenu, StatusItemConfig } from '@/components/ui/StatusDropdownMenu';
+import { TableActionMenu } from '@/components/ui/TableActionMenu';
 import { Skeleton } from '@/components/ui/Skeleton';
 
 export const EMPLOYEE_STATUS_CONFIGS: StatusItemConfig[] = [
