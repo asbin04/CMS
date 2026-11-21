@@ -2,7 +2,7 @@ import React from 'react';
 import { RotateCw } from 'lucide-react';
 
 export interface ReloadButtonProps {
-  onClick: () => void;
+  onClick?: () => void;
   isRefreshing?: boolean;
   disabled?: boolean;
   title?: string;

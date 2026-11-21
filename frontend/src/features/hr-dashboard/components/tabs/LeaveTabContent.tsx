@@ -11,6 +11,7 @@ import { masterDataService } from '@/services/masterDataService';
 import { LeaveTable } from '@/features/leave/components/LeaveTable';
 import { LeaveDetailModal } from '@/features/leave/components/LeaveDetailModal';
 import { AddLeaveModal } from '@/features/leave/components/AddLeaveModal';
+import { getCurrentApproverName } from '@/utils/approverUtils';
 
 export interface LeaveTabContentProps {
   initialApprovalFilter?: string;
@@ -169,19 +170,20 @@ export const LeaveTabContent: React.FC<LeaveTabContentProps> = ({
   }, [filteredLeaves, currentPage, pageSize]);
 
   // Approval handlers
-  const handleApprove = async (id: string) => {
+  const handleApprove = async (id: string, approverName?: string) => {
+    const finalApprover = approverName || getCurrentApproverName();
     try {
-      await leaveService.updateLeave(id, { approvalStatus: 'Approved', leaveStatus: 'Approved' });
+      await leaveService.updateLeave(id, { approvalStatus: 'Approved', leaveStatus: 'Approved', approvedBy: finalApprover });
       setLeaves((prev) =>
         prev.map((l) =>
-          l.id === id ? { ...l, approvalStatus: 'Approved', leaveStatus: 'Approved' } : l
+          l.id === id ? { ...l, approvalStatus: 'Approved', leaveStatus: 'Approved', approvedBy: finalApprover } : l
         )
       );
     } catch {
       // Local fallback update
       setLeaves((prev) =>
         prev.map((l) =>
-          l.id === id ? { ...l, approvalStatus: 'Approved', leaveStatus: 'Approved' } : l
+          l.id === id ? { ...l, approvalStatus: 'Approved', leaveStatus: 'Approved', approvedBy: finalApprover } : l
         )
       );
     } finally {
@@ -189,19 +191,20 @@ export const LeaveTabContent: React.FC<LeaveTabContentProps> = ({
     }
   };
 
-  const handleReject = async (id: string) => {
+  const handleReject = async (id: string, approverName?: string) => {
+    const finalApprover = approverName || getCurrentApproverName();
     try {
-      await leaveService.updateLeave(id, { approvalStatus: 'Rejected', leaveStatus: 'Rejected' });
+      await leaveService.updateLeave(id, { approvalStatus: 'Rejected', leaveStatus: 'Rejected', approvedBy: finalApprover });
       setLeaves((prev) =>
         prev.map((l) =>
-          l.id === id ? { ...l, approvalStatus: 'Rejected', leaveStatus: 'Rejected' } : l
+          l.id === id ? { ...l, approvalStatus: 'Rejected', leaveStatus: 'Rejected', approvedBy: finalApprover } : l
         )
       );
     } catch {
       // Local fallback update
       setLeaves((prev) =>
         prev.map((l) =>
-          l.id === id ? { ...l, approvalStatus: 'Rejected', leaveStatus: 'Rejected' } : l
+          l.id === id ? { ...l, approvalStatus: 'Rejected', leaveStatus: 'Rejected', approvedBy: finalApprover } : l
         )
       );
     } finally {
@@ -229,6 +232,11 @@ export const LeaveTabContent: React.FC<LeaveTabContentProps> = ({
       const payload: any = { [field]: newStatus };
       if (field === 'approvalStatus') {
         payload.leaveStatus = newStatus;
+        if (newStatus === 'Approved') {
+          payload.approvedBy = getCurrentApproverName();
+        } else if (newStatus === 'Pending') {
+          payload.approvedBy = '-';
+        }
       }
       await leaveService.updateLeave(id, payload);
       setLeaves((prev) =>
@@ -238,6 +246,11 @@ export const LeaveTabContent: React.FC<LeaveTabContentProps> = ({
       const payload: any = { [field]: newStatus };
       if (field === 'approvalStatus') {
         payload.leaveStatus = newStatus;
+        if (newStatus === 'Approved') {
+          payload.approvedBy = getCurrentApproverName();
+        } else if (newStatus === 'Pending') {
+          payload.approvedBy = '-';
+        }
       }
       setLeaves((prev) =>
         prev.map((l) => (l.id === id ? { ...l, ...payload } : l))

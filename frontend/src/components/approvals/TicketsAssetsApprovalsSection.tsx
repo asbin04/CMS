@@ -4,13 +4,14 @@ import {
   Search,
   Calendar,
   RotateCcw,
-  Download,
   ChevronDown,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
+import { ExportButton } from '../ui/ExportButton';
 import { TicketAssetApproval, ApprovalStatus } from '../../types/approvals';
 import { DetailItemType } from './ApprovalDetailModal';
+import { TablePagination } from '../ui/TablePagination';
 
 interface TicketsAssetsApprovalsSectionProps {
   approvals: TicketAssetApproval[];
@@ -202,19 +203,13 @@ export const TicketsAssetsApprovalsSection: React.FC<TicketsAssetsApprovalsSecti
               />
             </div>
 
-            <button
-              onClick={handleExport}
-              className="box-border flex flex-row items-center justify-center px-4 h-[40px] gap-1.5 bg-white border border-[#E2E8F0] hover:bg-slate-50 text-[#334155] rounded-xl text-xs sm:text-[13px] font-semibold transition-colors cursor-pointer shadow-2xs shrink-0"
-            >
-              <Download size={15} className="text-[#64748B]" />
-              <span>Export</span>
-            </button>
+            <ExportButton onClick={handleExport} />
           </div>
 
-          {/* Filters Row 1 */}
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2.5 text-xs">
+          {/* Filters: Single row with compact boxes */}
+          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-xs">
             {/* Record Type */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1 shrink-0">
               <span className="text-[#64748B] font-medium text-xs whitespace-nowrap">Record Type</span>
               <div className="relative">
                 <select
@@ -223,21 +218,21 @@ export const TicketsAssetsApprovalsSection: React.FC<TicketsAssetsApprovalsSecti
                     setSelectedRecordType(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="h-[30px] px-2 pr-7 bg-white border border-[#E2E8F0] rounded-lg text-xs text-[#334155] font-medium outline-none appearance-none cursor-pointer hover:border-slate-300"
+                  className="h-[28px] pl-2 pr-5 bg-white border border-[#E2E8F0] rounded-md text-[11px] text-[#334155] font-medium outline-none appearance-none cursor-pointer hover:border-slate-300"
                 >
                   <option value="All">All</option>
                   <option value="Ticket">Ticket</option>
                   <option value="Asset">Asset</option>
                 </select>
                 <ChevronDown
-                  size={13}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[#6B7280] pointer-events-none"
+                  size={12}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#6B7280] pointer-events-none"
                 />
               </div>
             </div>
 
             {/* Approval Type */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1 shrink-0">
               <span className="text-[#64748B] font-medium text-xs whitespace-nowrap">Approval Type</span>
               <div className="relative">
                 <select
@@ -246,7 +241,8 @@ export const TicketsAssetsApprovalsSection: React.FC<TicketsAssetsApprovalsSecti
                     setSelectedApprovalType(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="h-[30px] px-2.5 pr-7 bg-white border border-[#E2E8F0] rounded-lg text-xs text-[#334155] font-medium outline-none appearance-none cursor-pointer hover:border-slate-300"
+                  className="h-[28px] pl-2 pr-5 w-[76px] bg-white border border-[#E2E8F0] rounded-md text-[11px] text-[#334155] font-medium outline-none appearance-none cursor-pointer hover:border-slate-300 truncate"
+                  title={selectedApprovalType}
                 >
                   <option value="All">All</option>
                   <option value="Escalation">Escalation</option>
@@ -256,14 +252,14 @@ export const TicketsAssetsApprovalsSection: React.FC<TicketsAssetsApprovalsSecti
                   <option value="Asset Renewal Approval">Asset Renewal Approval</option>
                 </select>
                 <ChevronDown
-                  size={13}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[#6B7280] pointer-events-none"
+                  size={12}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#6B7280] pointer-events-none"
                 />
               </div>
             </div>
 
             {/* Status */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1 shrink-0">
               <span className="text-[#64748B] font-medium text-xs whitespace-nowrap">Status</span>
               <div className="relative">
                 <select
@@ -272,7 +268,7 @@ export const TicketsAssetsApprovalsSection: React.FC<TicketsAssetsApprovalsSecti
                     setSelectedStatus(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="h-[30px] px-2.5 pr-7 bg-white border border-[#E2E8F0] rounded-lg text-xs text-[#334155] font-medium outline-none appearance-none cursor-pointer hover:border-slate-300"
+                  className="h-[28px] pl-2 pr-5 bg-white border border-[#E2E8F0] rounded-md text-[11px] text-[#334155] font-medium outline-none appearance-none cursor-pointer hover:border-slate-300"
                 >
                   <option value="All">All</option>
                   <option value="Pending">Pending</option>
@@ -280,14 +276,14 @@ export const TicketsAssetsApprovalsSection: React.FC<TicketsAssetsApprovalsSecti
                   <option value="Rejected">Rejected</option>
                 </select>
                 <ChevronDown
-                  size={13}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[#6B7280] pointer-events-none"
+                  size={12}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#6B7280] pointer-events-none"
                 />
               </div>
             </div>
 
             {/* Priority */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1 shrink-0">
               <span className="text-[#64748B] font-medium text-xs whitespace-nowrap">Priority</span>
               <div className="relative">
                 <select
@@ -296,7 +292,7 @@ export const TicketsAssetsApprovalsSection: React.FC<TicketsAssetsApprovalsSecti
                     setSelectedPriority(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="h-[30px] px-2 pr-7 bg-white border border-[#E2E8F0] rounded-lg text-xs text-[#334155] font-medium outline-none appearance-none cursor-pointer hover:border-slate-300"
+                  className="h-[28px] pl-2 pr-5 bg-white border border-[#E2E8F0] rounded-md text-[11px] text-[#334155] font-medium outline-none appearance-none cursor-pointer hover:border-slate-300"
                 >
                   <option value="All">All</option>
                   <option value="High">High</option>
@@ -304,29 +300,26 @@ export const TicketsAssetsApprovalsSection: React.FC<TicketsAssetsApprovalsSecti
                   <option value="Low">Low</option>
                 </select>
                 <ChevronDown
-                  size={13}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[#6B7280] pointer-events-none"
+                  size={12}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#6B7280] pointer-events-none"
                 />
               </div>
             </div>
 
             {/* Date Range */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1 shrink-0">
               <span className="text-[#64748B] font-medium text-xs whitespace-nowrap">Date Range</span>
               <button
                 type="button"
-                className="h-[30px] px-2.5 flex items-center gap-2 bg-white border border-[#E2E8F0] rounded-lg text-xs text-[#64748B] hover:border-slate-300 transition-colors whitespace-nowrap"
+                className="h-[28px] px-2 flex items-center gap-1.5 bg-white border border-[#E2E8F0] rounded-md text-[11px] text-[#64748B] hover:border-slate-300 transition-colors whitespace-nowrap"
               >
-                <Calendar size={13} className="text-[#94A3B8]" />
+                <Calendar size={12} className="text-[#94A3B8]" />
                 <span>Select date range</span>
               </button>
             </div>
-          </div>
 
-          {/* Filters Row 2: Assigned Approver & Clear Filters */}
-          <div className="flex items-center gap-3 text-xs">
             {/* Assigned Approver */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1 shrink-0">
               <span className="text-[#64748B] font-medium text-xs whitespace-nowrap">Assigned Approver</span>
               <div className="relative">
                 <select
@@ -335,7 +328,8 @@ export const TicketsAssetsApprovalsSection: React.FC<TicketsAssetsApprovalsSecti
                     setSelectedApprover(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="h-[30px] px-2.5 pr-7 bg-white border border-[#E2E8F0] rounded-lg text-xs text-[#334155] font-medium outline-none appearance-none cursor-pointer hover:border-slate-300"
+                  className="h-[28px] pl-2 pr-5 w-[76px] bg-white border border-[#E2E8F0] rounded-md text-[11px] text-[#334155] font-medium outline-none appearance-none cursor-pointer hover:border-slate-300 truncate"
+                  title={selectedApprover}
                 >
                   <option value="All">All</option>
                   <option value="Akshit Ujjain">Akshit Ujjain</option>
@@ -344,8 +338,8 @@ export const TicketsAssetsApprovalsSection: React.FC<TicketsAssetsApprovalsSecti
                   <option value="Sneha K">Sneha K</option>
                 </select>
                 <ChevronDown
-                  size={13}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[#6B7280] pointer-events-none"
+                  size={12}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#6B7280] pointer-events-none"
                 />
               </div>
             </div>
@@ -353,9 +347,9 @@ export const TicketsAssetsApprovalsSection: React.FC<TicketsAssetsApprovalsSecti
             {/* Clear Filters */}
             <button
               onClick={handleClearFilters}
-              className="flex items-center gap-1.5 px-2 py-1 text-xs font-semibold text-[#2563EB] hover:text-blue-800 transition-colors"
+              className="flex items-center gap-1 px-1.5 py-1 text-xs font-semibold text-[#2563EB] hover:text-blue-800 transition-colors shrink-0 cursor-pointer ml-auto"
             >
-              <RotateCcw size={13} className="text-[#2563EB]" />
+              <RotateCcw size={12} className="text-[#2563EB]" />
               <span>Clear Filters</span>
             </button>
           </div>
@@ -364,9 +358,9 @@ export const TicketsAssetsApprovalsSection: React.FC<TicketsAssetsApprovalsSecti
 
       {/* Table Container */}
       <div className="w-full overflow-x-auto custom-scrollbar">
-        <table className="w-full text-left border-collapse min-w-[1150px]">
+        <table className="w-full text-left border-collapse min-w-[1150px] whitespace-nowrap">
           <thead>
-            <tr className="bg-[#F8FAFC]/75 border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.55px]">
+            <tr className="bg-[#F8FAFC]/75 border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.55px] whitespace-nowrap">
               <th className="py-3 px-4">APPROVAL ID</th>
               <th className="py-3 px-4">RECORD TYPE</th>
               <th className="py-3 px-4">TICKET/ASSET ID</th>
@@ -539,62 +533,18 @@ export const TicketsAssetsApprovalsSection: React.FC<TicketsAssetsApprovalsSecti
       </div>
 
       {/* Table Footer / Pagination */}
-      <div className="box-border flex flex-row flex-wrap items-center justify-between p-3 px-5 w-full border-t border-[#F1F5F9] gap-3 text-xs text-[#64748B]">
-        <span>Showing 1 – {Math.min(pageSize, displayItems.length)} of {totalItems} requests</span>
-
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-              className="w-6 h-6 flex items-center justify-center border border-[#E2E8F0] rounded hover:bg-slate-100 disabled:opacity-40 transition-colors"
-            >
-              <ChevronLeft size={13} className="text-[#94A3B8]" />
-            </button>
-
-            {[1, 2, 3, 4, 5].map((pageNum) => (
-              <button
-                key={pageNum}
-                onClick={() => setCurrentPage(pageNum)}
-                className={`w-7 h-7 flex items-center justify-center rounded text-xs transition-colors ${
-                  currentPage === pageNum
-                    ? 'bg-[#4F46E5] text-white font-semibold'
-                    : 'border border-[#E2E8F0] text-[#475569] hover:bg-slate-100 font-medium'
-                }`}
-              >
-                {pageNum}
-              </button>
-            ))}
-
-            <button
-              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-              disabled={currentPage >= totalPages}
-              className="w-6 h-6 flex items-center justify-center border border-[#E2E8F0] rounded hover:bg-slate-100 disabled:opacity-40 transition-colors"
-            >
-              <ChevronRight size={13} className="text-[#475569]" />
-            </button>
-          </div>
-
-          <div className="relative">
-            <select
-              value={pageSize}
-              onChange={(e) => {
-                setPageSize(Number(e.target.value));
-                setCurrentPage(1);
-              }}
-              className="h-[26px] px-2 pr-6 bg-white border border-[#E2E8F0] rounded text-xs text-[#475569] font-medium outline-none appearance-none cursor-pointer"
-            >
-              <option value={5}>5 per page</option>
-              <option value={10}>10 per page</option>
-              <option value={20}>20 per page</option>
-            </select>
-            <ChevronDown
-              size={12}
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#6B7280] pointer-events-none"
-            />
-          </div>
-        </div>
-      </div>
+      <TablePagination
+        currentPage={currentPage}
+        totalItems={totalItems}
+        pageSize={pageSize}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={(newSize) => {
+          setPageSize(newSize);
+          setCurrentPage(1);
+        }}
+        pageSizeOptions={[5, 10, 20]}
+        itemLabel="requests"
+      />
     </div>
   );
 };

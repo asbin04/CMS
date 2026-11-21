@@ -1,12 +1,14 @@
 import React from 'react';
 import { Clock, CheckCircle2, Briefcase, UserCheck } from 'lucide-react';
+import { Skeleton } from '../../../../components/ui/Skeleton';
 import { TimesheetKpis } from '../../types';
 
 interface TimesheetsKpiCardsProps {
   kpis: TimesheetKpis;
+  isLoading?: boolean;
 }
 
-export const TimesheetsKpiCards: React.FC<TimesheetsKpiCardsProps> = ({ kpis }) => {
+export const TimesheetsKpiCards: React.FC<TimesheetsKpiCardsProps> = ({ kpis, isLoading = false }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Card 1: Total Hours */}
@@ -17,7 +19,7 @@ export const TimesheetsKpiCards: React.FC<TimesheetsKpiCardsProps> = ({ kpis }) 
         <div>
           <span className="block text-xs font-medium text-slate-500">Total Hours</span>
           <span className="block text-xl font-bold text-slate-900 leading-tight mt-0.5">
-            {kpis.totalHours}
+            {isLoading ? <Skeleton variant="text" width={45} height={22} /> : kpis.totalHours}
           </span>
           <span className="block text-[11px] font-medium text-[#10B981] mt-1">
             {kpis.totalHoursTrend}
@@ -33,7 +35,7 @@ export const TimesheetsKpiCards: React.FC<TimesheetsKpiCardsProps> = ({ kpis }) 
         <div>
           <span className="block text-xs font-medium text-slate-500">Billable Hours</span>
           <span className="block text-xl font-bold text-slate-900 leading-tight mt-0.5">
-            {kpis.billableHours}
+            {isLoading ? <Skeleton variant="text" width={45} height={22} /> : kpis.billableHours}
           </span>
           <span className="block text-[11px] font-medium text-[#10B981] mt-1">
             {kpis.billableHoursTrend}
@@ -49,7 +51,7 @@ export const TimesheetsKpiCards: React.FC<TimesheetsKpiCardsProps> = ({ kpis }) 
         <div>
           <span className="block text-xs font-medium text-slate-500">Billable Amount</span>
           <span className="block text-xl font-bold text-slate-900 leading-tight mt-0.5">
-            {kpis.billableAmount}
+            {isLoading ? <Skeleton variant="text" width={75} height={22} /> : kpis.billableAmount}
           </span>
           <span className="block text-[11px] font-medium text-[#10B981] mt-1">
             {kpis.billableAmountTrend}
@@ -65,7 +67,7 @@ export const TimesheetsKpiCards: React.FC<TimesheetsKpiCardsProps> = ({ kpis }) 
         <div>
           <span className="block text-xs font-medium text-slate-500">Pending Approvals</span>
           <span className="block text-xl font-bold text-slate-900 leading-tight mt-0.5">
-            {kpis.pendingApprovals}
+            {isLoading ? <Skeleton variant="text" width={40} height={22} /> : kpis.pendingApprovals}
           </span>
           <span className="block text-[11px] font-medium text-[#EF4444] mt-1">
             {kpis.pendingApprovalsTrend}

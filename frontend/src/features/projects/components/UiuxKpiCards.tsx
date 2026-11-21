@@ -1,5 +1,6 @@
 import React from 'react';
 import { ShoppingBag, Edit3, CheckCircle2, RotateCcw, Clock } from 'lucide-react';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { UiuxKpis } from '../types/uiux';
 
 interface UiuxKpiCardsProps {
@@ -7,7 +8,7 @@ interface UiuxKpiCardsProps {
   isLoading?: boolean;
 }
 
-export const UiuxKpiCards: React.FC<UiuxKpiCardsProps> = ({ kpis }) => {
+export const UiuxKpiCards: React.FC<UiuxKpiCardsProps> = ({ kpis, isLoading = false }) => {
   const cards = [
     {
       id: 'total-designs',
@@ -181,7 +182,7 @@ export const UiuxKpiCards: React.FC<UiuxKpiCardsProps> = ({ kpis }) => {
                     alignItems: 'center',
                   }}
                 >
-                  {card.value}
+                  {isLoading && !card.value ? <Skeleton variant="text" width={45} height={24} /> : card.value}
                 </div>
 
                 {/* Trend Row */}

@@ -34,16 +34,12 @@ export function mapBackendRequirementToRecord(raw: any): RequirementRecord {
     ownerId: raw.ownerId || '',
     status: (raw.status || 'Draft') as RequirementStatus,
     scopeFreeze: isFrozen ? 'Yes' : 'No',
-    assignedApprover: rawAssignedApprover || 'Admin – Akshit Ujjain',
+    assignedApprover: rawAssignedApprover || '',
     approvedBy:
       raw.status === 'Completed' || (!raw.status && rawApprovedBy)
         ? (rawApprovedBy && rawApprovedBy !== '-'
-            ? (rawApprovedBy.toLowerCase().includes('gaurav')
-              ? 'Gaurav Tripathy'
-              : rawApprovedBy.toLowerCase().includes('akshit')
-              ? 'Akshit Ujjain'
-              : rawApprovedBy)
-            : ((rawAssignedApprover || '').toLowerCase().includes('gaurav') ? 'Gaurav Tripathy' : 'Akshit Ujjain'))
+            ? rawApprovedBy
+            : (rawAssignedApprover || ''))
         : '-',
     approvalDate:
       raw.status === 'Completed' || (!raw.status && rawApprovalDate)
@@ -141,7 +137,7 @@ export const requirementsApiService = {
       scopeFreeze: Boolean(payload.scopeFreeze),
       completionPercentage: status === 'Completed' ? 100 : (payload.completionPercentage ?? 0),
       requirementDate: formatDateForInput(payload.requirementDate),
-      assignedApprover: payload.assignedApprover || 'Admin – Akshit Ujjain',
+      assignedApprover: payload.assignedApprover || '',
     };
 
     if (payload.approvedBy && payload.approvedBy !== '-') {

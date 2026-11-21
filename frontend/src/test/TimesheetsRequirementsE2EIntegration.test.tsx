@@ -2,7 +2,7 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { TimesheetsRequirementsPage } from '../features/projects/pages/TimesheetsRequirementsPage';
+import { TimesheetsRequirementsPage } from '../features/timesheets-requirements/pages/TimesheetsRequirementsPage';
 import { timesheetsApiService } from '../features/timesheets-requirements/services/timesheetsApiService';
 import { requirementsApiService } from '../features/timesheets-requirements/services/requirementsApiService';
 import { projectLookupService } from '../features/timesheets-requirements/services/projectLookupService';

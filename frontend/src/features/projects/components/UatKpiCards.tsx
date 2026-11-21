@@ -1,5 +1,6 @@
 import React from 'react';
 import { FileText, PlayCircle, CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { UatKpis } from '../types/uat';
 
 interface UatKpiCardsProps {
@@ -16,7 +17,7 @@ const parseTrend = (trendStr?: string, defaultRate = '↑ 14%', defaultSuffix = 
   return { rate: trendStr, suffix: defaultSuffix };
 };
 
-export const UatKpiCards: React.FC<UatKpiCardsProps> = ({ kpis }) => {
+export const UatKpiCards: React.FC<UatKpiCardsProps> = ({ kpis, isLoading = false }) => {
   const totalTrend = parseTrend(kpis.totalUatsTrend || kpis.totalTrend, '↑ 14%', 'vs last month');
   const inTestingTrend = parseTrend(kpis.inTestingTrend, '↑ 18%', 'vs last month');
   const passedTrend = parseTrend(kpis.passedTrend, '↑ 20%', 'vs last month');
@@ -196,7 +197,7 @@ export const UatKpiCards: React.FC<UatKpiCardsProps> = ({ kpis }) => {
                     alignItems: 'center',
                   }}
                 >
-                  {card.value}
+                  {isLoading ? <Skeleton variant="text" width={45} height={24} /> : card.value}
                 </div>
 
                 {/* Trend Row */}

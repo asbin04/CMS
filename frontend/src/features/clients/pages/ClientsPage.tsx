@@ -10,6 +10,7 @@ import { AddClientModal } from '../components/AddClientModal';
 import { ClientDetailModal } from '../components/ClientDetailModal';
 import { ToastNotification, ToastItem } from '../../../components/ui/ToastNotification';
 import { ErrorBanner } from '../../../components/ui/ErrorBanner';
+import { SkeletonPageHeader, SkeletonCard, SkeletonTable } from '../../../components/ui';
 
 export const ClientsPage: React.FC = () => {
   const [clients, setClients] = useState<Client[]>([]);
@@ -355,11 +356,16 @@ export const ClientsPage: React.FC = () => {
     addToast('success', 'Export Complete', `Exported ${filteredClients.length} clients to CSV.`);
   };
 
-  if (isLoading) {
+  if (isLoading && clients.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-        <Loader2 className="animate-spin text-indigo-600" size={36} />
-        <p className="text-sm font-medium text-slate-500">Loading live clients from database...</p>
+      <div className="p-4 sm:p-6 w-full box-border font-sans bg-[#F8FAFC] flex flex-col items-start gap-5">
+        <SkeletonPageHeader />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+          {[1, 2, 3, 4].map((i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
+        <SkeletonTable rows={7} columns={9} hasFilters={true} />
       </div>
     );
   }

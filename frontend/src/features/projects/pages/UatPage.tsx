@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Download, Plus, ClipboardCheck, AlertCircle, RefreshCw } from 'lucide-react';
+import { Plus, ClipboardCheck, AlertCircle, RefreshCw } from 'lucide-react';
+import { ReloadButton } from '@/components/ui/ReloadButton';
+import { ExportButton } from '@/components/ui/ExportButton';
 import {
   UatItem,
   UatKpis,
@@ -29,10 +31,10 @@ export const UatPage: React.FC = () => {
     clientApprovedTrend: '—',
   });
   const [filterOptions, setFilterOptions] = useState<UatFilterOptions>({
-    projects: ['PRJ-001', 'PRJ-002', 'PRJ-003', 'PRJ-004', 'PRJ-005'],
+    projects: [],
     statuses: ['Passed', 'In Testing', 'Failed'],
     clientApprovals: ['Approved', 'Pending'],
-    testers: ['Amit Sharma', 'Sneha Nair', 'Divya Patel', 'Rohan Verma', 'Vikram Shah'],
+    testers: [],
   });
 
   // Loading and error states
@@ -308,34 +310,14 @@ export const UatPage: React.FC = () => {
             gap: '12px',
           }}
         >
+          <ReloadButton
+            onClick={() => loadData()}
+            isRefreshing={isLoading}
+            title="Refresh"
+          />
+
           {/* Export Button */}
-          <button
-            type="button"
-            onClick={handleExport}
-            style={{
-              boxSizing: 'border-box',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '8px 16px',
-              gap: '8px',
-              height: '34px',
-              background: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontFamily: 'Inter',
-              fontWeight: 500,
-              fontSize: '12px',
-              lineHeight: '16px',
-              color: '#334155',
-            }}
-            className="hover:bg-slate-50 transition-colors"
-          >
-            <Download size={16} color="#64748B" strokeWidth={1.5} />
-            <span>Export</span>
-          </button>
+          <ExportButton onClick={handleExport} />
 
           {/* + Add UAT Button */}
           <button

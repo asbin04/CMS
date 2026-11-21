@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Printer, Download, Building2, CheckCircle2 } from 'lucide-react';
+import { X, Printer, Building2, CheckCircle2 } from 'lucide-react';
 import { PayrollRecord } from '../../types/payroll';
 import { formatIndianCurrency } from './PayrollTable';
 

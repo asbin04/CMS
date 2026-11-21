@@ -24,11 +24,11 @@ describe('projectLookupService unit tests', () => {
     expect(projects[0].name).toBe('Enterprise Cloud Portal');
   });
 
-  it('2. getProjects falls back gracefully to MASTER_PROJECTS if endpoint fails', async () => {
+  it('2. getProjects falls back gracefully to empty array if endpoint fails', async () => {
     vi.spyOn(apiClient, 'get').mockRejectedValue(new Error('Network error'));
 
     const projects = await projectLookupService.getProjects();
-    expect(projects).toEqual(MASTER_PROJECTS);
+    expect(projects).toEqual([]);
   });
 
   it('3. getTasksForProject fetches tasks from /projects/{id}/tasks', async () => {
@@ -46,11 +46,11 @@ describe('projectLookupService unit tests', () => {
     expect(tasks[0].name).toBe('Database Architecture');
   });
 
-  it('4. getTasksForProject falls back gracefully to MASTER_TASKS if endpoint fails', async () => {
+  it('4. getTasksForProject falls back gracefully to empty array if endpoint fails', async () => {
     vi.spyOn(apiClient, 'get').mockRejectedValue(new Error('500 Server error'));
 
     const tasks = await projectLookupService.getTasksForProject('PRJ-001');
-    expect(tasks).toEqual(MASTER_TASKS);
+    expect(tasks).toEqual([]);
   });
 });
 

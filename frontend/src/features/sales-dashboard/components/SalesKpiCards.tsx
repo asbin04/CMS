@@ -13,57 +13,57 @@ export const SalesKpiCards: React.FC<SalesKpiCardsProps> = ({ data }) => {
       label: 'Total Leads',
       value: data.totalLeads.toLocaleString('en-IN'),
       icon: Users,
-      badgeBg: 'bg-[#F5F3FF]',
-      badgeColor: 'text-[#7C3AED]',
+      badgeBg: 'bg-[rgba(237,233,254,0.7)]',
+      iconColor: 'stroke-[#7C3AED]',
     },
     {
       id: 'opportunities',
       label: 'Total Opportunities',
       value: data.totalOpportunities.toLocaleString('en-IN'),
       icon: Target,
-      badgeBg: 'bg-[#E0F2FE]',
-      badgeColor: 'text-[#0284C7]',
+      badgeBg: 'bg-[rgba(224,242,254,0.7)]',
+      iconColor: 'stroke-[#0284C7]',
     },
     {
       id: 'proposals',
       label: 'Total Proposals (Value)',
       value: data.formattedProposalsValue,
       icon: FileText,
-      badgeBg: 'bg-[#FEF3C7]',
-      badgeColor: 'text-[#D97706]',
+      badgeBg: 'bg-[rgba(254,243,199,0.7)]',
+      iconColor: 'stroke-[#D97706]',
     },
     {
       id: 'contracts',
       label: 'Active Contracts',
       value: data.activeContracts.toLocaleString('en-IN'),
       icon: ThumbsUp,
-      badgeBg: 'bg-[#DCFCE7]',
-      badgeColor: 'text-[#16A34A]',
+      badgeBg: 'bg-[rgba(209,250,229,0.7)]',
+      iconColor: 'stroke-[#059669]',
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
       {cards.map((card) => {
         const IconComponent = card.icon;
         return (
           <div
             key={card.id}
-            className="bg-white border border-[#E2E8F0] rounded-2xl p-5 shadow-2xs flex items-center gap-4 transition-all hover:border-slate-300"
+            className="box-border flex flex-row items-center p-4 bg-white border border-[#E2E8F0]/90 rounded-[12px] h-[84px] shadow-none"
           >
-            {/* Circle Badge Icon */}
+            {/* Overlay / Circle Icon */}
             <div
-              className={`w-12 h-12 rounded-full ${card.badgeBg} ${card.badgeColor} flex items-center justify-center shrink-0`}
+              className={`w-12 h-12 rounded-full ${card.badgeBg} flex items-center justify-center shrink-0`}
             >
-              <IconComponent className="w-5 h-5 stroke-[2]" />
+              <IconComponent className={`w-6 h-6 ${card.iconColor} stroke-[2]`} />
             </div>
 
             {/* Label & Value */}
-            <div className="min-w-0 flex-1">
-              <span className="block text-xs font-medium text-slate-500 truncate">
+            <div className="ml-3.5 flex flex-col gap-0.5 min-w-0 flex-1">
+              <span className="font-['Inter'] font-medium text-[12px] leading-4 text-[#64748B] truncate">
                 {card.label}
               </span>
-              <span className="block text-2xl font-bold text-slate-900 tracking-tight mt-0.5">
+              <span className="font-['Inter'] font-bold text-[24px] leading-8 tracking-[-0.6px] text-[#0F172A] truncate">
                 {card.value}
               </span>
             </div>
@@ -73,4 +73,3 @@ export const SalesKpiCards: React.FC<SalesKpiCardsProps> = ({ data }) => {
     </div>
   );
 };
-

@@ -39,8 +39,8 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
     if (project) {
       setProjectCode(project.projectCode || '');
       setProjectName(project.projectName || '');
-      setClientId(project.clientId || (clientOptions[0] || 'CL-001'));
-      setProjectManager(project.projectManager || (managerOptions[0] || 'Amit Sharma'));
+      setClientId(project.clientId || (clientOptions[0] || ''));
+      setProjectManager(project.projectManager || (managerOptions[0] || ''));
       setStartDate(project.startDate ? project.startDate.substring(0, 10) : '');
       setPlannedEndDate(project.plannedEndDate ? project.plannedEndDate.substring(0, 10) : '');
       setStatus(project.status || 'In Progress');

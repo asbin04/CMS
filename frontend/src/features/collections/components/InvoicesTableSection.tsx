@@ -4,7 +4,6 @@ import {
   RotateCcw,
   Calendar,
   FileText,
-  Download,
   ArrowUpDown,
   ChevronRight,
   ChevronLeft,
@@ -15,6 +14,7 @@ import {
   History,
   LucideIcon,
 } from 'lucide-react';
+import { ExportButton } from '../../../components/ui/ExportButton';
 import { Invoice, CollectionStatus, AgeingBucket } from '../types';
 import { formatRupee, exportInvoicesToCsv, parseInvoiceDate } from '../utils';
 import { StatusDropdownMenu, StatusItemConfig } from '../../../components/ui/StatusDropdownMenu';
@@ -680,32 +680,7 @@ export const InvoicesTableSection: React.FC<InvoicesTableSectionProps> = ({
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleExportTable}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              height: '34px',
-              padding: '0 14px',
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              borderRadius: '8px',
-              fontSize: '12px',
-              fontWeight: 600,
-              lineHeight: '16px',
-              color: '#334155',
-              cursor: 'pointer',
-              fontFamily: "'Inter', sans-serif",
-              transition: 'background-color 0.15s ease',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F8FAFC')}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#FFFFFF')}
-          >
-            <Download size={14} color="#64748B" />
-            <span>Export table</span>
-          </button>
+          <ExportButton onClick={handleExportTable} label="Export table" />
         </div>
 
         {/* Scrollable Table */}
@@ -713,10 +688,12 @@ export const InvoicesTableSection: React.FC<InvoicesTableSectionProps> = ({
           <table
             style={{
               width: '100%',
+              minWidth: '1500px',
               borderCollapse: 'collapse',
               textAlign: 'left',
               fontSize: '12px',
               fontFamily: "'Inter', sans-serif",
+              whiteSpace: 'nowrap',
             }}
           >
             <thead>

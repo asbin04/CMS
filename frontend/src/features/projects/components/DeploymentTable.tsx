@@ -371,7 +371,7 @@ export const DeploymentTable: React.FC<DeploymentTableProps> = ({
 
       {/* 3 & 4: Horizontally scrollable table container matching 1837.23px specification */}
       <div className="w-full overflow-x-auto">
-        <table className="w-full min-w-[1837.23px] border-collapse text-left font-['Inter']">
+        <table className="w-full min-w-[1837.23px] border-collapse text-left font-['Inter'] whitespace-nowrap">
           <thead>
             <tr
               style={{
@@ -379,7 +379,7 @@ export const DeploymentTable: React.FC<DeploymentTableProps> = ({
                 background: 'rgba(248, 250, 252, 0.8)',
                 borderBottom: '1px solid #E2E8F0',
               }}
-              className="text-[11px] font-semibold leading-[16px] text-[#475569]"
+              className="text-[11px] font-semibold leading-[16px] text-[#475569] whitespace-nowrap"
             >
               <th style={{ width: '124.14px', minWidth: '124.14px', padding: '19.75px 16px 20.75px' }}>
                 Deployment ID
@@ -440,11 +440,26 @@ export const DeploymentTable: React.FC<DeploymentTableProps> = ({
           </thead>
           <tbody>
             {isLoading ? (
-              <tr>
-                <td colSpan={16} className="py-12 text-center text-[13px] text-[#64748B]">
-                  Loading deployments...
-                </td>
-              </tr>
+              Array.from({ length: 5 }).map((_, idx) => (
+                <tr key={idx} className="h-[48px] border-b border-[#F1F5F9] hover:bg-slate-50/50">
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={65} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={80} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={110} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="badge" width={85} height={18} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={55} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={75} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={65} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={80} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="badge" width={80} height={18} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={85} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={85} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={70} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={80} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="badge" width={65} height={18} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={90} height={12} /></td>
+                  <td className="px-3.5 py-2.5 text-center"><Skeleton variant="circular" width={22} height={22} className="mx-auto" /></td>
+                </tr>
+              ))
             ) : paginatedDeployments.length === 0 ? (
               <tr>
                 <td colSpan={16} className="py-12 text-center text-[13px] text-[#64748B]">

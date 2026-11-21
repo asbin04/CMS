@@ -26,7 +26,7 @@ export const ToastNotification: React.FC<ToastNotificationProps> = ({
   const positionClass =
     position === 'bottom-right'
       ? 'fixed bottom-6 right-6 z-[9999]'
-      : 'fixed top-6 right-6 z-[9999]';
+      : 'fixed top-20 right-6 z-[9999]';
 
   return (
     <div
@@ -55,7 +55,6 @@ export const ToastNotification: React.FC<ToastNotificationProps> = ({
             key={toast.id}
             className="pointer-events-auto bg-white border border-slate-200/90 rounded-2xl shadow-[0_12px_36px_-6px_rgba(0,0,0,0.12),0_4px_16px_-2px_rgba(0,0,0,0.06)] p-3.5 pl-4 pr-3.5 flex items-center gap-3.5 min-w-[320px] max-w-md animate-in slide-in-from-top-3 fade-in duration-200 transition-all"
             style={{
-              backgroundColor: '#FFFFFF',
               boxShadow: '0 12px 36px -6px rgba(15, 23, 42, 0.12), 0 4px 16px -2px rgba(15, 23, 42, 0.06)',
             }}
           >

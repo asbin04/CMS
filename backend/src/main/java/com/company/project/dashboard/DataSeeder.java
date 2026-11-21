@@ -38,56 +38,6 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        long followUpCount = followUpRepository.count();
-        if (followUpCount == 0) {
-            log.info("Initializing Follow-Up Queue seed data in database...");
-            followUpService.resetSeedData();
-            log.info("Follow-Up Queue seed data initialized with {} items.", followUpRepository.count());
-        } else {
-            log.info("Follow-Up Queue already contains {} items. Skipping seeding.", followUpCount);
-        }
-
-        long oppCount = opportunityRepository.count();
-        if (oppCount == 0) {
-            log.info("Initializing Opportunities seed data in database...");
-            opportunityService.resetSeedData();
-            log.info("Opportunities seed data initialized with {} items.", opportunityRepository.count());
-        } else {
-            log.info("Opportunities already contains {} items. Skipping seeding.", oppCount);
-        }
-
-        long approvalCount = employeeApprovalRepository.count();
-        if (approvalCount == 0) {
-            log.info("Initializing Approvals seed data in database...");
-            approvalService.resetSeedData();
-            log.info("Approvals seed data initialized with {} employee items.", employeeApprovalRepository.count());
-        } else {
-            log.info("Approvals already contains {} employee items. Skipping seeding.", approvalCount);
-        }
-
-        long contractCount = contractRepository.count();
-        if (contractCount == 0) {
-            log.info("Initializing Contracts seed data in database...");
-            contractService.resetSeedData();
-            log.info("Contracts seed data initialized with {} items.", contractRepository.count());
-        } else {
-            log.info("Contracts already contains {} items. Skipping seeding.", contractCount);
-        }
-
-        long proposalCount = proposalRepository.count();
-        if (proposalCount == 0) {
-            log.info("Initializing Proposals seed data in database...");
-            try {
-                ResourceDatabasePopulator populator = new ResourceDatabasePopulator(
-                        new ClassPathResource("db/dev-migration/V5__seed_proposals_data.sql")
-                );
-                populator.execute(dataSource);
-                log.info("Proposals seed data initialized with {} items.", proposalRepository.count());
-            } catch (Exception e) {
-                log.error("Failed to seed proposals: {}", e.getMessage(), e);
-            }
-        } else {
-            log.info("Proposals already contains {} items. Skipping seeding.", proposalCount);
-        }
+        log.info("DataSeeder: Auto-seeding disabled to keep database clean.");
     }
 }

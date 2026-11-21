@@ -159,9 +159,9 @@ export const LeaveTable: React.FC<LeaveTableProps> = ({
 
       {/* Horizontal Scroll Table Container */}
       <div className="overflow-x-auto min-h-[300px]">
-        <table className="w-full text-left border-collapse min-w-[1300px]">
+        <table className="w-full text-left border-collapse min-w-[1400px] whitespace-nowrap">
           <thead>
-            <tr className="h-[42px] bg-[#F8FAFC]/80 border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.55px] select-none">
+            <tr className="h-[42px] bg-[#F8FAFC]/80 border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.55px] select-none whitespace-nowrap">
               <th className="px-[14px] py-[12px] text-left whitespace-nowrap">LEAVE ID</th>
               <th className="px-[14px] py-[12px] text-left whitespace-nowrap">EMPLOYEE ID</th>
               <th className="px-[14px] py-[12px] text-left whitespace-nowrap">EMPLOYEE NAME</th>

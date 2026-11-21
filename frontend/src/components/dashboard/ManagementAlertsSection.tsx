@@ -7,7 +7,7 @@ import {
   Briefcase,
   ShieldCheck,
   FolderSync,
-  FileWarning,
+  FileX,
   Award,
   UserCheck,
   AlertCircle,
@@ -25,104 +25,123 @@ export const ManagementAlertsSection: React.FC<ManagementAlertsSectionProps> = (
   alerts,
   onAlertClick = () => {}
 }) => {
-  const renderAlertIcon = (iconType: string, color: string) => {
-    const size = 16;
-    let iconComp = <FileText size={size} color={color} strokeWidth={2} />;
+  // Predefined 10 standard rows from the Figma specification
+  const defaultAlertRows = [
+    { id: 1, alert_key: 'overdue_invoices', title: 'Overdue Invoices', alert_count: 0, icon_type: 'invoice', icon_color: '#F04438' },
+    { id: 2, alert_key: 'contracts_expiring', title: 'Contracts Expiring', alert_count: 0, icon_type: 'contract', icon_color: '#F59E0B' },
+    { id: 3, alert_key: 'overdue_projects', title: 'Overdue Projects', alert_count: 0, icon_type: 'project', icon_color: '#0284C7' },
+    { id: 4, alert_key: 'overdue_compliance', title: 'Overdue Compliance', alert_count: 0, icon_type: 'compliance', icon_color: '#16A34A' },
+    { id: 5, alert_key: 'doc_expiring', title: 'Expiring Documents', alert_count: 0, icon_type: 'doc_expiring', icon_color: '#9333EA' },
+    { id: 6, alert_key: 'doc_expired', title: 'Expired Documents', alert_count: 0, icon_type: 'doc_expired', icon_color: '#DC2626' },
+    { id: 7, alert_key: 'warranties_expired', title: 'Expired Warranties', alert_count: 0, icon_type: 'warranty', icon_color: '#EA580C' },
+    { id: 8, alert_key: 'pending_approvals', title: 'Pending Approvals', alert_count: 0, icon_type: 'approval_pending', icon_color: '#0284C7' },
+    { id: 9, alert_key: 'overdue_approvals', title: 'Overdue Approvals', alert_count: 0, icon_type: 'approval_overdue', icon_color: '#E11D48' },
+    { id: 10, alert_key: 'candidate_followups', title: 'Candidate Follow-ups', alert_count: 0, icon_type: 'candidate', icon_color: '#7C3AED' },
+  ];
 
+  // Merge live alert counts with rows
+  const displayAlerts = defaultAlertRows.map((row) => {
+    const liveAlert = (alerts || []).find(
+      (a: any) =>
+        (a.alert_key && a.alert_key.toLowerCase() === row.alert_key.toLowerCase()) ||
+        (a.title && a.title.toLowerCase() === row.title.toLowerCase())
+    );
+    return {
+      ...row,
+      alert_count: liveAlert?.alert_count ?? row.alert_count,
+      id: liveAlert?.id ?? row.id,
+    };
+  });
+
+  const renderAlertIcon = (iconType: string, color: string) => {
+    const size = 18;
     switch (iconType) {
       case 'invoice':
-        iconComp = <FileText size={size} color={color} strokeWidth={2} />;
-        break;
+        return <FileText size={size} color={color} strokeWidth={1.8} />;
       case 'contract':
-        iconComp = <FileText size={size} color={color} strokeWidth={2} />;
-        break;
+        return <FileText size={size} color={color} strokeWidth={1.8} />;
       case 'project':
-        iconComp = <Briefcase size={size} color={color} strokeWidth={2} />;
-        break;
+        return <Briefcase size={size} color={color} strokeWidth={1.8} />;
       case 'compliance':
-        iconComp = <ShieldCheck size={size} color={color} strokeWidth={2} />;
-        break;
+        return <ShieldCheck size={size} color={color} strokeWidth={1.8} />;
       case 'doc_expiring':
-        iconComp = <FolderSync size={size} color={color} strokeWidth={2} />;
-        break;
+        return <FolderSync size={size} color={color} strokeWidth={1.8} />;
       case 'doc_expired':
-        iconComp = <FileWarning size={size} color={color} strokeWidth={2} />;
-        break;
+        return <FileX size={size} color={color} strokeWidth={1.8} />;
       case 'warranty':
-        iconComp = <Award size={size} color={color} strokeWidth={2} />;
-        break;
+        return <Award size={size} color={color} strokeWidth={1.8} />;
       case 'approval_pending':
-        iconComp = <UserCheck size={size} color={color} strokeWidth={2} />;
-        break;
+        return <UserCheck size={size} color={color} strokeWidth={1.8} />;
       case 'approval_overdue':
-        iconComp = <AlertCircle size={size} color={color} strokeWidth={2} />;
-        break;
+        return <Clock size={size} color={color} strokeWidth={1.8} />;
       case 'candidate':
-        iconComp = <Users size={size} color={color} strokeWidth={2} />;
-        break;
+        return <Users size={size} color={color} strokeWidth={1.8} />;
       default:
-        iconComp = <Clock size={size} color={color} strokeWidth={2} />;
-        break;
+        return <AlertCircle size={size} color={color} strokeWidth={1.8} />;
     }
-
-    return (
-      <div className="w-5 h-5 flex items-center justify-center shrink-0">
-        {iconComp}
-      </div>
-    );
   };
 
   return (
-    <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-soft flex flex-col gap-5">
+    <div
+      className="bg-white border border-[#F1F5F9]/80 rounded-[16px] p-8 flex flex-col gap-6"
+      style={{
+        boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
+        fontFamily: "'Inter', sans-serif"
+      }}
+    >
       {/* Section Header */}
-      <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl bg-[#FFFBEB] text-[#F59E0B] border border-[#FDE68A]/60 flex items-center justify-center shrink-0 shadow-2xs">
-          <Bell size={18} />
+      <div className="flex items-center gap-4">
+        <div className="w-9 h-9 rounded-xl bg-[#FFF7ED] border border-[#FED7AA]/70 flex items-center justify-center shrink-0">
+          <Bell size={18} className="text-[#F97316]" />
         </div>
-        <div>
-          <h2 className="text-sm font-bold text-slate-900 leading-snug">Management Alerts</h2>
-          <p className="text-xs text-slate-500">
+        <div className="flex flex-col gap-0.5">
+          <h3 className="text-[14px] font-medium text-[#1E293B] tracking-[-0.6px] leading-tight">
+            Management Alerts
+          </h3>
+          <p className="text-[11.5px] font-normal text-[#94A3B8] leading-5">
             Live counts from the Alerts Center. Click on an item to view filtered alerts.
           </p>
         </div>
       </div>
 
-      {/* Table Container with Two Columns & Middle Vertical Divider */}
-      <div className="border border-slate-100/90 rounded-xl overflow-hidden">
-        {/* Table Header */}
-        <div className="grid grid-cols-[1.2fr_1fr] bg-slate-50/70 border-b border-slate-100 text-xs font-semibold text-slate-500 select-none">
-          <div className="px-5 py-2.5">
+      {/* Table Container with Two Columns & Middle Divider */}
+      <div className="border border-[#F1F5F9] rounded-lg overflow-hidden w-full">
+        {/* Table Head */}
+        <div className="grid grid-cols-12 bg-[#F8FAFC]/70 border-b border-[#F1F5F9] h-[47px] text-[12px] font-semibold text-[#475569] select-none">
+          <div className="col-span-6 px-6 py-3 border-r border-[#F1F5F9] flex items-center">
             Alert
           </div>
-          <div className="px-5 py-2.5 border-l border-slate-100">
+          <div className="col-span-6 px-6 py-3 flex items-center">
             Count
           </div>
         </div>
 
         {/* Table Rows */}
-        <div className="divide-y divide-slate-100 bg-white">
-          {(alerts || []).map((alert: any) => (
+        <div className="divide-y divide-[#F1F5F9] bg-white">
+          {displayAlerts.map((alert: any) => (
             <div
-              key={alert.id}
+              key={alert.id || alert.title}
               onClick={() => onAlertClick(alert)}
-              className="grid grid-cols-[1.2fr_1fr] items-center hover:bg-slate-50/70 transition-colors cursor-pointer group"
+              className="grid grid-cols-12 items-center hover:bg-slate-50/70 transition-colors cursor-pointer group h-[48px]"
             >
-              {/* Alert Icon & Label */}
-              <div className="px-5 py-3 flex items-center gap-3 min-w-0">
-                {renderAlertIcon(alert.icon_type, alert.icon_color)}
-                <span className="text-xs font-medium text-slate-800 group-hover:text-blue-600 transition-colors truncate">
+              {/* Alert Column */}
+              <div className="col-span-6 px-6 py-3 border-r border-[#F1F5F9] flex items-center gap-3.5 min-w-0">
+                <div className="w-5 h-5 flex items-center justify-center shrink-0">
+                  {renderAlertIcon(alert.icon_type, alert.icon_color)}
+                </div>
+                <span className="text-[12px] font-medium text-[#1E293B] group-hover:text-blue-600 transition-colors truncate">
                   {alert.title}
                 </span>
               </div>
 
-              {/* Count & Right Chevron */}
-              <div className="px-5 py-3 border-l border-slate-100 flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-900">
+              {/* Count Column */}
+              <div className="col-span-6 px-6 py-3 flex items-center justify-between">
+                <span className="text-[12px] font-semibold text-[#1E293B]">
                   {alert.alert_count}
                 </span>
                 <ChevronRight
-                  size={15}
-                  className="text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all"
+                  size={16}
+                  className="text-[#94A3B8] group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all"
                 />
               </div>
             </div>

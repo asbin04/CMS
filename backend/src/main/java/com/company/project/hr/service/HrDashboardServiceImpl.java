@@ -151,18 +151,7 @@ public class HrDashboardServiceImpl implements HrDashboardService {
             newHires = countNewHires(null, monthStart, monthEnd);
         }
 
-        // If employee table is empty, check hr_summary as cached aggregate fallback (if not 0)
         HrSummaryEntity cachedSummary = hrSummaryRepository.findById(1L).orElse(null);
-        if (activeEmployees == 0 && onNotice == 0 && cachedSummary != null && cachedSummary.getActiveEmployees() > 0) {
-            activeEmployees = cachedSummary.getActiveEmployees();
-            onNotice = cachedSummary.getOnNotice();
-            if (totalMonthlyCtc == null || totalMonthlyCtc.compareTo(BigDecimal.ZERO) == 0) {
-                totalMonthlyCtc = cachedSummary.getTotalMonthlyCtc();
-            }
-            if (newHires == 0) {
-                newHires = cachedSummary.getNewHiresThisMonth();
-            }
-        }
 
         WorkforceOverviewDto workforce = WorkforceOverviewDto.builder()
                 .activeEmployees((int) activeEmployees)
@@ -376,7 +365,7 @@ public class HrDashboardServiceImpl implements HrDashboardService {
                 .employmentType("Full Time")
                 .status(status)
                 .location("Bangalore")
-                .reportingManager("Akshit Ujjain")
+                .reportingManager("")
                 .joiningDate(joiningDate.format(ATTENDANCE_DATE_IN))
                 .tenureStatus("0-1 Years")
                 .monthlyCtc(monthlyCtc)
@@ -538,7 +527,7 @@ public class HrDashboardServiceImpl implements HrDashboardService {
 
                 boolean isLate = normalizedStatus.equals("Late");
                 String checkIn = request.getCheckIn() != null ? request.getCheckIn().trim() : "09:30 AM";
-                String id = "ATT-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+                String id = "ATT-" + empId + "-" + canonicalDate.replace("-", "");
 
                 AttendanceRecordEntity entity = AttendanceRecordEntity.builder()
                         .id(id)
@@ -642,7 +631,7 @@ public class HrDashboardServiceImpl implements HrDashboardService {
 
     private void logActivity(String type, String color, String description, String status) {
         HrActivityEntity act = HrActivityEntity.builder()
-                .id("act-" + UUID.randomUUID().toString())
+                .id("act-" + System.currentTimeMillis())
                 .activityDate(LocalDate.now().format(ATTENDANCE_DATE_IN))
                 .type(type)
                 .typeColor(color)

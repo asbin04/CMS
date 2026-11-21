@@ -1,12 +1,14 @@
 import React from 'react';
 import { Code2, Package, FileCode2, ShieldCheck, Zap } from 'lucide-react';
+import { Skeleton } from '../../../components/ui/Skeleton';
 import { DevelopmentKpis } from '../types';
 
 interface DevelopmentKpiCardsProps {
   kpis: DevelopmentKpis;
+  isLoading?: boolean;
 }
 
-export const DevelopmentKpiCards: React.FC<DevelopmentKpiCardsProps> = ({ kpis }) => {
+export const DevelopmentKpiCards: React.FC<DevelopmentKpiCardsProps> = ({ kpis, isLoading = false }) => {
   const cards = [
     {
       title: 'Total Developments',
@@ -78,7 +80,7 @@ export const DevelopmentKpiCards: React.FC<DevelopmentKpiCardsProps> = ({ kpis }
               </span>
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl font-bold tracking-tight text-slate-900 leading-none">
-                  {card.count}
+                  {isLoading ? <Skeleton variant="text" width={40} height={24} /> : card.count}
                 </span>
               </div>
               <span className="text-[11px] font-medium text-[#10B981] mt-1 block">

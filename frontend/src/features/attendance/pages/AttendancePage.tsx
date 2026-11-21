@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Calendar, Plus, Upload, Download, Loader2 } from 'lucide-react';
+import { Calendar, Plus, Upload, Loader2 } from 'lucide-react';
 import { ReloadButton } from '../../../components/ui/ReloadButton';
+import { ExportButton } from '../../../components/ui/ExportButton';
 import { AttendanceRecord, AttendanceFilterState, AttendanceSortOption } from '../types/attendance';
 import { attendanceService } from '../services/attendanceService';
 import { AttendanceMetricCards } from '../components/AttendanceMetricCards';
@@ -10,6 +11,7 @@ import { AddAttendanceModal } from '../components/AddAttendanceModal';
 import { AttendanceDetailModal } from '../components/AttendanceDetailModal';
 import { ToastNotification, ToastItem } from '../../../components/ui/ToastNotification';
 import { ErrorBanner } from '../../../components/ui/ErrorBanner';
+import { SkeletonPageHeader, SkeletonCard, SkeletonTable } from '../../../components/ui';
 
 export const AttendancePage: React.FC = () => {
   const [records, setRecords] = useState<AttendanceRecord[]>([]);
@@ -336,11 +338,16 @@ export const AttendancePage: React.FC = () => {
     input.click();
   };
 
-  if (isLoading) {
+  if (isLoading && records.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-        <Loader2 className="animate-spin text-indigo-600" size={36} />
-        <p className="text-sm font-medium text-slate-500">Loading live attendance records from database...</p>
+      <div className="p-4 sm:p-6 w-full box-border font-sans bg-[#F8FAFC] flex flex-col items-start gap-5">
+        <SkeletonPageHeader />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+          {[1, 2, 3, 4].map((i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
+        <SkeletonTable rows={7} columns={10} hasFilters={true} />
       </div>
     );
   }
@@ -447,29 +454,7 @@ export const AttendancePage: React.FC = () => {
           </button>
 
           {/* Export Button */}
-          <button
-            type="button"
-            onClick={handleExport}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              height: '32px',
-              padding: '0 12px',
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              borderRadius: '8px',
-              fontFamily: "'Inter', sans-serif",
-              fontSize: '12px',
-              fontWeight: 500,
-              color: '#1E293B',
-              cursor: 'pointer',
-            }}
-            title="Export attendance records to CSV"
-          >
-            <Download size={14} color="#64748B" />
-            <span>Export</span>
-          </button>
+          <ExportButton onClick={handleExport} title="Export attendance records to CSV" />
 
           {/* + Add Attendance Button */}
           <button

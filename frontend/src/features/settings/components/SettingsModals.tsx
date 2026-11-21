@@ -13,6 +13,7 @@ import {
   Camera,
   Trash2,
 } from 'lucide-react';
+import { Skeleton } from '../../../components/ui/Skeleton';
 import {
   ChangePasswordPayload,
   LoginHistoryItem,
@@ -1079,9 +1080,19 @@ export const ActiveSessionsModal: React.FC<ActiveSessionsModalProps> = ({
     >
       <div className="p-6 space-y-4">
         {loading ? (
-          <div className="py-8 flex items-center justify-center text-[13px] text-slate-500 gap-2">
-            <Loader2 size={16} className="animate-spin text-[#4F46E5]" />
-            <span>Loading active sessions...</span>
+          <div className="divide-y divide-slate-100 max-h-[340px] overflow-y-auto pr-1">
+            {Array.from({ length: 3 }).map((_, idx) => (
+              <div key={idx} className="py-3 flex items-center justify-between gap-4">
+                <div className="flex items-start gap-3 min-w-0">
+                  <Skeleton variant="rectangular" rounded="lg" width={32} height={32} />
+                  <div className="space-y-1.5">
+                    <Skeleton variant="text" width={160} height={14} />
+                    <Skeleton variant="text" width={220} height={11} />
+                  </div>
+                </div>
+                <Skeleton variant="button" width={60} height={26} />
+              </div>
+            ))}
           </div>
         ) : sessions.length === 0 ? (
           <div className="py-8 text-center text-[13px] text-slate-500">
@@ -1173,9 +1184,19 @@ export const LoginHistoryModal: React.FC<LoginHistoryModalProps> = ({
     >
       <div className="p-6 space-y-4">
         {loading ? (
-          <div className="py-8 flex items-center justify-center text-[13px] text-slate-500 gap-2">
-            <Loader2 size={16} className="animate-spin text-[#4F46E5]" />
-            <span>Loading security activity...</span>
+          <div className="divide-y divide-slate-100 max-h-[360px] overflow-y-auto pr-1">
+            {Array.from({ length: 3 }).map((_, idx) => (
+              <div key={idx} className="py-3 flex items-start justify-between gap-4">
+                <div className="flex items-start gap-3 min-w-0">
+                  <Skeleton variant="rectangular" rounded="lg" width={32} height={32} />
+                  <div className="space-y-1.5">
+                    <Skeleton variant="text" width={140} height={14} />
+                    <Skeleton variant="text" width={200} height={11} />
+                  </div>
+                </div>
+                <Skeleton variant="badge" width={55} height={18} />
+              </div>
+            ))}
           </div>
         ) : items.length === 0 ? (
           <div className="py-8 text-center text-[13px] text-slate-500">

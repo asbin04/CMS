@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Calendar, Download, Plus } from 'lucide-react';
+import { Calendar, Plus } from 'lucide-react';
 import { ReloadButton } from '../../../components/ui/ReloadButton';
+import { ExportButton } from '../../../components/ui/ExportButton';
 import {
   CreateLeavePayload,
   LeaveFilterState,
@@ -18,6 +19,7 @@ import { LeaveDetailModal } from '../components/LeaveDetailModal';
 import { ErrorBanner } from '../../../components/ui/ErrorBanner';
 import { ToastNotification, ToastItem } from '../../../components/ui/ToastNotification';
 import { AppLayoutContextType } from '../../../components/layout/AppLayout';
+import { getCurrentApproverName } from '../../../utils/approverUtils';
 
 export const LeaveManagementPage: React.FC = () => {
   const outletContext = useOutletContext<AppLayoutContextType | null>();
@@ -256,18 +258,19 @@ export const LeaveManagementPage: React.FC = () => {
     }
   };
 
-  const handleApprove = async (id: string, approverName = 'Rahul Mehta') => {
+  const handleApprove = async (id: string, approverName?: string) => {
+    const finalApprover = approverName?.trim() || getCurrentApproverName();
     try {
       const target = leaves.find((l) => l.id === id);
       const updated = await leaveService.updateLeave(id, {
         approvalStatus: 'Approved',
-        approvedBy: approverName,
+        approvedBy: finalApprover,
         leaveStatus: 'Approved',
       });
       addToast({
         type: 'success',
         title: 'Leave Request Approved',
-        message: `Leave ${id} for ${target?.employeeName || 'employee'} has been approved by ${approverName}.`,
+        message: `Leave ${id} for ${target?.employeeName || 'employee'} has been approved by ${finalApprover}.`,
         statusBadge: 'Approved',
       });
       // Update selected record if open
@@ -284,18 +287,19 @@ export const LeaveManagementPage: React.FC = () => {
     }
   };
 
-  const handleReject = async (id: string, approverName = 'Rahul Mehta') => {
+  const handleReject = async (id: string, approverName?: string) => {
+    const finalApprover = approverName?.trim() || getCurrentApproverName();
     try {
       const target = leaves.find((l) => l.id === id);
       const updated = await leaveService.updateLeave(id, {
         approvalStatus: 'Rejected',
-        approvedBy: approverName,
+        approvedBy: finalApprover,
         leaveStatus: 'Rejected',
       });
       addToast({
         type: 'error',
         title: 'Leave Request Rejected',
-        message: `Leave ${id} for ${target?.employeeName || 'employee'} has been rejected.`,
+        message: `Leave ${id} for ${target?.employeeName || 'employee'} has been rejected by ${finalApprover}.`,
         statusBadge: 'Rejected',
       });
       if (selectedRecord && selectedRecord.id === id) {
@@ -434,14 +438,7 @@ export const LeaveManagementPage: React.FC = () => {
             title="Refresh from database"
           />
 
-          <button
-            type="button"
-            onClick={handleExportCSV}
-            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
-          >
-            <Download className="w-3.5 h-3.5 text-slate-500" />
-            <span>Export</span>
-          </button>
+          <ExportButton onClick={handleExportCSV} />
 
           <button
             type="button"

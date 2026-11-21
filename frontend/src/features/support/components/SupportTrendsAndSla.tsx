@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { SupportTicketTrendsData, VolumeTrendItem } from '../types/tickets';
 import { ChartTooltip } from '../../../charts';
+import { Skeleton } from '../../../components/ui/Skeleton';
 
 interface SupportTrendsAndSlaProps {
   data: SupportTicketTrendsData | null;
@@ -322,7 +323,7 @@ export const SupportTrendsAndSla: React.FC<SupportTrendsAndSlaProps> = ({
   };
 
   return (
-    <div className="w-full flex flex-col gap-6" style={{ minWidth: '956px' }}>
+    <div className="w-full flex flex-col gap-6">
       {/* 1. KpiCardsSection (5 Cards) */}
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* Metric 1: Total Tickets */}
@@ -338,7 +339,7 @@ export const SupportTrendsAndSla: React.FC<SupportTrendsAndSlaProps> = ({
               Total Tickets
             </span>
             <span className="text-[20px] font-bold text-[#0F172A] leading-7 mt-0.5">
-              {isLoading ? '...' : trends.totalTickets}
+              {isLoading ? <Skeleton variant="text" width={48} height={24} className="rounded" /> : trends.totalTickets}
             </span>
             <span className="text-[10px] font-semibold text-[#059669] leading-4 mt-0.5">
               {trends.totalTicketsTrend}
@@ -359,7 +360,7 @@ export const SupportTrendsAndSla: React.FC<SupportTrendsAndSlaProps> = ({
               Resolution Rate
             </span>
             <span className="text-[20px] font-bold text-[#0F172A] leading-7 mt-0.5">
-              {isLoading ? '...' : `${trends.resolutionRate}%`}
+              {isLoading ? <Skeleton variant="text" width={48} height={24} className="rounded" /> : `${trends.resolutionRate}%`}
             </span>
             <span className="text-[10px] font-semibold text-[#059669] leading-4 mt-0.5">
               {trends.resolutionRateTrend}
@@ -380,7 +381,7 @@ export const SupportTrendsAndSla: React.FC<SupportTrendsAndSlaProps> = ({
               Avg. Response Time
             </span>
             <span className="text-[20px] font-bold text-[#0F172A] leading-7 mt-0.5">
-              {isLoading ? '...' : trends.avgResponseHours}
+              {isLoading ? <Skeleton variant="text" width={48} height={24} className="rounded" /> : trends.avgResponseHours}
             </span>
             <span className="text-[10px] font-semibold text-[#059669] leading-4 mt-0.5">
               {trends.avgResponseHoursTrend}
@@ -401,7 +402,7 @@ export const SupportTrendsAndSla: React.FC<SupportTrendsAndSlaProps> = ({
               Avg. Resolution Time
             </span>
             <span className="text-[20px] font-bold text-[#0F172A] leading-7 mt-0.5">
-              {isLoading ? '...' : trends.avgResolutionHours}
+              {isLoading ? <Skeleton variant="text" width={48} height={24} className="rounded" /> : trends.avgResolutionHours}
             </span>
             <span className="text-[10px] font-semibold text-[#059669] leading-4 mt-0.5">
               {trends.avgResolutionHoursTrend}
@@ -422,7 +423,7 @@ export const SupportTrendsAndSla: React.FC<SupportTrendsAndSlaProps> = ({
               SLA Compliance
             </span>
             <span className="text-[20px] font-bold text-[#0F172A] leading-7 mt-0.5">
-              {isLoading ? '...' : `${trends.slaCompliance}%`}
+              {isLoading ? <Skeleton variant="text" width={48} height={24} className="rounded" /> : `${trends.slaCompliance}%`}
             </span>
             <span className="text-[10px] font-semibold text-[#059669] leading-4 mt-0.5">
               {trends.slaComplianceTrend}

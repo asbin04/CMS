@@ -19,6 +19,7 @@ import { PeriodCashPositionTable } from '../components/trends/PeriodCashPosition
 import { KeyInsightsCard } from '../components/trends/KeyInsightsCard';
 import { AlertCircle, CheckCircle2, Loader2, RefreshCw } from 'lucide-react';
 import { ToastNotification, useToast } from '@/components/ui/ToastNotification';
+import { SkeletonTable, SkeletonCard, SkeletonChart } from '@/components/ui';
 
 export const CashFlowPage: React.FC = () => {
   // Navigation tab state
@@ -309,10 +310,7 @@ export const CashFlowPage: React.FC = () => {
 
               {/* Data Table */}
               {isLoading && records.length === 0 ? (
-                <div className="py-20 flex flex-col items-center justify-center text-slate-400">
-                  <Loader2 className="w-8 h-8 animate-spin text-[#4F46E5] mb-2" />
-                  <p className="text-xs font-medium text-slate-500">Loading cash flow records...</p>
-                </div>
+                <SkeletonTable rows={5} columns={10} showHeader={false} className="border-0 shadow-none" />
               ) : (
                 <CashFlowTable
                   records={records}
@@ -343,9 +341,17 @@ export const CashFlowPage: React.FC = () => {
         {activeTab === 'trends-analysis' && (
           <div className="space-y-5 animate-in fade-in-50 duration-200">
             {isLoadingTrends && !trendsData ? (
-              <div className="py-24 bg-white rounded-2xl border border-slate-200/80 flex flex-col items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-[#4F46E5] mb-2" />
-                <p className="text-xs font-medium text-slate-500">Loading historical trends and analytics...</p>
+              <div className="space-y-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <SkeletonCard key={i} />
+                  ))}
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                  <SkeletonChart type="line" height={260} />
+                  <SkeletonChart type="donut" height={260} />
+                </div>
+                <SkeletonTable rows={4} columns={8} />
               </div>
             ) : (
               <>

@@ -22,6 +22,8 @@ import {
   User,
 } from 'lucide-react';
 import { moduleEngineService, ModuleRecord, ModuleSummary } from '@/services/moduleEngineService';
+import { ReloadButton } from '@/components/ui/ReloadButton';
+import { ExportButton } from '@/components/ui/ExportButton';
 
 interface ModulePlaceholderProps {
   title?: string;
@@ -297,21 +299,12 @@ export const ModulePlaceholder: React.FC<ModulePlaceholderProps> = ({ title, cat
           </div>
 
           <div className="flex items-center flex-wrap gap-2.5">
-            <button
+            <ReloadButton
               onClick={handleRefresh}
-              disabled={isRefreshing}
+              isRefreshing={isRefreshing}
               title="Refresh live data"
-              className="w-8 h-8 rounded-[6px] border border-[#E2E8F0] bg-white text-[#64748B] flex items-center justify-center hover:bg-slate-50 transition-colors shadow-sm"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 text-[#64748B] ${isRefreshing ? 'animate-spin' : ''}`} />
-            </button>
-            <button
-              onClick={handleExport}
-              className="h-8 px-3.5 rounded-[6px] border border-[#E2E8F0] bg-white text-[12px] font-medium text-[#334155] flex items-center gap-1.5 hover:bg-slate-50 transition-colors shadow-sm"
-            >
-              <Download className="w-3.5 h-3.5 text-[#64748B]" />
-              Export
-            </button>
+            />
+            <ExportButton onClick={handleExport} />
             <button
               onClick={() => setIsAddModalOpen(true)}
               className="h-8 px-3.5 rounded-[6px] bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[12px] font-medium flex items-center gap-1 transition-colors shadow-sm"
@@ -517,9 +510,9 @@ export const ModulePlaceholder: React.FC<ModulePlaceholderProps> = ({ title, cat
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse" style={{ minWidth: '100%' }}>
+            <table className="w-full text-left border-collapse whitespace-nowrap" style={{ minWidth: '1000px' }}>
               <thead>
-                <tr className="bg-[#F8FAFC]/80 border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.55px]">
+                <tr className="bg-[#F8FAFC]/80 border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.55px] whitespace-nowrap">
                   <th className="py-3 px-3.5 whitespace-nowrap" style={{ width: '130px' }}>
                     <div className="flex items-center gap-1">
                       <span>ID / CODE</span>
@@ -815,7 +808,7 @@ export const ModulePlaceholder: React.FC<ModulePlaceholderProps> = ({ title, cat
                 </div>
                 <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
                   <span className="text-[11px] font-semibold text-slate-400 uppercase">Assignee / Owner</span>
-                  <p className="text-[13px] font-semibold text-slate-800">{selectedRecord.assignee || 'Akshit Ujjain'}</p>
+                  <p className="text-[13px] font-semibold text-slate-800">{selectedRecord.assignee || '-'}</p>
                 </div>
                 <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
                   <span className="text-[11px] font-semibold text-slate-400 uppercase">Value</span>

@@ -40,4 +40,10 @@ public interface ProjectDeploymentRepository extends JpaRepository<ProjectDeploy
 
     @Query("SELECT DISTINCT d.handoverStatus FROM ProjectDeploymentEntity d WHERE d.handoverStatus IS NOT NULL ORDER BY d.handoverStatus")
     List<String> findDistinctHandoverStatuses();
+
+    @Query("SELECT DISTINCT d.deploymentOwner FROM ProjectDeploymentEntity d WHERE d.deploymentOwner IS NOT NULL ORDER BY d.deploymentOwner")
+    List<String> findDistinctDeploymentOwners();
+
+    @Query("SELECT DISTINCT d.projectId FROM ProjectDeploymentEntity d WHERE d.projectId IS NOT NULL ORDER BY d.projectId")
+    List<String> findDistinctProjectIds();
 }

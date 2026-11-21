@@ -1,3 +1,4 @@
+import { UserPlus, CalendarCheck, Clock } from 'lucide-react';
 import { apiRequest } from '../../../services/api/apiClient';
 import { API_ENDPOINTS } from '../../../services/api/apiEndpoints';
 import {
@@ -8,10 +9,46 @@ import {
   AttendanceRecord,
   CandidateRecord,
   RecentActivityItem,
+  QuickActionItem,
   CreateEmployeePayload,
   LogAttendancePayload,
 } from '../types';
-import { INITIAL_QUICK_ACTIONS } from '../mockData';
+
+export const INITIAL_QUICK_ACTIONS: QuickActionItem[] = [
+  {
+    id: 'qa-1',
+    title: 'Add Employee',
+    description: 'Create a new employee record',
+    icon: UserPlus,
+    iconBg: 'bg-[#EFF6FF]',
+    iconBorder: 'border-[#BFDBFE]',
+    iconColor: 'text-[#2563EB]',
+    targetPath: '/hr/employee-master',
+    actionKey: 'add-employee',
+  },
+  {
+    id: 'qa-2',
+    title: 'Manage Leaves',
+    description: 'Review leave requests',
+    icon: CalendarCheck,
+    iconBg: 'bg-[#ECFDF5]',
+    iconBorder: 'border-[#A7F3D0]',
+    iconColor: 'text-[#059669]',
+    targetPath: '/hr/leave',
+    actionKey: 'manage-leaves',
+  },
+  {
+    id: 'qa-3',
+    title: 'View Attendance',
+    description: 'Check attendance records',
+    icon: Clock,
+    iconBg: 'bg-[#FFFBEB]',
+    iconBorder: 'border-[#FDE68A]',
+    iconColor: 'text-[#D97706]',
+    targetPath: '/hr/attendance',
+    actionKey: 'view-attendance',
+  },
+];
 
 export const hrApiService = {
   /**

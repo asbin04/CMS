@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronLeft, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Skeleton } from '../../../../components/ui/Skeleton';
 import { TimesheetRecord, TimesheetApprovalStatus } from '../../types';
 import { StatusDropdownMenu, StatusItemConfig } from '../../../../components/ui/StatusDropdownMenu';
 import { TableActionMenu } from '../../../../components/ui/TableActionMenu';
@@ -18,6 +19,7 @@ interface TimesheetsTableProps {
   sortField?: string | null;
   sortOrder?: 'asc' | 'desc';
   onSort?: (field: string) => void;
+  isLoading?: boolean;
 }
 
 const TIMESHEET_APPROVAL_CONFIGS: StatusItemConfig[] = [
@@ -31,6 +33,7 @@ export const TimesheetsTable: React.FC<TimesheetsTableProps> = ({
   totalCount = 0,
   currentPage = 1,
   pageSize = 5,
+  isLoading = false,
   onPageChange,
   onPageSizeChange,
   onUpdateApprovalStatus,
@@ -65,10 +68,10 @@ export const TimesheetsTable: React.FC<TimesheetsTableProps> = ({
       <th
         key={field}
         onClick={() => onSort?.(field)}
-        className="py-3.5 px-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider cursor-pointer select-none hover:text-slate-800 transition-colors"
+        className="py-3.5 px-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider cursor-pointer select-none hover:text-slate-800 transition-colors whitespace-nowrap"
       >
-        <div className="inline-flex items-center gap-1.5">
-          <span>{label}</span>
+        <div className="inline-flex items-center gap-1.5 whitespace-nowrap">
+          <span className="whitespace-nowrap">{label}</span>
           {isSorted ? (
             sortOrder === 'asc' ? (
               <ArrowUp className="w-3 h-3 text-indigo-600 shrink-0" />
@@ -86,7 +89,7 @@ export const TimesheetsTable: React.FC<TimesheetsTableProps> = ({
   return (
     <div className="w-full border-t border-slate-200 overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse min-w-[1300px]">
+        <table className="w-full text-left border-collapse min-w-[1700px] whitespace-nowrap">
           <thead>
             <tr className="border-b border-slate-100 bg-slate-50/50">
               {renderSortableHeader('timesheetId', 'Timesheet ID')}
@@ -103,13 +106,33 @@ export const TimesheetsTable: React.FC<TimesheetsTableProps> = ({
               {renderSortableHeader('approvedBy', 'Approved By')}
               {renderSortableHeader('estimatedLaborCost', 'Estimated Labor Cost')}
               {renderSortableHeader('notes', 'Notes')}
-              <th className="py-3.5 px-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider text-center">
+              <th className="py-3.5 px-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider text-center whitespace-nowrap">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {records.length === 0 ? (
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, idx) => (
+                <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
+                  <td className="py-3.5 px-4"><Skeleton variant="text" width={75} height={12} /></td>
+                  <td className="py-3.5 px-4"><Skeleton variant="text" width={75} height={12} /></td>
+                  <td className="py-3.5 px-4"><Skeleton variant="text" width={60} height={12} /></td>
+                  <td className="py-3.5 px-4"><Skeleton variant="text" width={95} height={12} /></td>
+                  <td className="py-3.5 px-4"><Skeleton variant="text" width={65} height={12} /></td>
+                  <td className="py-3.5 px-4"><Skeleton variant="text" width={65} height={12} /></td>
+                  <td className="py-3.5 px-4"><Skeleton variant="text" width={35} height={12} /></td>
+                  <td className="py-3.5 px-4"><Skeleton variant="badge" width={50} height={18} /></td>
+                  <td className="py-3.5 px-4"><Skeleton variant="text" width={60} height={12} /></td>
+                  <td className="py-3.5 px-4"><Skeleton variant="text" width={65} height={12} /></td>
+                  <td className="py-3.5 px-4"><Skeleton variant="badge" width={70} height={18} /></td>
+                  <td className="py-3.5 px-4"><Skeleton variant="text" width={80} height={12} /></td>
+                  <td className="py-3.5 px-4"><Skeleton variant="text" width={75} height={12} /></td>
+                  <td className="py-3.5 px-4"><Skeleton variant="text" width={90} height={12} /></td>
+                  <td className="py-3.5 px-4 text-center"><Skeleton variant="circular" width={20} height={20} className="mx-auto" /></td>
+                </tr>
+              ))
+            ) : records.length === 0 ? (
               <tr>
                 <td colSpan={15} className="py-12 text-center text-xs text-slate-500">
                   No timesheet records match your search or filter criteria.

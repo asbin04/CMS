@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ExpenseItem } from '../types/expenses';
+import { Skeleton } from '../../../components/ui/Skeleton';
 
 interface ExpensesTableProps {
   expenses: ExpenseItem[];
@@ -173,6 +174,7 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({
             borderCollapse: 'collapse',
             textAlign: 'left',
             fontFamily: "'Inter', sans-serif",
+            whiteSpace: 'nowrap',
           }}
         >
           <thead>
@@ -181,6 +183,7 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({
                 height: '42px',
                 background: '#FFFFFF',
                 borderBottom: '1px solid #E2E8F0',
+                whiteSpace: 'nowrap',
               }}
             >
               <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#334155', letterSpacing: '0.2px', width: '134px' }}>Expense ID</th>
@@ -203,11 +206,28 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({
           </thead>
           <tbody>
             {isLoading ? (
-              <tr>
-                <td colSpan={16} style={{ padding: '40px', textAlign: 'center', color: '#64748B', fontSize: '13px' }}>
-                  Loading expenses...
-                </td>
-              </tr>
+              Array.from({ length: 5 }).map((_, idx) => (
+                <tr key={idx} className="h-[52px] border-b border-[#F1F5F9] hover:bg-slate-50/50">
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="text" width={75} height={13} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="badge" width={80} height={20} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="text" width={110} height={13} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="text" width={80} height={13} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="text" width={90} height={13} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="text" width={130} height={13} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="text" width={75} height={13} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="text" width={90} height={13} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="badge" width={70} height={20} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="text" width={80} height={13} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="text" width={85} height={13} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="text" width={85} height={13} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="text" width={95} height={13} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="text" width={65} height={13} /></td>
+                  <td style={{ padding: '12px 16px' }}><Skeleton variant="badge" width={75} height={20} /></td>
+                  <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                    <Skeleton variant="circular" width={24} height={24} className="mx-auto" />
+                  </td>
+                </tr>
+              ))
             ) : currentExpenses.length === 0 ? (
               <tr>
                 <td colSpan={16} style={{ padding: '40px', textAlign: 'center', color: '#64748B', fontSize: '13px' }}>

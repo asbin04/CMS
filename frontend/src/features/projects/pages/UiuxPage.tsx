@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Download, Plus, Monitor, AlertCircle, RefreshCw } from 'lucide-react';
+import { Plus, Monitor, AlertCircle, RefreshCw } from 'lucide-react';
+import { ReloadButton } from '@/components/ui/ReloadButton';
+import { ExportButton } from '@/components/ui/ExportButton';
 import {
   UiuxDesignItem,
   UiuxKpis,
@@ -306,35 +308,42 @@ export const UiuxPage: React.FC = () => {
           >
             <RefreshCw size={15} color="#64748B" className={isLoading ? 'animate-spin' : ''} />
           </button>
+        </div>
+      )}
+
+      {/* Section - KPI Metric Cards */}
+      <UiuxKpiCards kpis={kpis} isLoading={isLoading} />
+
+      {/* Section - Tabs and Action Buttons Header */}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          width: '100%',
+          height: '34px',
+          boxSizing: 'border-box',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: '10px',
+            width: 'auto',
+            height: '34px',
+          }}
+        >
+          <ReloadButton
+            onClick={() => loadData()}
+            isRefreshing={isLoading}
+            title="Refresh"
+          />
 
           {/* Export Button */}
-          <button
-            type="button"
-            onClick={handleExport}
-            style={{
-              boxSizing: 'border-box',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              padding: '8px 14px',
-              gap: '6px',
-              height: '36px',
-              background: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontFamily: 'Inter',
-              fontWeight: 600,
-              fontSize: '12px',
-              lineHeight: '16px',
-              color: '#334155',
-              boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
-            }}
-            className="hover:bg-slate-50 transition-colors"
-          >
-            <Download size={16} color="#64748B" strokeWidth={1.33} />
-            <span>Export</span>
-          </button>
+          <ExportButton onClick={handleExport} />
 
           {/* + Add Design Button */}
           <button
@@ -413,55 +422,18 @@ export const UiuxPage: React.FC = () => {
         </div>
       )}
 
-      {/* Section - KPI Metric Cards */}
-      <UiuxKpiCards kpis={kpis} />
-
-      {/* Unified Filter and Table Container */}
-      <div
-        style={{
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          padding: '0px',
-          width: '100%',
-          background: '#FFFFFF',
-          border: '1px solid rgba(226, 232, 240, 0.9)',
-          borderRadius: '12px',
-          overflow: 'hidden',
-          boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
-        }}
-      >
-        {/* Filter Controls Bar */}
-        <UiuxFilterBar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          selectedProject={selectedProject}
-          onProjectChange={setSelectedProject}
-          selectedDesignType={selectedDesignType}
-          onDesignTypeChange={setSelectedDesignType}
-          selectedApprovalStatus={selectedApprovalStatus}
-          onApprovalStatusChange={setSelectedApprovalStatus}
-          selectedStatus={selectedStatus}
-          onStatusChange={setSelectedStatus}
-          filterOptions={filterOptions}
-          onToggleMoreFilters={() => setIsMoreFiltersOpen(!isMoreFiltersOpen)}
-          isMoreFiltersOpen={isMoreFiltersOpen}
-          onClearFilters={handleClearFilters}
-        />
-
-        {/* 17 Columns Data Table & Pagination */}
-        <UiuxTable
-          designs={paginatedDesigns}
-          onEdit={(item) => setEditingDesign(item)}
-          onDelete={handleDeleteDesign}
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-          pageSize={pageSize}
-          onPageSizeChange={setPageSize}
-          totalElements={totalElements}
-        />
-      </div>
+      {/* 17 Columns Data Table & Pagination */}
+      <UiuxTable
+        isLoading={isLoading}
+        designs={paginatedDesigns}
+        onEdit={(item) => setEditingDesign(item)}
+        onDelete={handleDeleteDesign}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+        pageSize={pageSize}
+        onPageSizeChange={setPageSize}
+        totalElements={totalElements}
+      />
 
       {/* Modals */}
       <AddDesignModal

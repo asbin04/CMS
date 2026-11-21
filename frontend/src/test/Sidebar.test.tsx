@@ -288,4 +288,29 @@ describe('Sidebar Component - Search & Rail interaction', () => {
     expect(clientsLinks[0]).toHaveAttribute('href', '/clients/list');
     expect(screen.queryByRole('button', { name: 'Clients' })).not.toBeInTheDocument();
   });
+
+  it('renders single-item Transaction Control section as a primary link without a dropdown', () => {
+    render(
+      <MemoryRouter initialEntries={['/reports/transaction-control']}>
+        <Sidebar isCollapsed={false} />
+      </MemoryRouter>
+    );
+
+    const tcLinks = screen.getAllByRole('link', { name: 'Transaction Control' });
+    expect(tcLinks).toHaveLength(1);
+    expect(tcLinks[0]).toHaveAttribute('href', '/reports/transaction-control');
+    expect(screen.queryByRole('button', { name: 'Transaction Control' })).not.toBeInTheDocument();
+  });
+
+  it('renders Project Dashboard link pointing to /projects/dashboard under Projects & Delivery', () => {
+    render(
+      <MemoryRouter initialEntries={['/projects/dashboard']}>
+        <Sidebar isCollapsed={false} />
+      </MemoryRouter>
+    );
+
+    const projectDashboardLink = screen.getByRole('link', { name: 'Project Dashboard' });
+    expect(projectDashboardLink).toBeInTheDocument();
+    expect(projectDashboardLink).toHaveAttribute('href', '/projects/dashboard');
+  });
 });

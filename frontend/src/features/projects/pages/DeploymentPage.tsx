@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Rocket, Download, Plus } from 'lucide-react';
+import { Rocket, Plus } from 'lucide-react';
+import { ReloadButton } from '@/components/ui/ReloadButton';
+import { ExportButton } from '@/components/ui/ExportButton';
 import {
   DeploymentItem,
   DeploymentKpis,
@@ -149,14 +151,12 @@ export const DeploymentPage: React.FC = () => {
 
         {/* Top Actions */}
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={handleExport}
-            className="box-border flex flex-row items-center justify-center px-3 py-1.5 gap-1.5 h-[32px] bg-white border border-[#E2E8F0] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] text-[#334155] font-medium text-[12px] leading-[16px] hover:bg-[#F8FAFC] transition-colors cursor-pointer"
-          >
-            <Download className="w-[14px] h-[14px] text-[#4F46E5]" strokeWidth={2} />
-            <span>Export</span>
-          </button>
+          <ReloadButton
+            onClick={fetchData}
+            isRefreshing={isLoading}
+            title="Refresh"
+          />
+          <ExportButton onClick={handleExport} />
 
           <button
             type="button"

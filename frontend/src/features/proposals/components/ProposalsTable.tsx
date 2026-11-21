@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Download,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -8,6 +7,7 @@ import {
   RefreshCw,
   FileQuestion,
 } from 'lucide-react';
+import { ExportButton } from '@/components/ui/ExportButton';
 import { Proposal, ProposalSortOption, ProposalStatus } from '../types';
 import { formatRupee } from '@/features/collections/utils';
 import { StatusDropdownMenu, StatusItemConfig } from '../../../components/ui/StatusDropdownMenu';
@@ -112,21 +112,14 @@ const PROPOSAL_STATUS_CONFIGS: StatusItemConfig[] = [
           </div>
 
           {/* Export Button */}
-          <button
-            type="button"
-            onClick={onExport}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold transition-colors shadow-2xs cursor-pointer active:scale-98"
-          >
-            <Download size={14} className="text-slate-500" />
-            <span>Export</span>
-          </button>
+          <ExportButton onClick={onExport} />
         </div>
       </div>
 
       {/* Horizontal Scrollable Table Wrapper */}
       <div className="w-full overflow-x-auto horizontal-table-scroll custom-scrollbar" style={{ WebkitOverflowScrolling: 'touch' }}>
         <table
-          className="w-full text-left border-collapse"
+          className="w-full text-left border-collapse whitespace-nowrap"
           style={{
             minWidth: '1825px',
             tableLayout: 'auto',
@@ -150,7 +143,7 @@ const PROPOSAL_STATUS_CONFIGS: StatusItemConfig[] = [
             <col style={{ width: '120px', minWidth: '120px' }} />
           </colgroup>
           <thead>
-            <tr className="select-none bg-white border-b border-slate-200 h-[44px]">
+            <tr className="select-none bg-[#F8FAFC] border-b border-slate-200 h-[44px] whitespace-nowrap">
               <th className="px-4 py-3 text-[11px] font-bold text-[#475569] uppercase tracking-[0.5px] whitespace-nowrap min-w-[120px]">
                 PROPOSAL ID
               </th>

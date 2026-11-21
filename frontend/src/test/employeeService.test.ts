@@ -80,6 +80,40 @@ describe('employeeService', () => {
     expect(result.id).toBe(249);
   });
 
+  it('bulkCreateEmployees calls apiClient.post to /employees/bulk with array', async () => {
+    const payloads = [
+      {
+        fullName: 'Employee One',
+        workEmail: 'emp1@company.com',
+        phone: '+91 91111 22222',
+        department: 'Engineering',
+        designation: 'Developer',
+        joiningDate: '01 Jan 2026',
+        monthlyCtc: 40000,
+      },
+      {
+        fullName: 'Employee Two',
+        workEmail: 'emp2@company.com',
+        phone: '+91 93333 44444',
+        department: 'Design',
+        designation: 'Designer',
+        joiningDate: '01 Feb 2026',
+        monthlyCtc: 45000,
+      },
+    ];
+
+    const postSpy = vi.spyOn(apiClient, 'post').mockResolvedValue({
+      success: true,
+      message: 'Imported',
+      data: [{ id: 1 }, { id: 2 }] as any,
+      timestamp: '2026-11-16T10:00:00Z',
+    });
+
+    const result = await employeeService.bulkCreateEmployees(payloads as any);
+    expect(postSpy).toHaveBeenCalledWith('/employees/bulk', payloads);
+    expect(result).toHaveLength(2);
+  });
+
   it('deleteEmployee calls apiClient.delete with id', async () => {
     const deleteSpy = vi.spyOn(apiClient, 'delete').mockResolvedValue({
       success: true,

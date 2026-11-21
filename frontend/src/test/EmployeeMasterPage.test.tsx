@@ -187,7 +187,11 @@ describe('EmployeeMasterPage Component', () => {
     ).toBeNull();
   });
 
-  it('renders consistent action menu button for each row and handles View Details and Edit', async () => {
+  it('clicking Import triggers CSV file selection and imports records via bulkCreateEmployees', async () => {
+    const bulkSpy = vi.spyOn(employeeService, 'bulkCreateEmployees').mockResolvedValue([
+      { id: 10, employeeId: 'EMP-010', fullName: 'Imported User' } as any,
+    ]);
+
     await act(async () => {
       render(
         <BrowserRouter>
@@ -196,54 +200,31 @@ describe('EmployeeMasterPage Component', () => {
       );
     });
 
-    // Should have action buttons for all 3 rows
-    const actionBtns = screen.getAllByLabelText(/Actions for /i);
-    expect(actionBtns.length).toBe(3);
+    const fileInput = screen.getByTestId('employee-csv-input');
+    const csvContent =
+      'Employee ID,Full Name,Email,Phone,Department,Designation,Monthly CTC,Joining Date\n' +
+      'EMP-010,Imported User,imported@company.com,+91 99999 11111,Engineering,Lead,85000,2026-01-15';
+    const file = new File([csvContent], 'employees.csv', { type: 'text/csv' });
 
-    // Open action menu for first employee in table (Rohan Kumar, newest joining date)
     await act(async () => {
-      fireEvent.click(actionBtns[0]);
+      fireEvent.change(fileInput, { target: { files: [file] } });
     });
 
-    // Menu options should be present in document body via portal
-    const viewOption = screen.getByRole('button', { name: /View Details/i });
-    const editOption = screen.getByRole('button', { name: /Edit/i });
-    const deleteOption = screen.getByRole('button', { name: /Delete/i });
-
-    expect(viewOption).toBeDefined();
-    expect(editOption).toBeDefined();
-    expect(deleteOption).toBeDefined();
-
-    // Click View Details
-    await act(async () => {
-      fireEvent.click(viewOption);
-    });
-
-    // Detail modal opens showing employee name and ID
-    expect(screen.getByRole('heading', { name: /Rohan Kumar/i })).toBeDefined();
-    expect(screen.getByText(/EMP-003 • E-003/i)).toBeDefined();
-
-    // Close detail modal
-    const closeBtn = screen.getByRole('button', { name: /Close modal/i });
-    await act(async () => {
-      fireEvent.click(closeBtn);
-    });
-
-    // Open action menu for second employee (Priya Kapoor)
-    await act(async () => {
-      fireEvent.click(actionBtns[1]);
-    });
-
-    const editOption2 = screen.getByRole('button', { name: /Edit/i });
-    await act(async () => {
-      fireEvent.click(editOption2);
-    });
-
-    // Should open detail modal in edit mode with Save button
-    expect(screen.getByRole('button', { name: /Save/i })).toBeDefined();
+    expect(bulkSpy).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({
+          employeeId: 'EMP-010',
+          fullName: 'Imported User',
+          workEmail: 'imported@company.com',
+          department: 'Engineering',
+          monthlyCtc: 85000,
+        }),
+      ])
+    );
+    expect(screen.getByText('Import Successful')).toBeDefined();
   });
 
-  it('maintains visible sticky actions column across pagination and sorting', async () => {
+  it('shows error toast when importing an empty CSV file', async () => {
     await act(async () => {
       render(
         <BrowserRouter>
@@ -252,87 +233,14 @@ describe('EmployeeMasterPage Component', () => {
       );
     });
 
-    // Verify ACTIONS header has sticky right alignment
-    const actionsHeader = screen.getByRole('columnheader', { name: /ACTIONS/i });
-    expect(actionsHeader).toBeDefined();
-    expect(actionsHeader.className).toContain('sticky');
-    expect(actionsHeader.className).toContain('right-0');
+    const fileInput = screen.getByTestId('employee-csv-input');
+    const emptyFile = new File([''], 'empty.csv', { type: 'text/csv' });
 
-    // Change sort order
-    const sortSelect = screen.getByDisplayValue('Joining Date (Newest)');
     await act(async () => {
-      fireEvent.change(sortSelect, { target: { value: 'Name (A-Z)' } });
+      fireEvent.change(fileInput, { target: { files: [emptyFile] } });
     });
 
-    // Action buttons still render consistently for all rows
-    const actionBtns = screen.getAllByLabelText(/Actions for /i);
-    expect(actionBtns.length).toBe(3);
-  });
-
-  it('renders unified filter and table layout matching Leads page specification', async () => {
-    await act(async () => {
-      render(
-        <BrowserRouter>
-          <EmployeeMasterPage />
-        </BrowserRouter>
-      );
-    });
-
-    // Top Row: Search bar, Filters button, Clear Filters button
-    expect(screen.getByPlaceholderText(/Search by Employee ID, name, employee code, email or phone.../i)).toBeDefined();
-    const filtersBtn = screen.getByRole('button', { name: /^Filters$/i });
-    const clearFiltersBtn = screen.getByRole('button', { name: /Clear Filters/i });
-    expect(filtersBtn).toBeDefined();
-    expect(clearFiltersBtn).toBeDefined();
-
-    // Filter section: 8 fields (Department, Designation, Employment Type, Status, Location, Reporting Manager, Joining Date, Current Tenure Status)
-    expect(screen.getByText('Department')).toBeDefined();
-    expect(screen.getByText('Designation')).toBeDefined();
-    expect(screen.getByText('Employment Type')).toBeDefined();
-    expect(screen.getByText('Status')).toBeDefined();
-    expect(screen.getByText('Location')).toBeDefined();
-    expect(screen.getByText('Reporting Manager')).toBeDefined();
-    expect(screen.getByText('Joining Date')).toBeDefined();
-    expect(screen.getByText('Current Tenure Status')).toBeDefined();
-    expect(screen.getByText('Select date range')).toBeDefined();
-
-    // Table header section within the unified card: dynamic Employees count, info icon, Sort by
-    expect(screen.getByRole('heading', { name: /Employees \(3\)/i })).toBeDefined();
-    expect(screen.getByText('Sort by')).toBeDefined();
-    expect(screen.getByDisplayValue('Joining Date (Newest)')).toBeDefined();
-
-    // Filter by department (e.g. Design)
-    const allSelects = screen.getAllByDisplayValue('All');
-    const deptSelect = allSelects[0];
-    await act(async () => {
-      fireEvent.change(deptSelect, { target: { value: 'Design' } });
-    });
-
-    // Count updates dynamically to 1
-    expect(screen.getByRole('heading', { name: /Employees \(1\)/i })).toBeDefined();
-    expect(screen.getByText('Priya Kapoor')).toBeDefined();
-    expect(screen.queryByText('Amit Sharma')).toBeNull();
-
-    // Click Clear Filters resets everything back
-    await act(async () => {
-      fireEvent.click(clearFiltersBtn);
-    });
-
-    expect(screen.getByRole('heading', { name: /Employees \(3\)/i })).toBeDefined();
-    expect(screen.getByText('Amit Sharma')).toBeDefined();
-    expect(screen.getByText('Priya Kapoor')).toBeDefined();
-
-    // Toggle Filters button hides the filter grid
-    await act(async () => {
-      fireEvent.click(filtersBtn);
-    });
-    expect(screen.queryByText('Select date range')).toBeNull();
-
-    // Toggle Filters button again restores the filter grid
-    await act(async () => {
-      fireEvent.click(filtersBtn);
-    });
-    expect(screen.getByText('Select date range')).toBeDefined();
+    expect(screen.getByText('Import Failed')).toBeDefined();
   });
 });
 

@@ -252,6 +252,7 @@ export const PayrollSalaryPage: React.FC = () => {
         totalRecords={totalRecords}
         filteredCount={filteredCount}
         sortOption={sortOption}
+        isLoading={isLoading}
         onSortChange={setSortOption}
         currentPage={currentPage}
         pageSize={pageSize}

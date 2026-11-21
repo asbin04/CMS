@@ -1,11 +1,10 @@
 import { apiClient } from '@/services/api/apiClient';
 import { API_ENDPOINTS } from '@/services/api/apiEndpoints';
 import { ProjectOption, TaskOption, EmployeeOption, ClientOption } from '../types';
-import { MASTER_PROJECTS, MASTER_TASKS, MASTER_EMPLOYEES, MASTER_CLIENTS } from '../mockData';
 
 export const projectLookupService = {
   /**
-   * Fetch all projects from backend, with master fallback
+   * Fetch all projects from backend
    */
   async getProjects(): Promise<ProjectOption[]> {
     try {
@@ -13,7 +12,7 @@ export const projectLookupService = {
       const rawList = Array.isArray(res.data)
         ? res.data
         : (Array.isArray(res) ? res : (Array.isArray((res as any)?.data?.data) ? (res as any).data.data : null));
-      if (Array.isArray(rawList) && rawList.length > 0) {
+      if (Array.isArray(rawList)) {
         return rawList.map((p: any) => ({
           id: p.id || p.projectId || p.projectCode || '',
           name: p.name || p.projectName || p.id || '',
@@ -24,13 +23,13 @@ export const projectLookupService = {
         }));
       }
     } catch {
-      // Fallback to master data if backend lookup unavailable
+      // Backend lookup unavailable
     }
-    return MASTER_PROJECTS;
+    return [];
   },
 
   /**
-   * Fetch tasks for a given project from backend, with master fallback
+   * Fetch tasks for a given project from backend
    */
   async getTasksForProject(projectId: string): Promise<TaskOption[]> {
     try {
@@ -41,7 +40,7 @@ export const projectLookupService = {
       const rawList = Array.isArray(res.data)
         ? res.data
         : (Array.isArray(res) ? res : (Array.isArray((res as any)?.data?.data) ? (res as any).data.data : null));
-      if (Array.isArray(rawList) && rawList.length > 0) {
+      if (Array.isArray(rawList)) {
         return rawList.map((t: any) => ({
           id: t.id || t.taskId || t.taskCode || '',
           name: t.name || t.taskName || t.id || '',
@@ -51,13 +50,13 @@ export const projectLookupService = {
         }));
       }
     } catch {
-      // Fallback
+      // Backend lookup unavailable
     }
-    return MASTER_TASKS;
+    return [];
   },
 
   /**
-   * Fetch all employees, with master fallback
+   * Fetch all employees
    */
   async getEmployees(): Promise<EmployeeOption[]> {
     try {
@@ -65,20 +64,20 @@ export const projectLookupService = {
       const rawList = Array.isArray(res.data)
         ? res.data
         : (Array.isArray(res) ? res : (Array.isArray((res as any)?.data?.data) ? (res as any).data.data : null));
-      if (Array.isArray(rawList) && rawList.length > 0) {
+      if (Array.isArray(rawList)) {
         return rawList.map((e: any) => ({
           id: e.employeeId || e.id || '',
           name: e.name || e.fullName || `${e.firstName || ''} ${e.lastName || ''}`.trim() || e.id || '',
         }));
       }
     } catch {
-      // Fallback
+      // Backend lookup unavailable
     }
-    return MASTER_EMPLOYEES;
+    return [];
   },
 
   /**
-   * Fetch all clients, with master fallback
+   * Fetch all clients
    */
   async getClients(): Promise<ClientOption[]> {
     try {
@@ -86,16 +85,16 @@ export const projectLookupService = {
       const rawList = Array.isArray(res.data)
         ? res.data
         : (Array.isArray(res) ? res : (Array.isArray((res as any)?.data?.data) ? (res as any).data.data : null));
-      if (Array.isArray(rawList) && rawList.length > 0) {
+      if (Array.isArray(rawList)) {
         return rawList.map((c: any) => ({
           id: c.id || c.clientId || c.clientCode || '',
           name: c.name || c.clientName || c.companyName || c.id || '',
         }));
       }
     } catch {
-      // Fallback
+      // Backend lookup unavailable
     }
-    return MASTER_CLIENTS;
+    return [];
   },
 };
 

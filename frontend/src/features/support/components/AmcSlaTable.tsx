@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MoreVertical, AlertTriangle, Edit, Trash2 } from 'lucide-react';
 import { AmcSlaContract } from '../types/amcSla';
+import { Skeleton } from '../../../components/ui/Skeleton';
 
 interface AmcSlaTableProps {
   contracts: AmcSlaContract[];
@@ -160,38 +161,18 @@ export const AmcSlaTable: React.FC<AmcSlaTableProps> = ({
   };
 
   const getOwner = (c: AmcSlaContract): string => {
-    if (c.contractCode === 'AMC-0012' && (!c.assignedManager || c.assignedManager === 'Rahul Sharma')) return 'Rohan Verma';
-    if (c.contractCode === 'SLA-0009' && (!c.assignedManager || c.assignedManager === 'Sneha Rao')) return 'Sneha Nair';
-    if (c.contractCode === 'AMC-0011' && (!c.assignedManager || c.assignedManager === 'Vikram Malhotra')) return 'Vikram Shah';
-    if (c.contractCode === 'SLA-0007' && (!c.assignedManager || c.assignedManager === 'Divya Patel')) return 'Amit Sharma';
-    if (c.contractCode === 'AMC-0006' && (!c.assignedManager || c.assignedManager === 'Amit Sharma')) return 'Divya Patel';
     return c.assignedManager || (c as any).owner || '-';
   };
 
   const getNotes = (c: AmcSlaContract): string => {
-    if (c.contractCode === 'AMC-0012' && (!c.notes || c.notes.includes('Full stack'))) return 'Production support & maintenance';
-    if (c.contractCode === 'SLA-0009' && (!c.notes || c.notes.includes('High availability'))) return 'Server, network & cloud support';
-    if (c.contractCode === 'AMC-0011' && (!c.notes || c.notes.includes('Continuous DevOps'))) return 'Application & DB maintenance';
-    if (c.contractCode === 'SLA-0007' && (!c.notes || c.notes.includes('Tier-2'))) return 'L2/L3 technical support';
-    if (c.contractCode === 'AMC-0006' && (!c.notes || c.notes.includes('Comprehensive annual'))) return 'Contract expired - renewal pending';
     return c.notes || '-';
   };
 
   const getCoverage = (c: AmcSlaContract): string => {
-    if (c.contractCode === 'AMC-0012' && (!c.coverageHours || c.coverageHours.includes('24/7 Support'))) return 'Mon – Fri, 9:00 AM – 6:00 PM';
-    if (c.contractCode === 'SLA-0009' && (!c.coverageHours || c.coverageHours.includes('Mission Critical'))) return '24 x 7';
-    if (c.contractCode === 'AMC-0011' && (!c.coverageHours || c.coverageHours.includes('Business Hours'))) return 'Mon – Sat, 9:00 AM – 6:00 PM';
-    if (c.contractCode === 'SLA-0007' && (!c.coverageHours || c.coverageHours.includes('9 AM'))) return 'Mon – Fri, 9:00 AM – 6:00 PM';
-    if (c.contractCode === 'AMC-0006' && (!c.coverageHours || c.coverageHours.includes('24/7 Support'))) return '24 x 7';
     return c.coverageHours || '-';
   };
 
   const getResolutionSla = (c: AmcSlaContract): string => {
-    if (c.contractCode === 'AMC-0012' && c.resolutionSla === '12 hrs') return '4 hrs';
-    if (c.contractCode === 'SLA-0009' && c.resolutionSla === '8 hrs') return '4 hrs';
-    if (c.contractCode === 'AMC-0011' && c.resolutionSla === '16 hrs') return '8 hrs';
-    if (c.contractCode === 'SLA-0007' && c.resolutionSla === '24 hrs') return '16 hrs';
-    if (c.contractCode === 'AMC-0006' && c.resolutionSla === '12 hrs') return '8 hrs';
     return c.resolutionSla || '-';
   };
 
@@ -199,9 +180,9 @@ export const AmcSlaTable: React.FC<AmcSlaTableProps> = ({
     <div className="w-full flex flex-col bg-white rounded-b-[12px] border-t border-[#E5E7EB]">
       {/* Horizontal Scrollable Table */}
       <div className="w-full overflow-x-auto">
-        <table className="w-full min-w-[2108.31px] border-collapse text-left font-['Inter']">
+        <table className="w-full min-w-[2108.31px] border-collapse text-left font-['Inter'] whitespace-nowrap">
           <thead>
-            <tr className="bg-[#F8FAFC]/80 border-b border-[#E2E8F0] text-[10px] font-bold uppercase tracking-[0.5px] text-[#475569] h-[41px]">
+            <tr className="bg-[#F8FAFC]/80 border-b border-[#E2E8F0] text-[10px] font-bold uppercase tracking-[0.5px] text-[#475569] h-[41px] whitespace-nowrap">
               <th style={{ width: '98.88px', minWidth: '98.88px', maxWidth: '98.88px', padding: '12px 14px' }}>AMC / SLA ID</th>
               <th style={{ width: '81.14px', minWidth: '81.14px', maxWidth: '81.14px', padding: '12px 14px' }}>CLIENT ID</th>
               <th style={{ width: '92.14px', minWidth: '92.14px', maxWidth: '92.14px', padding: '12px 14px' }}>PROJECT ID</th>
@@ -223,11 +204,27 @@ export const AmcSlaTable: React.FC<AmcSlaTableProps> = ({
           </thead>
           <tbody>
             {isLoading ? (
-              <tr>
-                <td colSpan={17} className="py-12 text-center text-[13px] text-[#64748B]">
-                  Loading AMC / SLA contracts...
-                </td>
-              </tr>
+              Array.from({ length: 5 }).map((_, idx) => (
+                <tr key={idx} className="h-[48px] border-b border-[#F1F5F9] hover:bg-slate-50/50">
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={75} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={80} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={110} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={90} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="badge" width={55} height={18} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="badge" width={65} height={18} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={75} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={75} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={85} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="badge" width={70} height={18} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="badge" width={65} height={18} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={80} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={60} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={60} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={85} height={12} /></td>
+                  <td className="px-3.5 py-2.5"><Skeleton variant="text" width={100} height={12} /></td>
+                  <td className="px-3.5 py-2.5 text-center"><Skeleton variant="circular" width={22} height={22} className="mx-auto" /></td>
+                </tr>
+              ))
             ) : paginatedContracts.length === 0 ? (
               <tr>
                 <td colSpan={17} className="py-12 text-center text-[13px] text-[#64748B]">
@@ -245,7 +242,7 @@ export const AmcSlaTable: React.FC<AmcSlaTableProps> = ({
                 return (
                   <tr
                     key={c.id}
-                    className="h-[49px] border-b border-[#F1F5F9] hover:bg-[#F8FAFC] transition-colors text-[12px]"
+                    className="h-[49px] border-b border-[#F1F5F9] hover:bg-[#F8FAFC] transition-colors text-[12px] whitespace-nowrap"
                   >
                     {/* 1. AMC / SLA ID */}
                     <td style={{ width: '98.88px', minWidth: '98.88px', maxWidth: '98.88px', padding: '16px 14px 17px' }}>

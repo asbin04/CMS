@@ -1,14 +1,21 @@
 import React from 'react';
 import { ArrowUp, ArrowDown, Wallet, BarChart2 } from 'lucide-react';
 import { TrendsKpis } from '../../types';
-import { formatIndianCurrency, MOCK_TRENDS_KPIS } from '../../mockData';
+import { formatIndianCurrency } from '../../mockData';
+
+const DEFAULT_TRENDS_KPIS: TrendsKpis = {
+  avgMonthlyInflow: 0,
+  avgMonthlyOutflow: 0,
+  netCashFlow: 0,
+  closingCashLatest: 0,
+};
 
 interface TrendsKpiCardsProps {
   kpis?: TrendsKpis;
 }
 
-export const TrendsKpiCards: React.FC<TrendsKpiCardsProps> = ({ kpis = MOCK_TRENDS_KPIS }) => {
-  const safeKpis = kpis || MOCK_TRENDS_KPIS;
+export const TrendsKpiCards: React.FC<TrendsKpiCardsProps> = ({ kpis }) => {
+  const safeKpis = kpis || DEFAULT_TRENDS_KPIS;
 
   const cards = [
     {

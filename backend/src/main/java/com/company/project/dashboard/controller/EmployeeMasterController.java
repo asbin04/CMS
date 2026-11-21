@@ -64,6 +64,17 @@ public class EmployeeMasterController {
                 .body(ApiResponse.success("Employee created successfully", created));
     }
 
+    @PostMapping("/bulk")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CEO')")
+    @Operation(summary = "Bulk import employees")
+    public ResponseEntity<ApiResponse<List<EmployeeMasterDto>>> bulkCreateEmployees(
+            @RequestBody List<CreateEmployeeRequest> requests
+    ) {
+        List<EmployeeMasterDto> created = service.createEmployees(requests);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("Imported " + created.size() + " employees successfully", created));
+    }
+
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'CEO')")
     @Operation(summary = "Update an employee")

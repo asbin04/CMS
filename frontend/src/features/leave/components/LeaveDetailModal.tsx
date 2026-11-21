@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, CheckCircle2, XCircle, FileText, Trash2, RotateCcw } from 'lucide-react';
 import { LeaveRecord } from '../types/leave';
+import { AUTHORIZED_APPROVERS, getCurrentApproverName } from '../../../utils/approverUtils';
 
 interface LeaveDetailModalProps {
   record: LeaveRecord | null;
@@ -19,9 +20,19 @@ export const LeaveDetailModal: React.FC<LeaveDetailModalProps> = ({
   onResetPending,
   onDelete,
 }) => {
-  const [approverName, setApproverName] = useState('Rahul Mehta');
+  const [approverName, setApproverName] = useState(() => getCurrentApproverName());
   const [processing, setProcessing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+
+  useEffect(() => {
+    if (record) {
+      if (record.approvedBy && record.approvedBy !== '-' && record.approvedBy.trim() !== '') {
+        setApproverName(record.approvedBy);
+      } else {
+        setApproverName(getCurrentApproverName());
+      }
+    }
+  }, [record?.id, record?.approvedBy]);
 
   if (!record) return null;
 
@@ -166,13 +177,20 @@ export const LeaveDetailModal: React.FC<LeaveDetailModalProps> = ({
           {/* If Pending: Choose Approver input */}
           {record.approvalStatus === 'Pending' && (
             <div className="pt-2">
-              <label className="block text-[11px] font-medium text-slate-600 mb-1">Approver Name</label>
-              <input
-                type="text"
-                value={approverName}
-                onChange={(e) => setApproverName(e.target.value)}
-                className="w-full text-xs text-slate-800 bg-white border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              />
+              <label className="block text-[11px] font-medium text-slate-600 mb-1">Approved By</label>
+              <div className="relative">
+                <select
+                  value={approverName}
+                  onChange={(e) => setApproverName(e.target.value)}
+                  className="w-full text-xs text-slate-800 bg-white border border-slate-200 rounded-lg px-3 py-2 pr-8 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium cursor-pointer"
+                >
+                  {AUTHORIZED_APPROVERS.map((approver) => (
+                    <option key={approver} value={approver}>
+                      {approver}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           )}
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { TimesheetsRequirementsPage } from '../features/projects/pages/TimesheetsRequirementsPage';
+import { TimesheetsRequirementsPage } from '../features/timesheets-requirements/pages/TimesheetsRequirementsPage';
 
 // Setup environment mocks for jsdom
 beforeEach(() => {
@@ -236,7 +236,7 @@ describe('TimesheetsRequirementsPage UI Implementation Tests', () => {
     const row186Queries = within(row186);
 
     // Initial status of REQ-2026-0186 is "In Progress", Priority is "High"
-    const [priorityBtn, statusBtn] = row186Queries.getAllByTitle('Click to change');
+    const [priorityBtn, statusBtn] = row186Queries.getAllByTitle(/Click to change/i);
     expect(statusBtn).toHaveTextContent('In Progress');
     expect(priorityBtn).toHaveTextContent('High');
 
@@ -298,7 +298,7 @@ describe('TimesheetsRequirementsPage UI Implementation Tests', () => {
     const row048Queries = within(row048);
 
     // Initial approval status of TS-202610-048 is "Approved"
-    const approvalBtn = row048Queries.getByTitle('Click to change');
+    const approvalBtn = row048Queries.getByTitle(/Click to change/i);
     expect(approvalBtn).toHaveTextContent('Approved');
 
     // Click approval status badge to open dropdown

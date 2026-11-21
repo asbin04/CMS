@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { EmployeeExitRecord, ExitSortOption } from '../../types';
 import { StatusDropdownMenu, StatusItemConfig } from '../../../../components/ui/StatusDropdownMenu';
+import { Skeleton } from '../../../../components/ui/Skeleton';
 
 export const EXIT_STATUS_CONFIGS: StatusItemConfig[] = [
   { value: 'Approved', label: 'Approved', dotColor: '#059669', textColor: '#059669' },
@@ -40,6 +41,7 @@ interface EmployeeExitTableProps {
   totalRecords: number;
   filteredCount: number;
   sortOption: ExitSortOption;
+  isLoading?: boolean;
   onSortChange: (sort: ExitSortOption) => void;
   currentPage: number;
   pageSize: number;
@@ -60,6 +62,7 @@ export const EmployeeExitTable: React.FC<EmployeeExitTableProps> = ({
   totalRecords,
   filteredCount,
   sortOption,
+  isLoading = false,
   onSortChange,
   currentPage,
   pageSize,
@@ -257,9 +260,9 @@ export const EmployeeExitTable: React.FC<EmployeeExitTableProps> = ({
 
       {/* Horizontal Scrollable Table Wrapper */}
       <div className="overflow-x-auto w-full table-horizontal-scroll border border-[#E2E8F0] rounded-xl">
-        <table className="w-full text-left border-collapse text-xs min-w-[1550px]">
+        <table className="w-full text-left border-collapse text-xs min-w-[1550px] whitespace-nowrap">
           <thead>
-            <tr className="h-[42px] bg-[#F8FAFC]/80 border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.55px] select-none">
+            <tr className="h-[42px] bg-[#F8FAFC]/80 border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.55px] select-none whitespace-nowrap">
               <th className="px-[14px] py-[12px] text-left whitespace-nowrap">
                 EXIT ID
               </th>
@@ -311,7 +314,29 @@ export const EmployeeExitTable: React.FC<EmployeeExitTableProps> = ({
             </tr>
           </thead>
           <tbody>
-            {records.length === 0 ? (
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, idx) => (
+                <tr key={idx} className="h-[48px] border-b border-[#E2E8F0] hover:bg-slate-50/50">
+                  <td className="py-3 px-3.5"><Skeleton variant="text" width={65} height={12} /></td>
+                  <td className="py-3 px-3.5"><Skeleton variant="text" width={75} height={12} /></td>
+                  <td className="py-3 px-3.5"><Skeleton variant="text" width={110} height={12} /></td>
+                  <td className="py-3 px-3.5"><Skeleton variant="text" width={80} height={12} /></td>
+                  <td className="py-3 px-3.5"><Skeleton variant="text" width={80} height={12} /></td>
+                  <td className="py-3 px-3.5"><Skeleton variant="text" width={70} height={12} /></td>
+                  <td className="py-3 px-3.5"><Skeleton variant="badge" width={65} height={18} /></td>
+                  <td className="py-3 px-3.5"><Skeleton variant="badge" width={65} height={18} /></td>
+                  <td className="py-3 px-3.5"><Skeleton variant="badge" width={70} height={18} /></td>
+                  <td className="py-3 px-3.5"><Skeleton variant="badge" width={65} height={18} /></td>
+                  <td className="py-3 px-3.5"><Skeleton variant="badge" width={65} height={18} /></td>
+                  <td className="py-3 px-3.5"><Skeleton variant="text" width={100} height={12} /></td>
+                  <td className="py-3 px-3.5"><Skeleton variant="text" width={80} height={12} /></td>
+                  <td className="py-3 px-3.5"><Skeleton variant="badge" width={70} height={18} /></td>
+                  <td className="py-3 px-3.5 text-center sticky right-0 bg-white">
+                    <Skeleton variant="circular" width={22} height={22} className="mx-auto" />
+                  </td>
+                </tr>
+              ))
+            ) : records.length === 0 ? (
               <tr>
                 <td colSpan={16} className="py-12 text-center text-xs text-slate-400">
                   No employee exit records match the current filter criteria.

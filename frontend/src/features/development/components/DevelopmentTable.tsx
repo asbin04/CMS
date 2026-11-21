@@ -1,5 +1,6 @@
 import React from 'react';
 import { ExternalLink, FileText, ArrowUpDown, ArrowUp, ArrowDown, Eye, Edit, Trash2 } from 'lucide-react';
+import { Skeleton } from '../../../components/ui/Skeleton';
 import {
   DevelopmentRecord,
   DevelopmentEnvironment,
@@ -21,6 +22,7 @@ interface DevelopmentTableProps {
   sortField?: string | null;
   sortOrder?: 'asc' | 'desc';
   onSort?: (field: string) => void;
+  isLoading?: boolean;
 }
 
 const CODE_REVIEW_STATUS_CONFIGS: StatusItemConfig[] = [
@@ -63,6 +65,7 @@ export const DevelopmentTable: React.FC<DevelopmentTableProps> = ({
   sortField = null,
   sortOrder = 'asc',
   onSort,
+  isLoading = false,
 }) => {
   const getEnvironmentBadge = (env: DevelopmentEnvironment) => {
     switch (env) {
@@ -163,9 +166,9 @@ export const DevelopmentTable: React.FC<DevelopmentTableProps> = ({
 
   return (
     <div className="w-full overflow-x-auto relative min-h-[300px]">
-      <table className="w-full text-left border-collapse min-w-[1550px]">
+      <table className="w-full text-left border-collapse min-w-[1700px] whitespace-nowrap">
         <thead>
-          <tr className="border-b border-[#DCE3ED] bg-[#F8FAFC]/60">
+          <tr className="border-b border-[#DCE3ED] bg-[#F8FAFC]/60 whitespace-nowrap">
             {renderSortableHeader('developmentId', 'Development ID')}
             {renderSortableHeader('projectId', 'Project ID')}
             {renderSortableHeader('requirementId', 'Requirement ID')}
@@ -195,7 +198,28 @@ export const DevelopmentTable: React.FC<DevelopmentTableProps> = ({
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100 bg-white">
-          {records.length === 0 ? (
+          {isLoading ? (
+            Array.from({ length: 5 }).map((_, idx) => (
+              <tr key={idx} className="hover:bg-slate-50/70 transition-colors">
+                <td className="py-3 px-4"><Skeleton variant="text" width={75} height={12} /></td>
+                <td className="py-3 px-4"><Skeleton variant="text" width={60} height={12} /></td>
+                <td className="py-3 px-4"><Skeleton variant="text" width={70} height={12} /></td>
+                <td className="py-3 px-4"><Skeleton variant="text" width={65} height={12} /></td>
+                <td className="py-3 px-4"><Skeleton variant="text" width={110} height={12} /></td>
+                <td className="py-3 px-4"><Skeleton variant="text" width={80} height={12} /></td>
+                <td className="py-3 px-4"><Skeleton variant="badge" width={60} height={18} /></td>
+                <td className="py-3 px-4"><Skeleton variant="text" width={80} height={12} /></td>
+                <td className="py-3 px-4"><Skeleton variant="text" width={90} height={12} /></td>
+                <td className="py-3 px-4"><Skeleton variant="text" width={75} height={12} /></td>
+                <td className="py-3 px-4"><Skeleton variant="badge" width={75} height={18} /></td>
+                <td className="py-3 px-4"><Skeleton variant="badge" width={70} height={18} /></td>
+                <td className="py-3 px-4"><Skeleton variant="text" width={60} height={12} /></td>
+                <td className="py-3 px-4"><Skeleton variant="text" width={60} height={12} /></td>
+                <td className="py-3 px-4"><Skeleton variant="text" width={70} height={12} /></td>
+                <td className="py-3 px-4 text-center"><Skeleton variant="circular" width={20} height={20} className="mx-auto" /></td>
+              </tr>
+            ))
+          ) : records.length === 0 ? (
             <tr>
               <td colSpan={16} className="py-12 text-center text-slate-400 text-xs">
                 No development records found matching your filters.

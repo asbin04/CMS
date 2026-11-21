@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Download, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import { ExportButton } from '../../../../components/ui/ExportButton';
 import { useRequirementsState } from '../../hooks/useRequirementsState';
 import { RequirementRecord } from '../../types';
 import { RequirementsKpiCards } from './RequirementsKpiCards';
@@ -37,6 +38,7 @@ export const RequirementsSection: React.FC = () => {
     updatePriority,
     exportCsv,
     resetFilters,
+    isLoading,
     nextRequirementId,
     sortField,
     sortOrder,
@@ -111,48 +113,58 @@ export const RequirementsSection: React.FC = () => {
       {/* Section Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold text-slate-900 tracking-tight">Requirements</h2>
+        <div className="flex items-center gap-2.5 self-end sm:self-auto">
+          {/* Export Button */}
+          <ExportButton onClick={handleExport} />
+
+          {/* + Add Requirement Button */}
+          <button
+            type="button"
+            onClick={() => setIsAddOpen(true)}
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-semibold rounded-[10px] shadow-sm transition-colors cursor-pointer h-[36px]"
+          >
+            <Plus className="w-3.5 h-3.5 text-white" />
+            <span>Add Requirement</span>
+          </button>
+        </div>
       </div>
 
       {/* Dynamic KPI Cards */}
-      <RequirementsKpiCards kpis={kpis} />
+      <RequirementsKpiCards kpis={kpis} isLoading={isLoading} />
 
-      {/* Unified Filter and Table Container */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col w-full">
-        {/* Dynamic Filter Bar */}
-        <RequirementsFilterBar
-          search={search}
-          onSearchChange={setSearch}
-          projectFilter={projectFilter}
-          onProjectFilterChange={setProjectFilter}
-          typeFilter={typeFilter}
-          onTypeFilterChange={setTypeFilter}
-          priorityFilter={priorityFilter}
-          onPriorityFilterChange={setPriorityFilter}
-          statusFilter={statusFilter}
-          onStatusFilterChange={setStatusFilter}
-          onResetFilters={resetFilters}
-          onExport={handleExport}
-          onAddRequirement={() => setIsAddOpen(true)}
-        />
+      {/* Dynamic Filter Bar */}
+      <RequirementsFilterBar
+        search={search}
+        onSearchChange={setSearch}
+        projectFilter={projectFilter}
+        onProjectFilterChange={setProjectFilter}
+        typeFilter={typeFilter}
+        onTypeFilterChange={setTypeFilter}
+        priorityFilter={priorityFilter}
+        onPriorityFilterChange={setPriorityFilter}
+        statusFilter={statusFilter}
+        onStatusFilterChange={setStatusFilter}
+        onResetFilters={resetFilters}
+      />
 
-        {/* Dynamic Table */}
-        <RequirementsTable
-          records={paginatedRecords}
-          totalCount={totalRecordsCount}
-          currentPage={currentPage}
-          pageSize={pageSize}
-          onPageChange={setCurrentPage}
-          onPageSizeChange={setPageSize}
-          onUpdateStatus={handleStatusChange}
-          onUpdatePriority={handlePriorityChange}
-          onViewDetails={(rec) => setViewRecord(rec)}
-          onEdit={(rec) => setEditRecord(rec)}
-          onDelete={(id) => setDeleteId(id)}
-          sortField={sortField}
-          sortOrder={sortOrder}
-          onSort={handleSort}
-        />
-      </div>
+      {/* Dynamic Table */}
+      <RequirementsTable
+        isLoading={isLoading}
+        records={paginatedRecords}
+        totalCount={totalRecordsCount}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={setPageSize}
+        onUpdateStatus={handleStatusChange}
+        onUpdatePriority={handlePriorityChange}
+        onViewDetails={(rec) => setViewRecord(rec)}
+        onEdit={(rec) => setEditRecord(rec)}
+        onDelete={(id) => setDeleteId(id)}
+        sortField={sortField}
+        sortOrder={sortOrder}
+        onSort={handleSort}
+      />
 
       {/* Modals */}
       <AddRequirementModal

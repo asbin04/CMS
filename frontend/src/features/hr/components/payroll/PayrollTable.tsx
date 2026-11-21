@@ -10,12 +10,14 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import { PayrollRecord, PayrollSortOption } from '../../types/payroll';
+import { Skeleton } from '../../../../components/ui/Skeleton';
 
 interface PayrollTableProps {
   records: PayrollRecord[];
   totalRecords: number;
   filteredCount: number;
   sortOption: PayrollSortOption;
+  isLoading?: boolean;
   onSortChange: (sort: PayrollSortOption) => void;
   currentPage: number;
   pageSize: number;
@@ -36,6 +38,7 @@ export const PayrollTable: React.FC<PayrollTableProps> = ({
   totalRecords,
   filteredCount,
   sortOption,
+  isLoading = false,
   onSortChange,
   currentPage,
   pageSize,
@@ -239,9 +242,9 @@ export const PayrollTable: React.FC<PayrollTableProps> = ({
 
       {/* Responsive Table Container */}
       <div className="overflow-x-auto w-full">
-        <table className="w-full text-left border-collapse min-w-[1300px]">
+        <table className="w-full text-left border-collapse min-w-[1700px] whitespace-nowrap">
           <thead>
-            <tr className="border-b border-[#F1F5F9] bg-[#F8FAFC]/80 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+            <tr className="border-b border-[#F1F5F9] bg-[#F8FAFC]/80 text-[11px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
               <th className="py-3 px-4">Payroll ID</th>
               <th className="py-3 px-3">Payroll Month</th>
               <th className="py-3 px-3">Employee ID</th>
@@ -262,7 +265,29 @@ export const PayrollTable: React.FC<PayrollTableProps> = ({
             </tr>
           </thead>
           <tbody className="divide-y divide-[#F1F5F9] text-xs font-normal text-slate-700">
-            {records.length === 0 ? (
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, idx) => (
+                <tr key={idx} className="h-[48px] hover:bg-slate-50/50">
+                  <td className="py-3 px-4"><Skeleton variant="text" width={75} height={12} /></td>
+                  <td className="py-3 px-3"><Skeleton variant="text" width={75} height={12} /></td>
+                  <td className="py-3 px-3"><Skeleton variant="text" width={75} height={12} /></td>
+                  <td className="py-3 px-4"><Skeleton variant="text" width={110} height={12} /></td>
+                  <td className="py-3 px-3"><Skeleton variant="badge" width={80} height={18} /></td>
+                  <td className="py-3 px-3"><Skeleton variant="text" width={80} height={12} /></td>
+                  <td className="py-3 px-2 text-center"><Skeleton variant="text" width={24} height={12} className="mx-auto" /></td>
+                  <td className="py-3 px-2 text-center"><Skeleton variant="text" width={24} height={12} className="mx-auto" /></td>
+                  <td className="py-3 px-2 text-center"><Skeleton variant="text" width={24} height={12} className="mx-auto" /></td>
+                  <td className="py-3 px-3"><Skeleton variant="text" width={65} height={12} /></td>
+                  <td className="py-3 px-3"><Skeleton variant="text" width={65} height={12} /></td>
+                  <td className="py-3 px-3"><Skeleton variant="text" width={65} height={12} /></td>
+                  <td className="py-3 px-3"><Skeleton variant="text" width={75} height={12} /></td>
+                  <td className="py-3 px-3"><Skeleton variant="text" width={65} height={12} /></td>
+                  <td className="py-3 px-3"><Skeleton variant="text" width={80} height={12} /></td>
+                  <td className="py-3 px-3 text-center"><Skeleton variant="badge" width={65} height={18} className="mx-auto" /></td>
+                  <td className="py-3 px-3 text-center"><Skeleton variant="circular" width={22} height={22} className="mx-auto" /></td>
+                </tr>
+              ))
+            ) : records.length === 0 ? (
               <tr>
                 <td colSpan={17} className="py-12 text-center text-slate-400">
                   No payroll records found matching your filters.

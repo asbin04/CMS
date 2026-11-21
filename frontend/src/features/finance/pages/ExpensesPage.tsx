@@ -12,6 +12,8 @@ import { ExpenseFilterBar } from '../components/ExpenseFilterBar';
 import { ExpensesTable } from '../components/ExpensesTable';
 import { AddExpenseModal } from '../components/AddExpenseModal';
 import { EditExpenseModal } from '../components/EditExpenseModal';
+import { ReloadButton } from '@/components/ui/ReloadButton';
+import { ExportButton } from '@/components/ui/ExportButton';
 
 export const ExpensesPage: React.FC = () => {
   const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
@@ -205,73 +207,16 @@ export const ExpensesPage: React.FC = () => {
         {/* Right: Refresh + Export + Add Expense */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {/* Refresh button */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <button
-              type="button"
-              onClick={() => {
-                fetchExpenses();
-                fetchKpis();
-              }}
-              title="Refresh"
-              style={{
-                boxSizing: 'border-box',
-                width: '32px',
-                height: '32px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: '#FFFFFF',
-                border: '1px solid #E2E8F0',
-                borderRadius: '8px',
-                cursor: 'pointer',
-              }}
-              className="hover:bg-slate-50 transition-colors"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#334155" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="23 4 23 10 17 10" />
-                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-              </svg>
-            </button>
-          </div>
+          <ReloadButton
+            onClick={() => {
+              fetchExpenses();
+              fetchKpis();
+            }}
+            title="Refresh"
+          />
 
           {/* Export Button */}
-          <button
-            type="button"
-            onClick={handleExport}
-            style={{
-              boxSizing: 'border-box',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '8px 16px',
-              gap: '8px',
-              height: '34px',
-              background: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
-              borderRadius: '8px',
-              cursor: 'pointer',
-            }}
-            className="hover:bg-slate-50 transition-colors"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
-            <span
-              style={{
-                fontFamily: "'Inter', sans-serif",
-                fontWeight: 600,
-                fontSize: '12px',
-                lineHeight: '16px',
-                color: '#334155',
-              }}
-            >
-              Export
-            </span>
-          </button>
+          <ExportButton onClick={handleExport} />
 
           {/* + Add Expense Button */}
           <button

@@ -133,5 +133,41 @@ class EmployeeMasterServiceTest {
         assertThat(created.getFullName()).isEqualTo("Priya Kapoor");
         assertThat(created.getAvatarInitials()).isEqualTo("PK");
     }
+
+    @Test
+    @DisplayName("createEmployees bulk imports multiple employees")
+    void testBulkCreateEmployees() {
+        when(employeeRepository.count()).thenReturn(0L, 1L);
+        when(employeeRepository.save(any(EmployeeMaster.class))).thenAnswer(invocation -> {
+            EmployeeMaster e = invocation.getArgument(0);
+            e.setId(10L);
+            return e;
+        });
+
+        CreateEmployeeRequest req1 = CreateEmployeeRequest.builder()
+                .fullName("John Doe")
+                .workEmail("john@company.com")
+                .phone("+91 99999 88888")
+                .department("Engineering")
+                .designation("Dev")
+                .joiningDate("01 Jan 2026")
+                .monthlyCtc(new BigDecimal("50000"))
+                .build();
+
+        CreateEmployeeRequest req2 = CreateEmployeeRequest.builder()
+                .fullName("Jane Smith")
+                .workEmail("jane@company.com")
+                .phone("+91 99999 77777")
+                .department("HR")
+                .designation("HR Lead")
+                .joiningDate("01 Feb 2026")
+                .monthlyCtc(new BigDecimal("60000"))
+                .build();
+
+        List<EmployeeMasterDto> result = employeeService.createEmployees(List.of(req1, req2));
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getFullName()).isEqualTo("John Doe");
+        assertThat(result.get(1).getFullName()).isEqualTo("Jane Smith");
+    }
 }
 

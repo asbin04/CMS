@@ -5,14 +5,15 @@ import {
   Calendar,
   RotateCcw,
   Plus,
-  Upload,
   ChevronDown,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
+import { ExportButton } from '../ui/ExportButton';
 import { EmployeeApproval, ApprovalStatus } from '../../types/approvals';
 import { DetailItemType } from './ApprovalDetailModal';
 import { CalendarDateRangePicker } from '../ui/CalendarDateRangePicker';
+import { TablePagination } from '../ui/TablePagination';
 
 interface EmployeeApprovalsSectionProps {
   approvals: EmployeeApproval[];
@@ -209,13 +210,7 @@ export const EmployeeApprovalsSection: React.FC<EmployeeApprovalsSectionProps> =
                 <span>Add Data</span>
               </button>
 
-              <button
-                onClick={handleExport}
-                className="box-border flex flex-row items-center justify-center px-4 h-[40px] gap-1.5 bg-white border border-[#E2E8F0] hover:bg-slate-50 text-[#334155] rounded-xl text-xs sm:text-[13px] font-semibold transition-colors cursor-pointer shadow-2xs"
-              >
-                <Upload size={15} className="text-[#64748B]" />
-                <span>Export</span>
-              </button>
+              <ExportButton onClick={handleExport} />
             </div>
           </div>
 
@@ -319,7 +314,7 @@ export const EmployeeApprovalsSection: React.FC<EmployeeApprovalsSectionProps> =
             {/* Clear Filters */}
             <button
               onClick={handleClearFilters}
-              className="flex items-center gap-1.5 px-2 py-1 text-xs font-semibold text-[#4F46E5] hover:text-[#4338CA] transition-colors cursor-pointer whitespace-nowrap ml-1"
+              className="flex items-center gap-1.5 px-2 py-1 text-xs font-semibold text-[#4F46E5] hover:text-[#4338CA] transition-colors cursor-pointer whitespace-nowrap ml-auto"
             >
               <RotateCcw size={13} className="text-[#4F46E5]" />
               <span>Clear Filters</span>
@@ -330,9 +325,9 @@ export const EmployeeApprovalsSection: React.FC<EmployeeApprovalsSectionProps> =
 
       {/* Table Container */}
       <div className="w-full overflow-x-auto custom-scrollbar">
-        <table className="w-full text-left border-collapse min-w-[980px]">
+        <table className="w-full text-left border-collapse min-w-[980px] whitespace-nowrap">
           <thead>
-            <tr className="bg-white border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.5px]">
+            <tr className="bg-white border-b border-[#E2E8F0] text-[11px] font-bold text-[#475569] uppercase tracking-[0.5px] whitespace-nowrap">
               <th className="py-3.5 px-4 font-bold">EMPLOYEE NAME</th>
               <th className="py-3.5 px-4 font-bold">REQUEST TYPE</th>
               <th
@@ -491,62 +486,18 @@ export const EmployeeApprovalsSection: React.FC<EmployeeApprovalsSectionProps> =
       </div>
 
       {/* Table Footer / Pagination */}
-      <div className="box-border flex flex-row flex-wrap items-center justify-between p-3 px-5 w-full border-t border-[#F1F5F9] gap-3 text-xs text-[#64748B]">
-        <span>Showing 1 – {Math.min(pageSize, displayItems.length)} of {totalItems} requests</span>
-
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-              className="w-6 h-6 flex items-center justify-center border border-[#E2E8F0] rounded hover:bg-slate-100 disabled:opacity-40 transition-colors"
-            >
-              <ChevronLeft size={13} className="text-[#94A3B8]" />
-            </button>
-
-            {[1, 2, 3, 4, 5].map((pageNum) => (
-              <button
-                key={pageNum}
-                onClick={() => setCurrentPage(pageNum)}
-                className={`w-7 h-7 flex items-center justify-center rounded text-xs transition-colors ${
-                  currentPage === pageNum
-                    ? 'bg-[#4F46E5] text-white font-semibold'
-                    : 'border border-[#E2E8F0] text-[#475569] hover:bg-slate-100 font-medium'
-                }`}
-              >
-                {pageNum}
-              </button>
-            ))}
-
-            <button
-              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-              disabled={currentPage >= totalPages}
-              className="w-6 h-6 flex items-center justify-center border border-[#E2E8F0] rounded hover:bg-slate-100 disabled:opacity-40 transition-colors"
-            >
-              <ChevronRight size={13} className="text-[#475569]" />
-            </button>
-          </div>
-
-          <div className="relative">
-            <select
-              value={pageSize}
-              onChange={(e) => {
-                setPageSize(Number(e.target.value));
-                setCurrentPage(1);
-              }}
-              className="h-[26px] px-2 pr-6 bg-white border border-[#E2E8F0] rounded text-xs text-[#475569] font-medium outline-none appearance-none cursor-pointer"
-            >
-              <option value={5}>5 per page</option>
-              <option value={10}>10 per page</option>
-              <option value={20}>20 per page</option>
-            </select>
-            <ChevronDown
-              size={12}
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#6B7280] pointer-events-none"
-            />
-          </div>
-        </div>
-      </div>
+      <TablePagination
+        currentPage={currentPage}
+        totalItems={totalItems}
+        pageSize={pageSize}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={(newSize) => {
+          setPageSize(newSize);
+          setCurrentPage(1);
+        }}
+        pageSizeOptions={[5, 10, 20]}
+        itemLabel="requests"
+      />
     </div>
   );
 };

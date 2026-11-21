@@ -12,6 +12,8 @@ import { AddClientApprovalModal } from '../../../components/approvals/AddClientA
 import { ToastNotification, ToastItem } from '../../../components/ui/ToastNotification';
 import { ApprovalStatus } from '../../../types/approvals';
 import { Skeleton } from '../../../components/ui/Skeleton';
+import { SkeletonCard } from '../../../components/ui/SkeletonCard';
+import { SkeletonTable } from '../../../components/ui/SkeletonTable';
 import { ErrorBanner } from '../../../components/ui/ErrorBanner';
 
 export const ApprovalInboxPage: React.FC = () => {
@@ -201,7 +203,6 @@ export const ApprovalInboxPage: React.FC = () => {
             onClick={handleManualRefresh}
             isRefreshing={isRefreshing}
             disabled={isLoading || isRefreshing}
-            className="p-1 rounded hover:bg-slate-200/60 text-[#64748B] hover:text-[#0F172A] transition-colors cursor-pointer disabled:opacity-50"
             title="Refresh inbox data"
           />
         </div>
@@ -219,16 +220,15 @@ export const ApprovalInboxPage: React.FC = () => {
 
       {/* Skeletons while loading initial data */}
       {isLoading && !data ? (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6" role="status" aria-label="Loading approvals..." aria-busy="true">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Skeleton variant="card" height={90} />
-            <Skeleton variant="card" height={90} />
-            <Skeleton variant="card" height={90} />
-            <Skeleton variant="card" height={90} />
+            {Array.from({ length: 4 }).map((_, i) => (
+              <SkeletonCard key={i} variant="kpi" height={96} />
+            ))}
           </div>
-          <Skeleton variant="card" height={260} />
-          <Skeleton variant="card" height={260} />
-          <Skeleton variant="card" height={260} />
+          <SkeletonTable rows={4} columns={6} hasFilters={false} className="border-[#F1F5F9]" />
+          <SkeletonTable rows={4} columns={6} hasFilters={false} className="border-[#F1F5F9]" />
+          <SkeletonTable rows={4} columns={6} hasFilters={false} className="border-[#F1F5F9]" />
         </div>
       ) : data ? (
         <>

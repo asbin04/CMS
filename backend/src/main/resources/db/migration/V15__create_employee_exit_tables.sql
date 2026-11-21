@@ -49,38 +49,7 @@ CREATE TABLE IF NOT EXISTS public.employee_exit_counters (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 5. Seed initial 18 exit records from designer-approved mock data
-INSERT INTO public.employee_exit_records (
-    exit_id, employee_id, employee_name, resignation_date, approval_date,
-    notice_period_days, last_working_day, exit_type, reason,
-    exit_status, assets_returned, full_and_final_status,
-    notes, notice_completion_date, exit_readiness
-)
-VALUES
-    ('EXI-00018', 'EMP-001', 'Amit Sharma', '2026-10-25', '2026-10-26', 30, '2026-11-24', 'Resignation', 'Personal reasons', 'Approved', 'Pending', 'Pending', '-', '2026-11-24', 'In Progress'),
-    ('EXI-00017', 'EMP-004', 'Sneha Nair', '2026-10-20', '2026-10-21', 15, '2026-11-05', 'Resignation', 'Career growth', 'Pending', 'Returned', 'Pending', '-', '2026-11-05', 'Not Started'),
-    ('EXI-00016', 'EMP-006', 'Ananya Rao', '2026-10-18', '2026-10-20', 20, '2026-11-07', 'Resignation', 'Family reasons', 'Approved', 'Returned', 'Approved', 'Laptop, ID Card', '2026-11-07', 'Completed'),
-    ('EXI-00015', 'EMP-002', 'Priya Kapoor', '2026-10-15', '2026-10-18', 30, '2026-11-14', 'Resignation', 'Health issues', 'Pending', 'Pending', 'Pending', '-', NULL, 'Not Started'),
-    ('EXI-00014', 'EMP-003', 'Rohan Kumar', '2026-10-08', '2026-10-10', 15, '2026-10-24', 'Termination', 'Restructuring', 'Approved', 'Returned', 'Approved', 'Company Assets', '2026-10-24', 'Completed'),
-    ('EXI-00013', 'EMP-007', 'Karthik R', '2026-10-02', '2026-10-05', 45, '2026-11-16', 'Resignation', 'Higher Studies', 'In Review', '-', 'In Review', '-', '2026-11-16', 'In Progress'),
-    ('EXI-00012', 'EMP-008', 'Divya Patel', '2026-09-28', '2026-09-30', 20, '2026-10-19', 'Resignation', 'Personal reasons', 'Approved', 'Returned', 'Approved', 'Laptop', '2026-10-19', 'Completed'),
-    ('EXI-00011', 'EMP-005', 'Vikram Shah', '2026-09-22', '2026-09-26', 10, '2026-10-06', 'Resignation', 'Relocation', 'Approved', 'Returned', 'Approved', 'ID Card', '2026-10-06', 'Completed'),
-    ('EXI-00010', 'EMP-009', 'Meera Joshi', '2026-09-15', '2026-09-18', 30, '2026-10-16', 'Resignation', 'Marriage', 'Pending', '-', 'Pending', '-', NULL, 'Not Started'),
-    ('EXI-00009', 'EMP-010', 'Arjun Verma', '2026-09-10', '2026-09-12', 15, '2026-09-27', 'Termination', 'Performance', 'Approved', 'Returned', 'Approved', 'Laptop, ID Card', '2026-09-27', 'Completed'),
-    ('EXI-00008', 'EMP-011', 'Sunita Deshmukh', '2026-09-01', '2026-09-03', 30, '2026-10-02', 'Resignation', 'Career growth', 'Approved', 'Returned', 'Approved', 'Laptop, Access Card', '2026-10-02', 'Completed'),
-    ('EXI-00007', 'EMP-012', 'Rajesh Nair', '2026-08-20', '2026-08-23', 30, '2026-09-21', 'Resignation', 'Personal reasons', 'Approved', 'Returned', 'Approved', 'Laptop', '2026-09-21', 'Completed'),
-    ('EXI-00006', 'EMP-013', 'Pooja Sharma', '2026-08-15', '2026-08-17', 15, '2026-08-31', 'Resignation', 'Higher Studies', 'Approved', 'Returned', 'Approved', 'ID Card, Token', '2026-08-31', 'Completed'),
-    ('EXI-00005', 'EMP-014', 'Aditya Singhal', '2026-08-05', '2026-08-08', 30, '2026-09-06', 'Resignation', 'Relocation', 'Approved', 'Returned', 'Approved', 'Company Phone', '2026-09-06', 'Completed'),
-    ('EXI-00004', 'EMP-015', 'Neha Gupta', '2026-07-28', '2026-07-30', 20, '2026-08-18', 'Resignation', 'Family reasons', 'Approved', 'Returned', 'Approved', 'Laptop, Monitor', '2026-08-18', 'Completed'),
-    ('EXI-00003', 'EMP-016', 'Manoj Tiwari', '2026-07-18', '2026-07-20', 15, '2026-08-04', 'Termination', 'Contract Ended', 'Approved', 'Returned', 'Approved', 'All Assets', '2026-08-04', 'In Progress'),
-    ('EXI-00002', 'EMP-017', 'Deepak Joshi', '2026-07-10', '2026-07-12', 30, '2026-08-11', 'Resignation', 'Career growth', 'In Review', 'Pending', 'In Review', 'Laptop', '2026-08-11', 'In Progress'),
-    ('EXI-00001', 'EMP-018', 'Swati Mishra', '2026-07-01', '2026-07-04', 45, '2026-08-17', 'Resignation', 'Better Opportunity', 'Pending', 'Pending', 'Pending', '-', NULL, 'Not Started')
-ON CONFLICT (exit_id) DO NOTHING;
-
--- 6. Initialize atomic sequence counter to 18 (matching max exit_id number)
+-- 5. Initialize atomic sequence counter to 0 for clean start
 INSERT INTO public.employee_exit_counters (prefix, current_val)
-VALUES ('EXI', 18)
-ON CONFLICT (prefix) DO UPDATE
-SET current_val = GREATEST(public.employee_exit_counters.current_val, 18),
-    updated_at = NOW();
-
+VALUES ('EXI', 0)
+ON CONFLICT (prefix) DO NOTHING;

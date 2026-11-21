@@ -36,14 +36,6 @@ public class SupportTicketServiceImpl implements SupportTicketService {
         long resolved = repository.countByStatusIgnoreCase("Resolved");
         long breaches = repository.countBySlaStatusIgnoreCase("Breached");
 
-        // Fallbacks matching exact target design if table is empty
-        if (total == 0) {
-            total = 186;
-            open = 34;
-            resolved = 124;
-            breaches = 6;
-        }
-
         double compliance = total > 0 ? ((double) (total - breaches) / total) * 100.0 : 100.0;
         String complianceFormatted = String.format(Locale.US, "%.1f%%", compliance);
 
@@ -103,16 +95,16 @@ public class SupportTicketServiceImpl implements SupportTicketService {
         double avgResponse = allTickets.stream()
                 .map(SupportTicketEntity::getResponseHours)
                 .filter(s -> s != null && !s.isBlank() && !s.equals("-"))
-                .mapToDouble(s -> parseHoursSafe(s, 1.2))
+                .mapToDouble(s -> parseHoursSafe(s, 0.0))
                 .average()
-                .orElse(1.2);
+                .orElse(0.0);
 
         double avgResolution = allTickets.stream()
                 .map(SupportTicketEntity::getResolutionHours)
                 .filter(s -> s != null && !s.isBlank() && !s.equals("-"))
-                .mapToDouble(s -> parseHoursSafe(s, 18.6))
+                .mapToDouble(s -> parseHoursSafe(s, 0.0))
                 .average()
-                .orElse(18.6);
+                .orElse(0.0);
 
         String avgResponseHours = String.format(Locale.US, "%.1f hrs", avgResponse);
         String avgResolutionHours = String.format(Locale.US, "%.1f hrs", avgResolution);
@@ -355,16 +347,17 @@ public class SupportTicketServiceImpl implements SupportTicketService {
     }
 
     private synchronized String generateNextTicketCode() {
+        int currentYear = LocalDate.now().getYear();
         return repository.findMaxTicketCode()
                 .map(code -> {
                     try {
                         int num = Integer.parseInt(code.substring(8));
-                        return String.format("ST-2026-%04d", num + 1);
+                        return String.format("ST-%d-%04d", currentYear, num + 1);
                     } catch (Exception ignored) {
-                        return "ST-2026-0187";
+                        return String.format("ST-%d-0001", currentYear);
                     }
                 })
-                .orElse("ST-2026-0001");
+                .orElse(String.format("ST-%d-0001", currentYear));
     }
 
     private static double parseHoursSafe(String val, double defaultValue) {

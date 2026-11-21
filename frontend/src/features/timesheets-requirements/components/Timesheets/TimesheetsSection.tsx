@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Download, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import { ExportButton } from '../../../../components/ui/ExportButton';
 import { useTimesheetsState } from '../../hooks/useTimesheetsState';
 import { TimesheetRecord } from '../../types';
 import { TimesheetsKpiCards } from './TimesheetsKpiCards';
@@ -36,6 +37,7 @@ export const TimesheetsSection: React.FC = () => {
     updateApprovalStatus,
     exportCsv,
     resetFilters,
+    isLoading,
     nextTimesheetId,
     sortField,
     sortOrder,
@@ -117,47 +119,57 @@ export const TimesheetsSection: React.FC = () => {
       {/* Section Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold text-slate-900 tracking-tight">Timesheets</h2>
+        <div className="flex items-center gap-2.5 self-end sm:self-auto">
+          {/* Export Button */}
+          <ExportButton onClick={handleExport} />
+
+          {/* + Log Time Button */}
+          <button
+            type="button"
+            onClick={() => setIsLogTimeOpen(true)}
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-semibold rounded-[10px] shadow-sm transition-colors cursor-pointer h-[36px]"
+          >
+            <Plus className="w-3.5 h-3.5 text-white" />
+            <span>Log Time</span>
+          </button>
+        </div>
       </div>
 
       {/* Dynamic KPI Cards */}
-      <TimesheetsKpiCards kpis={kpis} />
+      <TimesheetsKpiCards kpis={kpis} isLoading={isLoading} />
 
-      {/* Unified Filter and Table Container */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col w-full">
-        {/* Dynamic Filter Bar */}
-        <TimesheetsFilterBar
-          search={search}
-          onSearchChange={setSearch}
-          projectFilter={projectFilter}
-          onProjectFilterChange={setProjectFilter}
-          employeeFilter={employeeFilter}
-          onEmployeeFilterChange={setEmployeeFilter}
-          approvalFilter={approvalFilter}
-          onApprovalFilterChange={setApprovalFilter}
-          billableFilter={billableFilter}
-          onBillableFilterChange={setBillableFilter}
-          onResetFilters={resetFilters}
-          onExport={handleExport}
-          onLogTime={() => setIsLogTimeOpen(true)}
-        />
+      {/* Dynamic Filter Bar */}
+      <TimesheetsFilterBar
+        search={search}
+        onSearchChange={setSearch}
+        projectFilter={projectFilter}
+        onProjectFilterChange={setProjectFilter}
+        employeeFilter={employeeFilter}
+        onEmployeeFilterChange={setEmployeeFilter}
+        approvalFilter={approvalFilter}
+        onApprovalFilterChange={setApprovalFilter}
+        billableFilter={billableFilter}
+        onBillableFilterChange={setBillableFilter}
+        onResetFilters={resetFilters}
+      />
 
-        {/* Dynamic Table */}
-        <TimesheetsTable
-          records={paginatedRecords}
-          totalCount={totalRecordsCount}
-          currentPage={currentPage}
-          pageSize={pageSize}
-          onPageChange={setCurrentPage}
-          onPageSizeChange={setPageSize}
-          onUpdateApprovalStatus={handleApprovalChange}
-          onViewDetails={(rec) => setViewRecord(rec)}
-          onEdit={(rec) => setEditRecord(rec)}
-          onDelete={(id) => setDeleteId(id)}
-          sortField={sortField}
-          sortOrder={sortOrder}
-          onSort={handleSort}
-        />
-      </div>
+      {/* Dynamic Table */}
+      <TimesheetsTable
+        isLoading={isLoading}
+        records={paginatedRecords}
+        totalCount={totalRecordsCount}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={setPageSize}
+        onUpdateApprovalStatus={handleApprovalChange}
+        onViewDetails={(rec) => setViewRecord(rec)}
+        onEdit={(rec) => setEditRecord(rec)}
+        onDelete={(id) => setDeleteId(id)}
+        sortField={sortField}
+        sortOrder={sortOrder}
+        onSort={handleSort}
+      />
 
       {/* Modals */}
       <LogTimeModal

@@ -17,13 +17,13 @@ export const EditUatModal: React.FC<EditUatModalProps> = ({
   uat,
   projectOptions,
 }) => {
-  const [projectId, setProjectId] = useState('PRJ-001');
+  const [projectId, setProjectId] = useState(uat?.projectId || projectOptions[0] || '');
   const [requirementId, setRequirementId] = useState('');
   const [testDate, setTestDate] = useState('');
   const [testCase, setTestCase] = useState('');
   const [expectedResult, setExpectedResult] = useState('');
   const [actualResult, setActualResult] = useState('');
-  const [testerName, setTesterName] = useState('Amit Sharma');
+  const [testerName, setTesterName] = useState('');
   const [status, setStatus] = useState('Passed');
   const [defectId, setDefectId] = useState('-');
   const [clientApproval, setClientApproval] = useState('Approved');
@@ -40,7 +40,7 @@ export const EditUatModal: React.FC<EditUatModalProps> = ({
       setTestCase(uat.testCase || '');
       setExpectedResult(uat.expectedResult || '');
       setActualResult(uat.actualResult || '');
-      setTesterName(uat.testerName || 'Amit Sharma');
+      setTesterName(uat.testerName || '');
       setStatus(uat.status || 'Passed');
       setDefectId(uat.defectId || '-');
       setClientApproval(uat.clientApproval || 'Approved');
@@ -173,17 +173,13 @@ export const EditUatModal: React.FC<EditUatModalProps> = ({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-slate-700 mb-1">Tester Name</label>
-              <select
+              <input
+                type="text"
                 value={testerName}
                 onChange={(e) => setTesterName(e.target.value)}
+                placeholder="Enter tester name"
                 className="w-full h-9 px-3 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              >
-                <option value="Amit Sharma">Amit Sharma (AS)</option>
-                <option value="Sneha Nair">Sneha Nair (SN)</option>
-                <option value="Divya Patel">Divya Patel (DP)</option>
-                <option value="Rohan Verma">Rohan Verma (RV)</option>
-                <option value="Vikram Shah">Vikram Shah (VK)</option>
-              </select>
+              />
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-700 mb-1">Status</label>

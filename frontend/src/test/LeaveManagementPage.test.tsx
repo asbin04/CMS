@@ -30,7 +30,7 @@ const mockLeaves: LeaveRecord[] = [
     days: 2,
     reason: 'Fever and rest',
     approvalStatus: 'Approved',
-    approvedBy: 'Rahul Mehta',
+    approvedBy: 'Akshit Ujjain',
     calculatedDays: 2,
     leaveStatus: 'Approved',
   },
@@ -191,6 +191,50 @@ describe('LeaveManagementPage Component', () => {
     });
 
     expect(screen.queryByText('Add Leave Request')).not.toBeInTheDocument();
+  });
+
+  it('approves a leave using current approver name', async () => {
+    const updateSpy = vi.spyOn(leaveService, 'updateLeave').mockResolvedValue({
+      ...mockLeaves[0],
+      approvalStatus: 'Approved',
+      approvedBy: 'Akshit Ujjain',
+      leaveStatus: 'Approved',
+    });
+
+    render(
+      <BrowserRouter>
+        <LeaveManagementPage />
+      </BrowserRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('LV-00086')).toBeInTheDocument();
+    });
+
+    // Click on LV-00086 to open detail modal
+    const lvBtn = screen.getByRole('button', { name: 'LV-00086' });
+    act(() => {
+      fireEvent.click(lvBtn);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Leave Details')).toBeInTheDocument();
+    });
+
+    const approveBtn = screen.getByRole('button', { name: /^approve$/i });
+    act(() => {
+      fireEvent.click(approveBtn);
+    });
+
+    await waitFor(() => {
+      expect(updateSpy).toHaveBeenCalledWith(
+        'LV-00086',
+        expect.objectContaining({
+          approvalStatus: 'Approved',
+          approvedBy: expect.stringMatching(/Akshit Ujjain|Gaurav Tripathy|Asbin T S/),
+        })
+      );
+    });
   });
 });
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { ExpenseKpis } from '../types/expenses';
+import { Skeleton } from '../../../components/ui/Skeleton';
 
 interface ExpenseKpiCardsProps {
   kpis: ExpenseKpis | null;
@@ -179,7 +180,11 @@ export const ExpenseKpiCards: React.FC<ExpenseKpiCardsProps> = ({ kpis, isLoadin
                 whiteSpace: 'nowrap',
               }}
             >
-              {isLoading ? '...' : card.value}
+              {isLoading ? (
+                <Skeleton variant="text" width={110} height={24} className="rounded" />
+              ) : (
+                card.value
+              )}
             </span>
 
             {/* Trend Row */}

@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ReloadButton } from '../../../components/ui/ReloadButton';
+import { ExportButton } from '../../../components/ui/ExportButton';
+import { Skeleton } from '../../../components/ui/Skeleton';
 import {
   LayoutDashboard,
   Package,
@@ -79,8 +81,8 @@ export const ProjectDashboardPage: React.FC = () => {
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [successToast, setSuccessToast] = useState<string | null>(null);
-  const [clientOptions, setClientOptions] = useState<string[]>(['CL-001', 'CL-002', 'CL-003']);
-  const [managerOptions, setManagerOptions] = useState<string[]>(['Amit Sharma', 'Sneha Nair', 'Rohan Verma']);
+  const [clientOptions, setClientOptions] = useState<string[]>([]);
+  const [managerOptions, setManagerOptions] = useState<string[]>([]);
 
   // Mount animation trigger
   useEffect(() => {
@@ -235,8 +237,8 @@ export const ProjectDashboardPage: React.FC = () => {
       id: row.projectId,
       projectCode: row.projectCode,
       projectName: row.projectName,
-      clientId: clientOptions[0] || 'CL-001',
-      projectManager: managerOptions[0] || 'Amit Sharma',
+      clientId: clientOptions[0] || '',
+      projectManager: managerOptions[0] || '',
       startDate: new Date().toISOString().substring(0, 10),
       plannedEndDate: new Date().toISOString().substring(0, 10),
       status: row.status || 'In Progress',
@@ -446,16 +448,12 @@ export const ProjectDashboardPage: React.FC = () => {
           />
 
           {/* Export Report Button */}
-          <button
+          <ExportButton
             onClick={handleExport}
             disabled={isExporting}
-            className="box-border flex items-center h-[34px] px-[14px] bg-white border border-[#CBD5E1] rounded-[8px] hover:bg-slate-50 transition-colors shadow-sm gap-[6px] disabled:opacity-50 cursor-pointer"
-          >
-            <Download className={`w-[14px] h-[14px] text-[#4F46E5] stroke-[2] ${isExporting ? 'animate-bounce' : ''}`} />
-            <span className="font-['Inter'] font-semibold text-[12px] leading-[16px] text-[#334155]">
-              {isExporting ? 'Exporting...' : 'Export Report'}
-            </span>
-          </button>
+            label={isExporting ? 'Exporting...' : 'Export Report'}
+            title="Export Report"
+          />
         </div>
       </div>
 
@@ -513,7 +511,7 @@ export const ProjectDashboardPage: React.FC = () => {
                 Active Projects
               </span>
               <span className="text-[18px] font-bold text-[#0F172A] leading-[18px] mt-1">
-                {overview.activeProjects}
+                {summaryLoading ? <Skeleton variant="text" width={36} height={18} /> : overview.activeProjects}
               </span>
             </div>
           </div>
@@ -528,7 +526,7 @@ export const ProjectDashboardPage: React.FC = () => {
                 At Risk Projects
               </span>
               <span className="text-[18px] font-bold text-[#0F172A] leading-[18px] mt-1">
-                {overview.atRiskProjects}
+                {summaryLoading ? <Skeleton variant="text" width={36} height={18} /> : overview.atRiskProjects}
               </span>
             </div>
           </div>
@@ -543,7 +541,7 @@ export const ProjectDashboardPage: React.FC = () => {
                 Delayed Projects
               </span>
               <span className="text-[18px] font-bold text-[#0F172A] leading-[18px] mt-1">
-                {overview.delayedProjects}
+                {summaryLoading ? <Skeleton variant="text" width={36} height={18} /> : overview.delayedProjects}
               </span>
             </div>
           </div>
@@ -558,7 +556,7 @@ export const ProjectDashboardPage: React.FC = () => {
                 Projects Due ≤ 7 Days
               </span>
               <span className="text-[18px] font-bold text-[#0F172A] leading-[18px] mt-1">
-                {overview.dueSoonProjects}
+                {summaryLoading ? <Skeleton variant="text" width={36} height={18} /> : overview.dueSoonProjects}
               </span>
             </div>
           </div>
@@ -590,7 +588,7 @@ export const ProjectDashboardPage: React.FC = () => {
                 Contract / Revenue Value
               </span>
               <span className="text-[18px] font-bold text-[#0F172A] leading-[18px] mt-1">
-                {financials.contractRevenueFormatted}
+                {summaryLoading ? <Skeleton variant="text" width={75} height={18} /> : financials.contractRevenueFormatted}
               </span>
             </div>
           </div>
@@ -605,7 +603,7 @@ export const ProjectDashboardPage: React.FC = () => {
                 Total Project Cost
               </span>
               <span className="text-[18px] font-bold text-[#0F172A] leading-[18px] mt-1">
-                {financials.totalProjectCostFormatted}
+                {summaryLoading ? <Skeleton variant="text" width={75} height={18} /> : financials.totalProjectCostFormatted}
               </span>
             </div>
           </div>
@@ -620,7 +618,7 @@ export const ProjectDashboardPage: React.FC = () => {
                 Estimated Project Profit
               </span>
               <span className="text-[18px] font-bold text-[#0F172A] leading-[18px] mt-1">
-                {financials.estimatedProjectProfitFormatted}
+                {summaryLoading ? <Skeleton variant="text" width={75} height={18} /> : financials.estimatedProjectProfitFormatted}
               </span>
             </div>
           </div>
@@ -635,7 +633,7 @@ export const ProjectDashboardPage: React.FC = () => {
                 Overall Project Margin
               </span>
               <span className="text-[18px] font-bold text-[#0F172A] leading-[18px] mt-1">
-                {financials.overallProjectMarginFormatted}
+                {summaryLoading ? <Skeleton variant="text" width={50} height={18} /> : financials.overallProjectMarginFormatted}
               </span>
             </div>
           </div>
@@ -840,27 +838,35 @@ export const ProjectDashboardPage: React.FC = () => {
 
         {/* Table Content */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
+          <table className="w-full text-left border-collapse text-xs whitespace-nowrap min-w-[900px]">
             <thead>
-              <tr className="border-b border-slate-200/80 bg-slate-50/75 text-slate-600 font-semibold">
-                <th className="py-3 px-4 w-12 text-center">S.No</th>
-                <th className="py-3 px-4">Project ID</th>
-                <th className="py-3 px-4">Project Name</th>
-                <th className="py-3 px-4">Revenue</th>
-                <th className="py-3 px-4" title="Billable Cost: Hours × Billable Rate">Total Cost</th>
-                <th className="py-3 px-4">Profit</th>
-                <th className="py-3 px-4">Margin</th>
-                <th className="py-3 px-4 text-center">Health</th>
-                <th className="py-3 px-4 text-center w-16">Actions</th>
+              <tr className="border-b border-slate-200/80 bg-slate-50/75 text-slate-600 font-semibold whitespace-nowrap">
+                <th className="py-3 px-4 w-12 text-center whitespace-nowrap">S.No</th>
+                <th className="py-3 px-4 whitespace-nowrap">Project ID</th>
+                <th className="py-3 px-4 whitespace-nowrap">Project Name</th>
+                <th className="py-3 px-4 whitespace-nowrap">Revenue</th>
+                <th className="py-3 px-4 whitespace-nowrap" title="Billable Cost: Hours × Billable Rate">Total Cost</th>
+                <th className="py-3 px-4 whitespace-nowrap">Profit</th>
+                <th className="py-3 px-4 whitespace-nowrap">Margin</th>
+                <th className="py-3 px-4 text-center whitespace-nowrap">Health</th>
+                <th className="py-3 px-4 text-center w-16 whitespace-nowrap">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {tableLoading ? (
-                <tr>
-                  <td colSpan={9} className="py-8 text-center text-slate-400">
-                    Loading project profitability data from database...
-                  </td>
-                </tr>
+                Array.from({ length: 5 }).map((_, idx) => (
+                  <tr key={idx} className="h-12 hover:bg-slate-50/50">
+                    <td className="py-3 px-4"><Skeleton variant="text" width={90} height={12} /></td>
+                    <td className="py-3 px-4"><Skeleton variant="text" width={120} height={12} /></td>
+                    <td className="py-3 px-4"><Skeleton variant="badge" width={75} height={18} /></td>
+                    <td className="py-3 px-4 text-right"><Skeleton variant="text" width={80} height={12} className="ml-auto" /></td>
+                    <td className="py-3 px-4 text-right"><Skeleton variant="text" width={80} height={12} className="ml-auto" /></td>
+                    <td className="py-3 px-4 text-right"><Skeleton variant="text" width={70} height={12} className="ml-auto" /></td>
+                    <td className="py-3 px-4 text-right"><Skeleton variant="text" width={55} height={12} className="ml-auto" /></td>
+                    <td className="py-3 px-4 text-center"><Skeleton variant="badge" width={65} height={18} className="mx-auto" /></td>
+                    <td className="py-3 px-4 text-center"><Skeleton variant="circular" width={22} height={22} className="mx-auto" /></td>
+                  </tr>
+                ))
               ) : tableRows.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="py-8 text-center text-slate-400">
