@@ -73,20 +73,16 @@ export const UatTable: React.FC<UatTableProps> = ({
   const endIndex = Math.min(currentPage * pageSize, totalElements);
 
   return (
-    <div
-      style={{
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        padding: '0px',
-        width: '100%',
-        background: '#FFFFFF',
-        border: '1px solid #E2E8F0',
-        borderRadius: '12px',
-        overflow: 'hidden',
-      }}
-    >
+    <div className="flex flex-col w-full bg-white">
+      {/* Table Header Section: Record Count */}
+      <div className="px-4 sm:px-5 py-3 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white w-full">
+        <div className="flex items-center gap-2">
+          <h2 className="text-sm font-bold text-slate-900">
+            UAT Executions ({totalElements})
+          </h2>
+        </div>
+      </div>
+
       {/* Scrollable table container */}
       <div
         style={{
@@ -543,7 +539,7 @@ export const UatTable: React.FC<UatTableProps> = ({
           }}
         >
           Showing <span style={{ fontWeight: 600, color: '#0F172A' }}>{startIndex} – {endIndex}</span> of{' '}
-          <span style={{ fontWeight: 600, color: '#0F172A' }}>{totalElements}</span> requirements
+          <span style={{ fontWeight: 600, color: '#0F172A' }}>{totalElements}</span> UAT records
         </span>
 
         {/* Right: Pagination Controls */}

@@ -8,15 +8,30 @@ import {
   Edit,
   Trash2,
 } from 'lucide-react';
-import { DeploymentItem } from '../types/deployment';
+import { DeploymentItem, DeploymentFilterOptions } from '../types/deployment';
 import { formatDeploymentDisplayDate } from '../services/deploymentService';
+import { DeploymentFilterBar } from './DeploymentFilterBar';
 
-interface DeploymentTableProps {
+export interface DeploymentTableProps {
   deployments: DeploymentItem[];
   isLoading?: boolean;
   onView: (deployment: DeploymentItem) => void;
   onEdit: (deployment: DeploymentItem) => void;
   onDelete: (deployment: DeploymentItem) => void;
+  // Unified Filter props inside the main table container
+  search?: string;
+  onSearchChange?: (value: string) => void;
+  environment?: string;
+  onEnvironmentChange?: (value: string) => void;
+  status?: string;
+  onStatusChange?: (value: string) => void;
+  handoverStatus?: string;
+  onHandoverStatusChange?: (value: string) => void;
+  onClearFilters?: () => void;
+  filterOptions?: DeploymentFilterOptions;
+  isFilterOpen?: boolean;
+  onToggleFilter?: () => void;
+  filterBar?: React.ReactNode;
 }
 
 export const DeploymentTable: React.FC<DeploymentTableProps> = ({
@@ -25,6 +40,19 @@ export const DeploymentTable: React.FC<DeploymentTableProps> = ({
   onView,
   onEdit,
   onDelete,
+  search,
+  onSearchChange,
+  environment,
+  onEnvironmentChange,
+  status,
+  onStatusChange,
+  handoverStatus,
+  onHandoverStatusChange,
+  onClearFilters,
+  filterOptions,
+  isFilterOpen,
+  onToggleFilter,
+  filterBar,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -320,8 +348,28 @@ export const DeploymentTable: React.FC<DeploymentTableProps> = ({
   };
 
   return (
-    <div className="flex flex-col w-full font-['Inter']">
-      {/* Horizontally scrollable table container matching 1837.23px specification */}
+    <div className="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col w-full overflow-hidden font-['Inter']">
+      {/* 1 & 2: Search Toolbar and Filter Fields inside the Main Table Container */}
+      {filterBar ? (
+        filterBar
+      ) : search !== undefined && onSearchChange && onClearFilters && filterOptions ? (
+        <DeploymentFilterBar
+          search={search}
+          onSearchChange={onSearchChange}
+          environment={environment || 'All'}
+          onEnvironmentChange={onEnvironmentChange || (() => {})}
+          status={status || 'All'}
+          onStatusChange={onStatusChange || (() => {})}
+          handoverStatus={handoverStatus || 'All'}
+          onHandoverStatusChange={onHandoverStatusChange || (() => {})}
+          onClearFilters={onClearFilters}
+          options={filterOptions}
+          isFilterOpen={isFilterOpen ?? true}
+          onToggleFilter={onToggleFilter || (() => {})}
+        />
+      ) : null}
+
+      {/* 3 & 4: Horizontally scrollable table container matching 1837.23px specification */}
       <div className="w-full overflow-x-auto">
         <table className="w-full min-w-[1837.23px] border-collapse text-left font-['Inter']">
           <thead>

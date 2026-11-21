@@ -72,15 +72,19 @@ export const ClientsMetricCards: React.FC<ClientsMetricCardsProps> = ({
                 : 'border-slate-200 hover:border-slate-300'
             }`}
           >
-            {/* Left Icon Container: 48x48 */}
+            {/* Left Icon Container: 44x44 */}
             <div
-              className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] max-w-[44px] max-h-[44px] rounded-xl flex items-center justify-center shrink-0 border"
               style={{
+                width: '44px',
+                height: '44px',
+                minWidth: '44px',
+                minHeight: '44px',
                 backgroundColor: card.iconBg,
                 borderColor: card.iconColor + '20',
               }}
             >
-              <IconComponent size={22} color={card.iconColor} strokeWidth={2} />
+              <IconComponent size={20} className="w-5 h-5" color={card.iconColor} strokeWidth={2.2} />
             </div>
 
             {/* Right Metric Details */}

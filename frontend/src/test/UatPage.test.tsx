@@ -219,4 +219,42 @@ describe('UatPage Component', () => {
     fireEvent.click(filterBtn);
     expect(screen.getByTestId('uat-filter-dropdowns-row')).toBeInTheDocument();
   });
+
+  it('renders table header section with dynamic record count', async () => {
+    render(
+      <BrowserRouter>
+        <UatPage />
+      </BrowserRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 2, name: /UAT Executions/i })).toBeInTheDocument();
+      expect(screen.getByText(/UAT records/i)).toBeInTheDocument();
+    });
+  });
+
+  it('filters by status and clears all filters properly', async () => {
+    render(
+      <BrowserRouter>
+        <UatPage />
+      </BrowserRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('UAT-2026-0483')).toBeInTheDocument();
+    });
+
+    // Change status dropdown to 'Failed'
+    const statusSelect = screen.getByDisplayValue('All Status');
+    fireEvent.change(statusSelect, { target: { value: 'Failed' } });
+
+    // Click Clear Filters
+    const clearBtn = screen.getByText('Clear Filters');
+    fireEvent.click(clearBtn);
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue('All Status')).toBeInTheDocument();
+      expect(screen.getByDisplayValue('All Projects')).toBeInTheDocument();
+    });
+  });
 });

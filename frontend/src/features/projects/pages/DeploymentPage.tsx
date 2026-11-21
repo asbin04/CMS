@@ -9,7 +9,6 @@ import {
 } from '../types/deployment';
 import { deploymentService, INITIAL_DEPLOYMENT_ITEMS, INITIAL_DEPLOYMENT_KPIS } from '../services/deploymentService';
 import { DeploymentKpiCards } from '../components/DeploymentKpiCards';
-import { DeploymentFilterBar } from '../components/DeploymentFilterBar';
 import { DeploymentTable } from '../components/DeploymentTable';
 import { AddDeploymentModal } from '../components/AddDeploymentModal';
 import { EditDeploymentModal } from '../components/EditDeploymentModal';
@@ -175,31 +174,26 @@ export const DeploymentPage: React.FC = () => {
         <DeploymentKpiCards kpis={kpis} isLoading={isLoading} />
       </div>
 
-      {/* Main Table Container Box */}
-      <div className="w-full bg-white border border-[#E2E8F0] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[12px] overflow-hidden flex flex-col">
-        <DeploymentFilterBar
-          search={search}
-          onSearchChange={setSearch}
-          environment={environment}
-          onEnvironmentChange={setEnvironment}
-          status={status}
-          onStatusChange={setStatus}
-          handoverStatus={handoverStatus}
-          onHandoverStatusChange={setHandoverStatus}
-          onClearFilters={handleClearFilters}
-          options={filterOptions}
-          isFilterOpen={isFilterOpen}
-          onToggleFilter={() => setIsFilterOpen(!isFilterOpen)}
-        />
-
-        <DeploymentTable
-          deployments={deployments}
-          isLoading={isLoading}
-          onView={(d) => setViewingDeployment(d)}
-          onEdit={(d) => setEditingDeployment(d)}
-          onDelete={handleDeleteDeployment}
-        />
-      </div>
+      {/* Main Unified Deployment Table Container (Includes Search Toolbar, Filter Fields, Table Header, Table Body, Pagination) */}
+      <DeploymentTable
+        deployments={deployments}
+        isLoading={isLoading}
+        onView={(d) => setViewingDeployment(d)}
+        onEdit={(d) => setEditingDeployment(d)}
+        onDelete={handleDeleteDeployment}
+        search={search}
+        onSearchChange={setSearch}
+        environment={environment}
+        onEnvironmentChange={setEnvironment}
+        status={status}
+        onStatusChange={setStatus}
+        handoverStatus={handoverStatus}
+        onHandoverStatusChange={setHandoverStatus}
+        onClearFilters={handleClearFilters}
+        filterOptions={filterOptions}
+        isFilterOpen={isFilterOpen}
+        onToggleFilter={() => setIsFilterOpen(!isFilterOpen)}
+      />
 
       {/* Modals */}
       <AddDeploymentModal
