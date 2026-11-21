@@ -399,37 +399,39 @@ export const UatPage: React.FC = () => {
       {/* Section - 5 KPI Metric Cards */}
       <UatKpiCards kpis={kpis} isLoading={isLoading} />
 
-      {/* Section - Filter Controls Bar */}
-      <UatFilterBar
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        selectedProject={selectedProject}
-        onProjectChange={setSelectedProject}
-        selectedStatus={selectedStatus}
-        onStatusChange={setSelectedStatus}
-        selectedApproval={selectedApproval}
-        onApprovalChange={setSelectedApproval}
-        selectedTester={selectedTester}
-        onTesterChange={setSelectedTester}
-        filterOptions={filterOptions}
-        onClearFilters={handleClearFilters}
-        activeFilterCount={activeFilterCount}
-        isFiltersOpen={isFiltersOpen}
-        onToggleFilters={() => setIsFiltersOpen((prev) => !prev)}
-      />
+      {/* Main Unified UAT Container: Filters + Header + Table */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col w-full overflow-hidden">
+        {/* Section - Filter Controls Bar */}
+        <UatFilterBar
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          selectedProject={selectedProject}
+          onProjectChange={setSelectedProject}
+          selectedStatus={selectedStatus}
+          onStatusChange={setSelectedStatus}
+          selectedApproval={selectedApproval}
+          onApprovalChange={setSelectedApproval}
+          selectedTester={selectedTester}
+          onTesterChange={setSelectedTester}
+          filterOptions={filterOptions}
+          onClearFilters={handleClearFilters}
+          activeFilterCount={activeFilterCount}
+          isFiltersOpen={isFiltersOpen}
+          onToggleFilters={() => setIsFiltersOpen((prev) => !prev)}
+        />
 
-      {/* Section - 14-Column Table with Pagination */}
-      <UatTable
-        isLoading={isLoading}
-        uats={paginatedUats}
-        onEdit={(item) => setEditingUat(item)}
-        onDelete={handleDeleteUat}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-        pageSize={pageSize}
-        onPageSizeChange={setPageSize}
-        totalElements={totalElements}
-      />
+        {/* Section - 14-Column Table with Table Header and Pagination */}
+        <UatTable
+          uats={paginatedUats}
+          onEdit={(item) => setEditingUat(item)}
+          onDelete={handleDeleteUat}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          pageSize={pageSize}
+          onPageSizeChange={setPageSize}
+          totalElements={totalElements}
+        />
+      </div>
 
       {/* Modals */}
       <AddUatModal

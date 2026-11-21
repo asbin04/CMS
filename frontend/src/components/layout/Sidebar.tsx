@@ -655,64 +655,46 @@ export const Sidebar: React.FC<SidebarProps> = ({
               const isActive = isSectionActive(section);
               const SectionIcon = section.icon;
 
-              if (section.items.length === 1) {
-                return (
-                  <NavLink
-                    key={section.id}
-                    to={section.items[0].path}
+              return (
+                <div
+                  key={section.id}
+                  onMouseEnter={(e) => openFlyout(section, e)}
+                  onMouseLeave={scheduleCloseFlyout}
+                  style={{
+                    position: 'relative',
+                    width: '44px',
+                    height: '44px',
+                    minWidth: '44px',
+                    minHeight: '44px',
+                    flexShrink: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      if (section.items.length === 1) {
+                        navigate(section.items[0].path);
+                      } else {
+                        openFlyout(section, e);
+                      }
+                    }}
                     tabIndex={isCollapsed ? 0 : -1}
                     aria-label={section.title}
                     title={section.title}
                     style={{
                       width: '44px',
                       height: '44px',
-                      borderRadius: '10px',
-                      backgroundColor: isActive ? colors.secondaryBrand : 'transparent',
-                      color: isActive ? '#FFFFFF' : '#8A99B5',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      textDecoration: 'none',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s ease',
-                      position: 'relative',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
-                        e.currentTarget.style.color = '#FFFFFF';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.backgroundColor = 'transparent';
-                        e.currentTarget.style.color = '#8A99B5';
-                      }
-                    }}
-                  >
-                    <SectionIcon size={19} strokeWidth={isActive ? 2.3 : 1.9} />
-                  </NavLink>
-                );
-              }
-
-              return (
-                <div
-                  key={section.id}
-                  onMouseEnter={(e) => openFlyout(section, e)}
-                  onMouseLeave={scheduleCloseFlyout}
-                  style={{ position: 'relative' }}
-                >
-                  <button
-                    type="button"
-                    onClick={(e) => openFlyout(section, e)}
-                    tabIndex={isCollapsed ? 0 : -1}
-                    aria-label={section.title}
-                    style={{
-                      width: '44px',
-                      height: '44px',
+                      minWidth: '44px',
+                      minHeight: '44px',
+                      flexShrink: 0,
                       borderRadius: '10px',
                       backgroundColor: isActive ? colors.secondaryBrand : 'transparent',
                       border: 'none',
+                      padding: 0,
+                      boxSizing: 'border-box',
                       color: isActive ? '#FFFFFF' : '#8A99B5',
                       display: 'flex',
                       alignItems: 'center',

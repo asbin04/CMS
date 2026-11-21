@@ -163,4 +163,61 @@ describe('DeploymentPage Component', () => {
       expect(deploymentService.createDeployment).toHaveBeenCalled();
     });
   });
+
+  it('renders table header section and pagination controls', async () => {
+    await act(async () => {
+      render(
+        <BrowserRouter>
+          <DeploymentPage />
+        </BrowserRouter>
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Deployment ID')).toBeInTheDocument();
+      expect(screen.getByText(/of \d+ deployments/i)).toBeInTheDocument();
+    });
+  });
+
+  it('toggles filter panel and clears filters properly', async () => {
+    await act(async () => {
+      render(
+        <BrowserRouter>
+          <DeploymentPage />
+        </BrowserRouter>
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('All Environments')).toBeInTheDocument();
+    });
+
+    // Toggle Filters button off
+    const filterBtn = screen.getByRole('button', { name: /^Filters$/i });
+    await act(async () => {
+      fireEvent.click(filterBtn);
+    });
+    expect(screen.queryByText('All Environments')).not.toBeInTheDocument();
+
+    // Toggle Filters button back on
+    await act(async () => {
+      fireEvent.click(filterBtn);
+    });
+    expect(screen.getByText('All Environments')).toBeInTheDocument();
+
+    // Select an environment filter then click Clear Filters
+    const envSelect = screen.getByDisplayValue('All Environments');
+    await act(async () => {
+      fireEvent.change(envSelect, { target: { value: 'Production' } });
+    });
+
+    const clearBtn = screen.getByText('Clear Filters');
+    await act(async () => {
+      fireEvent.click(clearBtn);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue('All Environments')).toBeInTheDocument();
+    });
+  });
 });

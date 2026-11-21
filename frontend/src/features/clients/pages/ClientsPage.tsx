@@ -386,10 +386,13 @@ export const ClientsPage: React.FC = () => {
       {/* Section - Page Header matching Leads / Employee Master layout */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full">
         {/* Left Title with Green Badge */}
-        <div className="flex items-center gap-3">
-          {/* Green Icon Badge: 40x40 rounded-xl bg #ECFDF5 border #D1FAE5 */}
-          <div className="w-12 h-12 rounded-[12px] bg-[#ECFDF5] border border-[#D1FAE5] flex items-center justify-center text-[#059669] shrink-0 shadow-2xs">
-            <Handshake size={24} className="text-[#059669]" strokeWidth={2} />
+        <div className="flex items-center gap-3.5">
+          {/* Green Icon Badge: 44x44 rounded-xl bg #ECFDF5 border #A7F3D0 */}
+          <div
+            className="w-11 h-11 min-w-[44px] min-h-[44px] max-w-[44px] max-h-[44px] rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] flex items-center justify-center text-[#059669] shrink-0 shadow-2xs"
+            style={{ width: '44px', height: '44px', minWidth: '44px', minHeight: '44px' }}
+          >
+            <Handshake size={20} className="w-5 h-5 text-[#059669]" strokeWidth={2.2} />
           </div>
 
           <div className="flex flex-col items-start">
